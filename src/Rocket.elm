@@ -3,8 +3,10 @@ module Rocket exposing (..)
 import Html exposing (..)
 import Html.App exposing (program)
 import Rocket.World exposing (..)
+import Rocket.Intersection exposing (intersectionsSegmentPath)
+import List exposing (any, map)
 import Keyboard
-import Char
+import Char exposing (KeyCode, fromCode)
 import Element exposing (toHtml)
 import Time exposing (..)
 
@@ -13,8 +15,23 @@ type alias Model =
     { leftKeyDown : Bool
     , rightKeyDown : Bool
     , forwardKeyDown : Bool
+    , updateInterval : Float
     , rocket : RocketModel
+    , world : WorldModel
     , str : String
+    , gameover : Bool
+    }
+
+
+initModel =
+    { leftKeyDown = False
+    , rightKeyDown = False
+    , forwardKeyDown = False
+    , updateInterval = 20
+    , rocket = initRocketModel
+    , world = hole
+    , str = "Show Me Debug"
+    , gameover = False
     }
 
 
@@ -26,6 +43,67 @@ type alias RocketModel =
     , velocity : ( Float, Float )
     , acceleration : Float
     , twist : Float
+    , touchesWorld : Bool
+    , base : ( ( Float, Float ), ( Float, Float ) )
+    , top : ( Float, Float )
+    }
+
+
+initRocketModel =
+    { acceleration = initWorldModel.gravity * 3
+    , position = ( 0, 0 )
+    , landed = False
+    , fire = False
+    , angle = 0
+    , velocity = ( 0, 0 )
+    , twist = 5
+    , touchesWorld = False
+    , base = ( ( -10, -5 ), ( 10, -5 ) )
+    , top = ( 0, 20 )
+    }
+
+
+type alias WorldModel =
+    { path : List ( Float, Float )
+    , pointsOutside : ( ( Float, Float ), ( Float, Float ) )
+    , size : ( Float, Float )
+    , gravity : Float
+    }
+
+
+initWorldModel =
+    { size = ( 800, 600 )
+    , pointsOutside = ( ( 0, 300 ), ( -200, 200 ) )
+    , path = [ ( -400, -150 ), ( 400, -150 ) ]
+    , gravity = 0.05
+    }
+
+
+world1 =
+    { initWorldModel
+        | path =
+            [ ( -400, 150 )
+            , ( -200, -200 )
+            , ( -100, -200 )
+            , ( 0, -100 )
+            , ( 100, -100 )
+            , ( 400, -200 )
+            ]
+    }
+
+
+hole =
+    { initWorldModel
+        | path =
+            [ ( -400, 200 )
+            , ( -100, 200 )
+            , ( -100, -150 )
+            , ( -120, -150 )
+            , ( -120, 150 )
+            , ( -380, 150 )
+            , ( -380, -280 )
+            , ( 400, -280 )
+            ]
     }
 
 
@@ -42,52 +120,52 @@ type Key
     = Left
     | Right
     | Forward
+    | Start
     | NotBound
 
 
-keyBinding : Char.KeyCode -> Key
+keyBinding : KeyCode -> Key
 keyBinding code =
-    if code == Char.toCode 'W' then
-        Forward
-    else if code == Char.toCode 'A' then
-        Left
-    else if code == Char.toCode 'D' then
-        Right
-    else
-        NotBound
+    case fromCode code of
+        'W' ->
+            Forward
+
+        'A' ->
+            Left
+
+        'D' ->
+            Right
+
+        _ ->
+            NotBound
+
+
+keyBindingGameover : KeyCode -> Key
+keyBindingGameover code =
+    case fromCode code of
+        'R' ->
+            Start
+
+        _ ->
+            NotBound
 
 
 init =
     ( initModel, Cmd.none )
 
 
-initModel =
-    { leftKeyDown = False
-    , rightKeyDown = False
-    , forwardKeyDown = False
-    , rocket = initRocketModel
-    , str = "Show Me Debug"
-    }
-
-
-initRocketModel =
-    { acceleration = 0.15
-    , position = ( 0, 0 )
-    , landed = False
-    , fire = False
-    , angle = 0
-    , velocity = ( 0, 0 )
-    , twist = 5
-    }
-
-
 subscriptions model =
-    Sub.batch
-        [ Keyboard.downs (KeyDown << keyBinding)
-        , Keyboard.ups (KeyUp << keyBinding)
-          -- , every (30 * millisecond) (\_ -> Step)
-        , every (20 * millisecond) (\_ -> Step)
-        ]
+    if not model.gameover then
+        Sub.batch
+            [ Keyboard.downs (KeyDown << keyBinding)
+            , Keyboard.ups (KeyUp << keyBinding)
+            , every (model.updateInterval * millisecond) (\_ -> Step)
+            ]
+    else
+        Sub.batch
+            [ Keyboard.ups (KeyUp << keyBindingGameover)
+            , Keyboard.downs (KeyDown << keyBindingGameover)
+            ]
 
 
 view model =
@@ -95,11 +173,11 @@ view model =
         rocket =
             model.rocket
 
-        ( a, b ) =
-            ( 800, 600 )
+        world =
+            model.world
     in
         div []
-            [ toHtml <| drawScene a b rocket
+            [ toHtml <| drawScene world rocket
             , viewRocketStatus rocket
             ]
 
@@ -125,6 +203,7 @@ viewRocketStatus r =
             , viewValue "Fire" r.fire
             , viewValue "Acceleration" r.acceleration
             , viewValue "Twist" r.twist
+            , viewValue "touches World" r.touchesWorld
             ]
         ]
 
@@ -142,8 +221,11 @@ viewValue name value =
 update : Msg -> Model -> Model
 update msg model =
     let
+        world =
+            model.world
+
         gravity =
-            0.1
+            world.gravity
 
         rocket =
             model.rocket
@@ -178,6 +260,9 @@ update msg model =
                     Forward ->
                         { model | forwardKeyDown = True }
 
+                    Start ->
+                        model
+
                     NotBound ->
                         model
 
@@ -192,32 +277,41 @@ update msg model =
                     Forward ->
                         { model | forwardKeyDown = False }
 
+                    Start ->
+                        initModel
+
                     NotBound ->
                         model
 
             Step ->
-                { model
-                    | rocket =
-                        { rocket
-                            | angle =
-                                if model.leftKeyDown then
-                                    angle + twist
-                                else if model.rightKeyDown then
-                                    angle - twist
-                                else
-                                    angle
-                            , velocity =
-                                accelerate gravity 180
-                                    <| (if model.forwardKeyDown then
-                                            accelerate acceleration angle
-                                        else
-                                            identity
-                                       )
-                                    <| ( vx, vy )
-                            , position = ( vx + x, vy + y )
-                            , fire = model.forwardKeyDown
-                        }
-                }
+                let
+                    touch =
+                        touchesWorld rocket world
+                in
+                    { model
+                        | rocket =
+                            { rocket
+                                | angle =
+                                    if model.leftKeyDown then
+                                        angle + twist
+                                    else if model.rightKeyDown then
+                                        angle - twist
+                                    else
+                                        angle
+                                , velocity =
+                                    accelerate gravity 180
+                                        <| (if model.forwardKeyDown then
+                                                accelerate acceleration angle
+                                            else
+                                                identity
+                                           )
+                                        <| ( vx, vy )
+                                , position = ( vx + x, vy + y )
+                                , fire = model.forwardKeyDown
+                                , touchesWorld = touch
+                            }
+                        , gameover = touch
+                    }
 
             ShowMe s ->
                 { model | str = s }
@@ -236,7 +330,7 @@ main =
 
 
 
-{- Some Helpers -}
+{- Some Helpers : -}
 
 
 accelerate : Float -> Float -> ( Float, Float ) -> ( Float, Float )
@@ -246,3 +340,41 @@ accelerate acceleration angle ( x, y ) =
             degrees (angle + 90)
     in
         ( acceleration * cos deg + x, acceleration * sin deg + y )
+
+
+touchesWorld rocket world =
+    let
+        ( p1, p2 ) =
+            world.pointsOutside
+
+        ( b1, b2 ) =
+            rocket.base
+
+        t =
+            rocket.top
+
+        pos =
+            rocket.position
+
+        path =
+            world.path
+
+        isOdd =
+            (\x ->
+                if x % 2 == 1 then
+                    True
+                else
+                    False
+            )
+
+        checkPoint =
+            \p ->
+                (isOdd <| intersectionsSegmentPath ( p1, p ) path)
+                    && (isOdd <| intersectionsSegmentPath ( p2, p ) path)
+    in
+        any checkPoint (map (addPoints pos) [ b1, b2, t ])
+
+
+addPoints : ( Float, Float ) -> ( Float, Float ) -> ( Float, Float )
+addPoints ( px, py ) ( qx, qy ) =
+    ( px + qx, py + qy )

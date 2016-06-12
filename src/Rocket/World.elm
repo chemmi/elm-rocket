@@ -24,13 +24,24 @@ testWorld a b =
             <| rect a (b * rel)
 
 
+worldForm world =
+    let
+        ( a, b ) =
+            world.size
+
+        path =
+            world.path
+    in
+        filled lightCharcoal (polygon (( a / 2, -b / 2 ) :: ( -a / 2, -b / 2 ) :: path))
+
+
 background : Float -> Float -> Form
 background a b =
     filled green <| rect a b
 
 
-frame : Float -> Float -> Form
-frame a b =
+frameForm : Float -> Float -> Form
+frameForm a b =
     let
         l : LineStyle
         l =
@@ -39,46 +50,24 @@ frame a b =
         outlined { l | width = 10 } <| rect a b
 
 
-testScene : Float -> Float -> Element
-testScene a b =
+rocketForm rocket =
     let
-        world =
-            testWorld
-    in
-        collage (round a) (round b)
-            <| [ background a b
-               , world a b
-               , rocket False
-               , frame a b
-               ]
+        ( base1, base2 ) =
+            rocket.base
 
+        top =
+            rocket.top
 
+        fire =
+            rocket.fire
 
--- A main for testing Worlds
-{-
-
-   main =
-       let
-           ( a, b ) =
-               ( 400, 400 )
-       in
-           toHtml
-           <| testScene a b
-
--}
-
-{- Try Comment -}
-
-rocket : Bool -> Form
-rocket fire =
-    let
         bodyShape : Shape
         bodyShape =
-            polygon [ ( -10, -10 ), ( 0, 15 ), ( 10, -10 ), ( 0, -5 ) ]
+            polygon [ base1, top, base2, ( 0, 0 ) ]
 
         fireShape : Shape
         fireShape =
-            polygon [ ( -6, -4 ), ( 0, -12 ), ( 6, -4 ) ]
+            polygon [ ( -6, 1 ), ( 0, -9 ), ( 6, 1 ) ]
     in
         group
             <| (if fire then
@@ -95,18 +84,18 @@ rocket fire =
                )
 
 
-
---drawScene : Float -> Float -> { position : (Float, Float), angle : Float} ->  Element
-
-
-drawScene a b r =
+{-| drawScene : Float -> Float -> { position : (Float, Float), angle : Float} ->  Element
+-}
+drawScene world rocket =
     let
-        world =
-            testWorld
+        ( a, b ) =
+            world.size
     in
         collage (round a) (round b)
             <| [ background a b
-               , world a b
-               , move r.position << rotate (degrees r.angle) <| (rocket r.fire)
-               , frame a b
+               , worldForm world
+               , move rocket.position
+                    << rotate (degrees rocket.angle)
+                    <| (rocketForm rocket)
+               , frameForm a b
                ]
