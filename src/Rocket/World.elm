@@ -31,8 +31,17 @@ worldForm world =
 
         path =
             world.path
+
+        poly =
+            polygon (( a / 2, -b / 2 ) :: ( -a / 2, -b / 2 ) :: path)
+
+        l =
+            solid black
     in
-        filled lightCharcoal (polygon (( a / 2, -b / 2 ) :: ( -a / 2, -b / 2 ) :: path))
+        group
+            [ filled lightCharcoal poly
+            , outlined { l | width = 1 } poly
+            ]
 
 
 background : Float -> Float -> Form
@@ -47,7 +56,7 @@ frameForm a b =
         l =
             solid black
     in
-        outlined { l | width = 10 } <| rect a b
+        outlined { l | width = 2 } <| rect a b
 
 
 rocketForm rocket =
@@ -67,19 +76,17 @@ rocketForm rocket =
 
         fireShape : Shape
         fireShape =
-            polygon [ ( -6, 1 ), ( 0, -9 ), ( 6, 1 ) ]
+            polygon [ ( -6, 1 ), ( 0, -6 ), ( 6, 1 ) ]
     in
         group
             <| (if fire then
                     [ filled red fireShape
                     , filled blue bodyShape
                     , outlined defaultLine bodyShape
-                      --, filled red fire
                     ]
                 else
                     [ filled blue bodyShape
                     , outlined defaultLine bodyShape
-                      --, filled red fire
                     ]
                )
 

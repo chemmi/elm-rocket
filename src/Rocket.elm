@@ -371,8 +371,21 @@ touchesWorld rocket world =
             \p ->
                 (isOdd <| intersectionsSegmentPath ( p1, p ) path)
                     && (isOdd <| intersectionsSegmentPath ( p2, p ) path)
+
+        outOfScope =
+            let
+                ( a, b ) =
+                    world.size
+            in
+                \p ->
+                    let
+                        ( px, py ) =
+                            p
+                    in
+                        px < -a / 2 || px > a / 2 || py < -b / 2 || py > b / 2
     in
         any checkPoint (map (addPoints pos) [ b1, b2, t ])
+            || any outOfScope (map (addPoints pos) [ b1, b2, t ])
 
 
 addPoints : ( Float, Float ) -> ( Float, Float ) -> ( Float, Float )
