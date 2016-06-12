@@ -20,6 +20,7 @@ type alias Model =
 
 type alias RocketModel =
     { position : ( Float, Float )
+    , landed : Bool
     , fire : Bool
     , angle : Float
     , velocity : ( Float, Float )
@@ -72,6 +73,7 @@ initModel =
 initRocketModel =
     { acceleration = 0.15
     , position = ( 0, 0 )
+    , landed = False
     , fire = False
     , angle = 0
     , velocity = ( 0, 0 )
@@ -84,7 +86,7 @@ subscriptions model =
         [ Keyboard.downs (KeyDown << keyBinding)
         , Keyboard.ups (KeyUp << keyBinding)
           -- , every (30 * millisecond) (\_ -> Step)
-        , every (30 * millisecond) (\_ -> Step)
+        , every (20 * millisecond) (\_ -> Step)
         ]
 
 
@@ -94,12 +96,47 @@ view model =
             model.rocket
 
         ( a, b ) =
-            ( 400, 400 )
+            ( 800, 600 )
     in
         div []
             [ toHtml <| drawScene a b rocket
-            , text model.str
+            , viewRocketStatus rocket
             ]
+
+
+viewRocketStatus : RocketModel -> Html a
+viewRocketStatus r =
+    div []
+        [ h3 [] [ text "Rocket Status" ]
+        , table []
+            [ viewValue "Position"
+                <| let
+                    ( x, y ) =
+                        r.position
+                   in
+                    ( round x, round y )
+            , viewValue "Angle" <| round r.angle
+            , viewValue "Velocity"
+                <| let
+                    ( vx, vy ) =
+                        r.velocity
+                   in
+                    ( round vx, round vy )
+            , viewValue "Fire" r.fire
+            , viewValue "Acceleration" r.acceleration
+            , viewValue "Twist" r.twist
+            ]
+        ]
+
+
+viewValue : String -> a -> Html b
+viewValue name value =
+    tr []
+        [ td [] [ text name ]
+        , td []
+            [ text <| toString value
+            ]
+        ]
 
 
 update : Msg -> Model -> Model
