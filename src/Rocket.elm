@@ -4,7 +4,8 @@ import Html exposing (..)
 import Html.App exposing (program)
 import Rocket.World exposing (..)
 import Rocket.Intersection exposing (intersectionsSegmentPath)
-import List exposing (any, map)
+import List exposing (..)
+import Maybe exposing (andThen)
 import Keyboard
 import Char exposing (KeyCode, fromCode)
 import Element exposing (toHtml)
@@ -27,7 +28,7 @@ initModel =
     { leftKeyDown = False
     , rightKeyDown = False
     , forwardKeyDown = False
-    , updateInterval = 20
+    , updateInterval = 15
     , rocket = initRocketModel
     , world = hole
     , str = "Show Me Debug"
@@ -38,6 +39,7 @@ initModel =
 type alias RocketModel =
     { position : ( Float, Float )
     , landed : Bool
+    , onPlatform : Maybe Platform
     , fire : Bool
     , angle : Float
     , velocity : ( Float, Float )
@@ -51,12 +53,13 @@ type alias RocketModel =
 
 initRocketModel =
     { acceleration = initWorldModel.gravity * 3
-    , position = ( 0, 0 )
+    , position = ( 250, -200 )
     , landed = False
+    , onPlatform = Nothing
     , fire = False
     , angle = 0
     , velocity = ( 0, 0 )
-    , twist = 5
+    , twist = 3
     , touchesWorld = False
     , base = ( ( -10, -5 ), ( 10, -5 ) )
     , top = ( 0, 20 )
@@ -68,14 +71,16 @@ type alias WorldModel =
     , pointsOutside : ( ( Float, Float ), ( Float, Float ) )
     , size : ( Float, Float )
     , gravity : Float
+    , platforms : List Platform
     }
 
 
 initWorldModel =
     { size = ( 800, 600 )
-    , pointsOutside = ( ( 0, 300 ), ( -200, 200 ) )
+    , pointsOutside = ( ( 0, 600 ), ( -200, 200 ) )
     , path = [ ( -400, -150 ), ( 400, -150 ) ]
     , gravity = 0.05
+    , platforms = []
     }
 
 
@@ -104,6 +109,21 @@ hole =
             , ( -380, -280 )
             , ( 400, -280 )
             ]
+        , platforms =
+            [ { height = -280
+              , from = 200
+              , to = 300
+              , marked = False
+              }
+            ]
+    }
+
+
+type alias Platform =
+    { height : Float
+    , from : Float
+    , to : Float
+    , marked : Bool
     }
 
 
@@ -179,7 +199,17 @@ view model =
         div []
             [ toHtml <| drawScene world rocket
             , viewRocketStatus rocket
+            , viewStatus model
             ]
+
+
+viewStatus : Model -> Html a
+viewStatus model =
+    div []
+        [ h3 [] [ text "Model Status" ]
+        , table []
+            [ viewValue "Gameover" model.gameover ]
+        ]
 
 
 viewRocketStatus : RocketModel -> Html a
@@ -204,6 +234,8 @@ viewRocketStatus r =
             , viewValue "Acceleration" r.acceleration
             , viewValue "Twist" r.twist
             , viewValue "touches World" r.touchesWorld
+            , viewValue "landed" r.landed
+            , viewValue "on Platform" r.onPlatform
             ]
         ]
 
@@ -224,29 +256,8 @@ update msg model =
         world =
             model.world
 
-        gravity =
-            world.gravity
-
         rocket =
             model.rocket
-
-        ( x, y ) =
-            rocket.position
-
-        angle =
-            rocket.angle
-
-        fire =
-            rocket.fire
-
-        ( vx, vy ) =
-            rocket.velocity
-
-        acceleration =
-            rocket.acceleration
-
-        twist =
-            rocket.twist
     in
         case msg of
             KeyDown key ->
@@ -287,37 +298,186 @@ update msg model =
                 let
                     touch =
                         touchesWorld rocket world
+
+                    platform =
+                        if touch then
+                            atPlatform rocket world
+                        else
+                            rocket.onPlatform
+
+                    landed =
+                        rocket.landed
                 in
-                    { model
-                        | rocket =
-                            { rocket
-                                | angle =
-                                    if model.leftKeyDown then
-                                        angle + twist
-                                    else if model.rightKeyDown then
-                                        angle - twist
-                                    else
-                                        angle
-                                , velocity =
-                                    accelerate gravity 180
-                                        <| (if model.forwardKeyDown then
-                                                accelerate acceleration angle
-                                            else
-                                                identity
-                                           )
-                                        <| ( vx, vy )
-                                , position = ( vx + x, vy + y )
-                                , fire = model.forwardKeyDown
-                                , touchesWorld = touch
-                            }
-                        , gameover = touch
-                    }
+                    if landed then
+                        if model.forwardKeyDown then
+                            let
+                                ( px, py ) =
+                                    rocket.position
+                            in
+                                { model
+                                    | rocket =
+                                        { rocket
+                                            | landed = False
+                                            , position = ( px, py + 1 )
+                                            , fire = True
+                                            , onPlatform = Nothing
+                                        }
+                                }
+                        else
+                            model
+                    else if touch then
+                        case andThen platform (landing model) of
+                            Just m ->
+                                m
+
+                            Nothing ->
+                                { model | gameover = True }
+                    else
+                        updateRocket model
 
             ShowMe s ->
                 { model | str = s }
 
             _ ->
                 model
+
+
+landing : Model -> Platform -> Maybe Model
+landing model platform =
+    let
+        rocket =
+            model.rocket
+
+        world =
+            model.world
+
+        ( vx, vy ) =
+            rocket.velocity
+
+        pos =
+            rocket.position
+
+        ( px, py ) =
+            pos
+
+        ( b1, b2 ) =
+            rocket.base
+
+        ( b1x, b1y ) =
+            b1
+
+        ( b2x, b2y ) =
+            b2
+
+        roundedAngle =
+            round rocket.angle % 360
+
+        angleTolerance =
+            10
+
+        vxTolerance =
+            1
+
+        vyTolerance =
+            2
+    in
+        if
+            ((roundedAngle < angleTolerance)
+                || (roundedAngle > 360 - angleTolerance)
+            )
+                && (b1x + px > platform.from)
+                && (b2x + px < platform.to)
+                && (abs vx < vxTolerance)
+                && (abs vy < vyTolerance)
+        then
+            Just
+                { model
+                    | rocket =
+                        { rocket
+                            | angle = 0
+                            , position = ( px, platform.height - b1y )
+                            , landed = True
+                            , velocity = ( 0, 0 )
+                            , fire = False
+                            , onPlatform = Just platform
+                        }
+                    , leftKeyDown = False
+                    , rightKeyDown = False
+                    , forwardKeyDown = False
+                    , world =
+                        { world
+                            | platforms = markPlatform platform world.platforms
+                        }
+                }
+        else
+            Nothing
+
+
+markPlatform : Platform -> List Platform -> List Platform
+markPlatform p ps =
+    case ps of
+        [] ->
+            []
+
+        p' :: ps' ->
+            if p == p' then
+                { p | marked = True } :: ps'
+            else
+                p' :: markPlatform p ps'
+
+
+updateRocket : Model -> Model
+updateRocket model =
+    let
+        world =
+            model.world
+
+        gravity =
+            world.gravity
+
+        rocket =
+            model.rocket
+
+        ( x, y ) =
+            rocket.position
+
+        angle =
+            rocket.angle
+
+        fire =
+            rocket.fire
+
+        ( vx, vy ) =
+            rocket.velocity
+
+        acceleration =
+            rocket.acceleration
+
+        twist =
+            rocket.twist
+    in
+        { model
+            | rocket =
+                { rocket
+                    | angle =
+                        if model.leftKeyDown then
+                            angle + twist
+                        else if model.rightKeyDown then
+                            angle - twist
+                        else
+                            angle
+                    , velocity =
+                        accelerate gravity 180
+                            <| (if model.forwardKeyDown then
+                                    accelerate acceleration angle
+                                else
+                                    identity
+                               )
+                            <| ( vx, vy )
+                    , position = ( vx + x, vy + y )
+                    , fire = model.forwardKeyDown
+                }
+        }
 
 
 main =
@@ -391,3 +551,29 @@ touchesWorld rocket world =
 addPoints : ( Float, Float ) -> ( Float, Float ) -> ( Float, Float )
 addPoints ( px, py ) ( qx, qy ) =
     ( px + qx, py + qy )
+
+
+atPlatform : RocketModel -> WorldModel -> Maybe Platform
+atPlatform rocket world =
+    let
+        ( b1, b2 ) =
+            rocket.base
+
+        pos =
+            rocket.position
+
+        platforms =
+            world.platforms
+
+        nearplatform =
+            \( px, py ) platform ->
+                if platform.from < px && platform.to > px then
+                    platform.height - 10 < py && platform.height > py
+                else
+                    False
+
+        candidates =
+            append (filter (nearplatform (addPoints b1 pos)) platforms)
+                (filter (nearplatform (addPoints b2 pos)) platforms)
+    in
+        head candidates

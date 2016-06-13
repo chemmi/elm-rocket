@@ -4,6 +4,7 @@ import Collage exposing (..)
 import Element exposing (..)
 import Html exposing (..)
 import Color exposing (..)
+import List exposing (map)
 
 
 type alias RocketData =
@@ -11,17 +12,6 @@ type alias RocketData =
     , angle : Float
     , fire : Bool
     }
-
-
-testWorld : Float -> Float -> Form
-testWorld a b =
-    let
-        rel =
-            1 / 4
-    in
-        moveY (-b / 2 * (1 - rel))
-            <| filled gray
-            <| rect a (b * rel)
 
 
 worldForm world =
@@ -44,9 +34,45 @@ worldForm world =
             ]
 
 
+platformsForm platforms =
+    let
+        line =
+            solid black
+
+        markedColor =
+            green
+
+        unmarkedColor =
+            red
+
+        toForm =
+            \p ->
+                let
+                    form =
+                        polygon
+                            [ ( p.from, p.height )
+                            , ( p.to, p.height )
+                            , ( p.to, p.height - 10 )
+                            , ( p.from, p.height - 10 )
+                            ]
+
+                    color =
+                        if p.marked then
+                            markedColor
+                        else
+                            unmarkedColor
+                in
+                    group
+                        [ filled color form
+                        , outlined { line | width = 1 } form
+                        ]
+    in
+        group (map toForm platforms)
+
+
 background : Float -> Float -> Form
 background a b =
-    filled green <| rect a b
+    filled lightGreen <| rect a b
 
 
 frameForm : Float -> Float -> Form
@@ -104,5 +130,6 @@ drawScene world rocket =
                , move rocket.position
                     << rotate (degrees rocket.angle)
                     <| (rocketForm rocket)
+               , platformsForm world.platforms
                , frameForm a b
                ]
