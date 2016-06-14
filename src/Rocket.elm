@@ -4,6 +4,7 @@ import Html exposing (..)
 import Html.App exposing (program)
 import Rocket.Types exposing (..)
 import Rocket.Worlds exposing (..)
+import Rocket.Movement exposing (..)
 import Rocket.View exposing (..)
 import Rocket.Intersection exposing (intersectionsSegmentPath)
 import List exposing (..)
@@ -267,7 +268,12 @@ update msg model =
                             Nothing ->
                                 { model | gameover = True }
                     else
-                        updateRocket model
+                        { model
+                            | rocket =
+                                moveRocket rocket
+                                    model.keyDown
+                                    world.gravity
+                        }
 
             ShowMe s ->
                 { model | str = s }
@@ -358,60 +364,6 @@ markPlatform p ps =
                 p' :: markPlatform p ps'
 
 
-updateRocket : Model -> Model
-updateRocket model =
-    let
-        world =
-            model.world
-
-        gravity =
-            world.gravity
-
-        rocket =
-            model.rocket
-
-        ( x, y ) =
-            rocket.position
-
-        angle =
-            rocket.angle
-
-        fire =
-            rocket.fire
-
-        ( vx, vy ) =
-            rocket.velocity
-
-        acceleration =
-            rocket.acceleration
-
-        twist =
-            rocket.twist
-    in
-        { model
-            | rocket =
-                { rocket
-                    | angle =
-                        if (model.keyDown).left then
-                            angle + twist
-                        else if (model.keyDown).right then
-                            angle - twist
-                        else
-                            angle
-                    , velocity =
-                        accelerate gravity 180
-                            <| (if (model.keyDown).forward then
-                                    accelerate acceleration angle
-                                else
-                                    identity
-                               )
-                            <| ( vx, vy )
-                    , position = ( vx + x, vy + y )
-                    , fire = (model.keyDown).forward
-                }
-        }
-
-
 main =
     program
         { init = init
@@ -423,15 +375,6 @@ main =
 
 
 {- Some Helpers : -}
-
-
-accelerate : Float -> Float -> ( Float, Float ) -> ( Float, Float )
-accelerate acceleration angle ( x, y ) =
-    let
-        deg =
-            degrees (angle + 90)
-    in
-        ( acceleration * cos deg + x, acceleration * sin deg + y )
 
 
 touchesWorld rocket world =
