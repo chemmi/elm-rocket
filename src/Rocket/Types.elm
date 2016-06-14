@@ -6,14 +6,19 @@ type alias Point =
 
 
 type alias Model =
-    { leftKeyDown : Bool
-    , rightKeyDown : Bool
-    , forwardKeyDown : Bool
+    { keyDown : KeyDown
     , updateInterval : Float
     , rocket : Rocket
     , world : World
     , str : String
     , gameover : Bool
+    }
+
+
+type alias KeyDown =
+    { left : Bool
+    , right : Bool
+    , forward : Bool
     }
 
 

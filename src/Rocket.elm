@@ -19,9 +19,7 @@ initModel =
         world =
             hole
     in
-        { leftKeyDown = False
-        , rightKeyDown = False
-        , forwardKeyDown = False
+        { keyDown = noKeyDown
         , updateInterval = 15
         , world = world
         , rocket =
@@ -31,6 +29,13 @@ initModel =
         , str = "Show Me Debug"
         , gameover = False
         }
+
+
+noKeyDown =
+    { left = False
+    , right = False
+    , forward = False
+    }
 
 
 initRocket =
@@ -49,8 +54,8 @@ initRocket =
 
 
 type Msg
-    = KeyDown Key
-    | KeyUp Key
+    = KeyDownMsg Key
+    | KeyUpMsg Key
     | Step
     | NoMsg
       -- ShowMe used for debugging
@@ -98,14 +103,14 @@ init =
 subscriptions model =
     if not model.gameover then
         Sub.batch
-            [ Keyboard.downs (KeyDown << keyBinding)
-            , Keyboard.ups (KeyUp << keyBinding)
+            [ Keyboard.downs (KeyDownMsg << keyBinding)
+            , Keyboard.ups (KeyUpMsg << keyBinding)
             , every (model.updateInterval * millisecond) (\_ -> Step)
             ]
     else
         Sub.batch
-            [ Keyboard.ups (KeyUp << keyBindingGameover)
-            , Keyboard.downs (KeyDown << keyBindingGameover)
+            [ Keyboard.ups (KeyUpMsg << keyBindingGameover)
+            , Keyboard.downs (KeyDownMsg << keyBindingGameover)
             ]
 
 
@@ -181,39 +186,47 @@ update msg model =
             model.rocket
     in
         case msg of
-            KeyDown key ->
-                case key of
-                    Left ->
-                        { model | leftKeyDown = True }
+            KeyDownMsg key ->
+                let
+                    keyDown =
+                        model.keyDown
+                in
+                    case key of
+                        Left ->
+                            { model | keyDown = { keyDown | left = True } }
 
-                    Right ->
-                        { model | rightKeyDown = True }
+                        Right ->
+                            { model | keyDown = { keyDown | right = True } }
 
-                    Forward ->
-                        { model | forwardKeyDown = True }
+                        Forward ->
+                            { model | keyDown = { keyDown | forward = True } }
 
-                    Start ->
-                        model
+                        Start ->
+                            model
 
-                    NotBound ->
-                        model
+                        NotBound ->
+                            model
 
-            KeyUp key ->
-                case key of
-                    Left ->
-                        { model | leftKeyDown = False }
+            KeyUpMsg key ->
+                let
+                    keyDown =
+                        model.keyDown
+                in
+                    case key of
+                        Left ->
+                            { model | keyDown = { keyDown | left = False } }
 
-                    Right ->
-                        { model | rightKeyDown = False }
+                        Right ->
+                            { model | keyDown = { keyDown | right = False } }
 
-                    Forward ->
-                        { model | forwardKeyDown = False }
+                        Forward ->
+                            { model | keyDown = { keyDown | forward = False } }
 
-                    Start ->
-                        initModel
+                        Start ->
+                            initModel
 
-                    NotBound ->
-                        model
+                        NotBound ->
+                            model
 
             Step ->
                 let
@@ -230,7 +243,7 @@ update msg model =
                         rocket.landed
                 in
                     if landed then
-                        if model.forwardKeyDown then
+                        if (model.keyDown).forward then
                             let
                                 ( px, py ) =
                                     rocket.position
@@ -322,9 +335,7 @@ landing model platform =
                             , fire = False
                             , onPlatform = Just platform
                         }
-                    , leftKeyDown = False
-                    , rightKeyDown = False
-                    , forwardKeyDown = False
+                    , keyDown = noKeyDown
                     , world =
                         { world
                             | platforms = markPlatform platform world.platforms
@@ -381,22 +392,22 @@ updateRocket model =
             | rocket =
                 { rocket
                     | angle =
-                        if model.leftKeyDown then
+                        if (model.keyDown).left then
                             angle + twist
-                        else if model.rightKeyDown then
+                        else if (model.keyDown).right then
                             angle - twist
                         else
                             angle
                     , velocity =
                         accelerate gravity 180
-                            <| (if model.forwardKeyDown then
+                            <| (if (model.keyDown).forward then
                                     accelerate acceleration angle
                                 else
                                     identity
                                )
                             <| ( vx, vy )
                     , position = ( vx + x, vy + y )
-                    , fire = model.forwardKeyDown
+                    , fire = (model.keyDown).forward
                 }
         }
 
