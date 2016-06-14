@@ -10,14 +10,14 @@ type alias Model =
     , rightKeyDown : Bool
     , forwardKeyDown : Bool
     , updateInterval : Float
-    , rocket : RocketModel
-    , world : WorldModel
+    , rocket : Rocket
+    , world : World
     , str : String
     , gameover : Bool
     }
 
 
-type alias RocketModel =
+type alias Rocket =
     { position : Point
     , landed : Bool
     , onPlatform : Maybe Platform
@@ -32,7 +32,7 @@ type alias RocketModel =
     }
 
 
-type alias WorldModel =
+type alias World =
     { path : List Point
     , pointsOutside : ( Point, Point )
     , size : ( Float, Float )

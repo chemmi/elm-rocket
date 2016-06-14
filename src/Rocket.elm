@@ -18,15 +18,15 @@ initModel =
     , rightKeyDown = False
     , forwardKeyDown = False
     , updateInterval = 15
-    , rocket = initRocketModel
+    , rocket = initRocket
     , world = hole
     , str = "Show Me Debug"
     , gameover = False
     }
 
 
-initRocketModel =
-    { acceleration = initWorldModel.gravity * 3
+initRocket =
+    { acceleration = initWorld.gravity * 3
     , position = ( 250, -200 )
     , landed = False
     , onPlatform = Nothing
@@ -40,7 +40,7 @@ initRocketModel =
     }
 
 
-initWorldModel =
+initWorld =
     { size = ( 800, 600 )
     , pointsOutside = ( ( 0, 600 ), ( -200, 200 ) )
     , path = [ ( -400, -150 ), ( 400, -150 ) ]
@@ -50,7 +50,7 @@ initWorldModel =
 
 
 world1 =
-    { initWorldModel
+    { initWorld
         | path =
             [ ( -400, 150 )
             , ( -200, -200 )
@@ -63,7 +63,7 @@ world1 =
 
 
 hole =
-    { initWorldModel
+    { initWorld
         | path =
             [ ( -400, 200 )
             , ( -100, 200 )
@@ -169,7 +169,7 @@ viewStatus model =
         ]
 
 
-viewRocketStatus : RocketModel -> Html a
+viewRocketStatus : Rocket -> Html a
 viewRocketStatus r =
     div []
         [ h3 [] [ text "Rocket Status" ]
@@ -510,7 +510,7 @@ addPoints ( px, py ) ( qx, qy ) =
     ( px + qx, py + qy )
 
 
-atPlatform : RocketModel -> WorldModel -> Maybe Platform
+atPlatform : Rocket -> World -> Maybe Platform
 atPlatform rocket world =
     let
         ( b1, b2 ) =
