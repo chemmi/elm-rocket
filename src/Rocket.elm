@@ -2,6 +2,7 @@ module Rocket exposing (..)
 
 import Html exposing (..)
 import Html.App exposing (program)
+import Rocket.Types exposing (..)
 import Rocket.World exposing (..)
 import Rocket.Intersection exposing (intersectionsSegmentPath)
 import List exposing (..)
@@ -10,18 +11,6 @@ import Keyboard
 import Char exposing (KeyCode, fromCode)
 import Element exposing (toHtml)
 import Time exposing (..)
-
-
-type alias Model =
-    { leftKeyDown : Bool
-    , rightKeyDown : Bool
-    , forwardKeyDown : Bool
-    , updateInterval : Float
-    , rocket : RocketModel
-    , world : WorldModel
-    , str : String
-    , gameover : Bool
-    }
 
 
 initModel =
@@ -33,21 +22,6 @@ initModel =
     , world = hole
     , str = "Show Me Debug"
     , gameover = False
-    }
-
-
-type alias RocketModel =
-    { position : ( Float, Float )
-    , landed : Bool
-    , onPlatform : Maybe Platform
-    , fire : Bool
-    , angle : Float
-    , velocity : ( Float, Float )
-    , acceleration : Float
-    , twist : Float
-    , touchesWorld : Bool
-    , base : ( ( Float, Float ), ( Float, Float ) )
-    , top : ( Float, Float )
     }
 
 
@@ -63,15 +37,6 @@ initRocketModel =
     , touchesWorld = False
     , base = ( ( -10, -5 ), ( 10, -5 ) )
     , top = ( 0, 20 )
-    }
-
-
-type alias WorldModel =
-    { path : List ( Float, Float )
-    , pointsOutside : ( ( Float, Float ), ( Float, Float ) )
-    , size : ( Float, Float )
-    , gravity : Float
-    , platforms : List Platform
     }
 
 
@@ -116,14 +81,6 @@ hole =
               , marked = False
               }
             ]
-    }
-
-
-type alias Platform =
-    { height : Float
-    , from : Float
-    , to : Float
-    , marked : Bool
     }
 
 
