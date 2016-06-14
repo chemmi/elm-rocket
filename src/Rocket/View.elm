@@ -1,17 +1,10 @@
-module Rocket.World exposing (..)
+module Rocket.View exposing (..)
 
 import Collage exposing (..)
 import Element exposing (..)
 import Html exposing (..)
 import Color exposing (..)
 import List exposing (map)
-
-
-type alias RocketData =
-    { position : ( Float, Float )
-    , angle : Float
-    , fire : Bool
-    }
 
 
 worldForm world =
