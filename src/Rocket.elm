@@ -3,6 +3,7 @@ module Rocket exposing (..)
 import Html exposing (..)
 import Html.App exposing (program)
 import Rocket.Types exposing (..)
+import Rocket.Worlds exposing (..)
 import Rocket.View exposing (..)
 import Rocket.Intersection exposing (intersectionsSegmentPath)
 import List exposing (..)
@@ -14,20 +15,27 @@ import Time exposing (..)
 
 
 initModel =
-    { leftKeyDown = False
-    , rightKeyDown = False
-    , forwardKeyDown = False
-    , updateInterval = 15
-    , rocket = initRocket
-    , world = hole
-    , str = "Show Me Debug"
-    , gameover = False
-    }
+    let
+        world =
+            hole
+    in
+        { leftKeyDown = False
+        , rightKeyDown = False
+        , forwardKeyDown = False
+        , updateInterval = 15
+        , world = world
+        , rocket =
+            { initRocket
+                | position = world.rocketStartPosition
+            }
+        , str = "Show Me Debug"
+        , gameover = False
+        }
 
 
 initRocket =
     { acceleration = initWorld.gravity * 3
-    , position = ( 250, -200 )
+    , position = ( 0, 0 )
     , landed = False
     , onPlatform = Nothing
     , fire = False
@@ -37,50 +45,6 @@ initRocket =
     , touchesWorld = False
     , base = ( ( -10, -5 ), ( 10, -5 ) )
     , top = ( 0, 20 )
-    }
-
-
-initWorld =
-    { size = ( 800, 600 )
-    , pointsOutside = ( ( 0, 600 ), ( -200, 200 ) )
-    , path = [ ( -400, -150 ), ( 400, -150 ) ]
-    , gravity = 0.05
-    , platforms = []
-    }
-
-
-world1 =
-    { initWorld
-        | path =
-            [ ( -400, 150 )
-            , ( -200, -200 )
-            , ( -100, -200 )
-            , ( 0, -100 )
-            , ( 100, -100 )
-            , ( 400, -200 )
-            ]
-    }
-
-
-hole =
-    { initWorld
-        | path =
-            [ ( -400, 200 )
-            , ( -100, 200 )
-            , ( -100, -150 )
-            , ( -120, -150 )
-            , ( -120, 150 )
-            , ( -380, 150 )
-            , ( -380, -280 )
-            , ( 400, -280 )
-            ]
-        , platforms =
-            [ { height = -280
-              , from = 200
-              , to = 300
-              , marked = False
-              }
-            ]
     }
 
 

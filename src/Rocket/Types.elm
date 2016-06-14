@@ -38,6 +38,7 @@ type alias World =
     , size : ( Float, Float )
     , gravity : Float
     , platforms : List Platform
+    , rocketStartPosition : Point
     }
 
 
