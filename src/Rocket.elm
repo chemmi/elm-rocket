@@ -185,49 +185,19 @@ update msg model =
 
         rocket =
             model.rocket
+
+        keyDown =
+            model.keyDown
     in
         case msg of
-            KeyDownMsg key ->
-                let
-                    keyDown =
-                        model.keyDown
-                in
-                    case key of
-                        Left ->
-                            { model | keyDown = { keyDown | left = True } }
+            KeyUpMsg Start ->
+                initModel
 
-                        Right ->
-                            { model | keyDown = { keyDown | right = True } }
+            KeyDownMsg _ ->
+                { model | keyDown = updateKeyDown keyDown msg }
 
-                        Forward ->
-                            { model | keyDown = { keyDown | forward = True } }
-
-                        Start ->
-                            model
-
-                        NotBound ->
-                            model
-
-            KeyUpMsg key ->
-                let
-                    keyDown =
-                        model.keyDown
-                in
-                    case key of
-                        Left ->
-                            { model | keyDown = { keyDown | left = False } }
-
-                        Right ->
-                            { model | keyDown = { keyDown | right = False } }
-
-                        Forward ->
-                            { model | keyDown = { keyDown | forward = False } }
-
-                        Start ->
-                            initModel
-
-                        NotBound ->
-                            model
+            KeyUpMsg _ ->
+                { model | keyDown = updateKeyDown keyDown msg }
 
             Step ->
                 let
@@ -280,6 +250,41 @@ update msg model =
 
             _ ->
                 model
+
+
+updateKeyDown : KeyDown -> Msg -> KeyDown
+updateKeyDown keyDown msg =
+    case msg of
+        KeyDownMsg key ->
+            case key of
+                Left ->
+                    { keyDown | left = True }
+
+                Right ->
+                    { keyDown | right = True }
+
+                Forward ->
+                    { keyDown | forward = True }
+
+                _ ->
+                    keyDown
+
+        KeyUpMsg key ->
+            case key of
+                Left ->
+                    { keyDown | left = False }
+
+                Right ->
+                    { keyDown | right = False }
+
+                Forward ->
+                    { keyDown | forward = False }
+
+                _ ->
+                    keyDown
+
+        _ ->
+            keyDown
 
 
 landing : Model -> Platform -> Maybe Model
