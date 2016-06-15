@@ -7,7 +7,7 @@ initWorld =
     { size = ( 800, 600 )
     , pointsOutside = ( ( 0, 600 ), ( -200, 200 ) )
     , path = [ ( -400, -150 ), ( 400, -150 ) ]
-    , gravity = 0.05
+    , gravity = 5
     , platforms = []
     , rocketStartPosition = ( 0, 0 )
     }

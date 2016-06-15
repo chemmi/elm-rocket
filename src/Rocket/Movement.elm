@@ -1,10 +1,11 @@
 module Rocket.Movement exposing (..)
 
 import Rocket.Types exposing (..)
+import Time exposing (..)
 
 
-moveRocket : Rocket -> KeyDown -> Float -> Rocket
-moveRocket rocket keyDown gravity =
+moveRocket : KeyDown -> Float -> Time -> Rocket -> Rocket
+moveRocket keyDown gravity diffTime rocket =
     let
         ( x, y ) =
             rocket.position
@@ -23,6 +24,8 @@ moveRocket rocket keyDown gravity =
 
         twist =
             rocket.twist
+
+        diffSeconds = inSeconds diffTime
     in
         { rocket
             | angle =
@@ -33,9 +36,9 @@ moveRocket rocket keyDown gravity =
                 else
                     angle
             , velocity =
-                accelerate gravity 180
+                accelerate (gravity * diffSeconds) 180
                     <| (if keyDown.forward then
-                            accelerate acceleration angle
+                            accelerate (acceleration * diffSeconds) angle
                         else
                             identity
                        )

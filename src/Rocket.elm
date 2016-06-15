@@ -12,6 +12,7 @@ import Maybe exposing (andThen)
 import Keyboard
 import Char exposing (KeyCode, fromCode)
 import Element exposing (toHtml)
+import AnimationFrame exposing (..)
 import Time exposing (..)
 
 
@@ -57,7 +58,7 @@ initRocket =
 type Msg
     = KeyDownMsg Key
     | KeyUpMsg Key
-    | Step
+    | Step Time
     | NoMsg
       -- ShowMe used for debugging
     | ShowMe String
@@ -106,7 +107,8 @@ subscriptions model =
         Sub.batch
             [ Keyboard.downs (KeyDownMsg << keyBinding)
             , Keyboard.ups (KeyUpMsg << keyBinding)
-            , every (model.updateInterval * millisecond) (\_ -> Step)
+            , diffs Step
+              --, every (model.updateInterval * millisecond) (\_ -> Step)
             ]
     else
         Sub.batch
@@ -135,7 +137,9 @@ viewStatus model =
     div []
         [ h3 [] [ text "Model Status" ]
         , table []
-            [ viewValue "Gameover" model.gameover ]
+            [ viewValue "Gameover" model.gameover
+            , viewValue "Show Me" model.str
+            ]
         ]
 
 
@@ -199,7 +203,7 @@ update msg model =
             KeyUpMsg _ ->
                 { model | keyDown = updateKeyDown keyDown msg }
 
-            Step ->
+            Step diffTime ->
                 let
                     touch =
                         touchesWorld rocket world
@@ -240,9 +244,11 @@ update msg model =
                     else
                         { model
                             | rocket =
-                                moveRocket rocket
-                                    model.keyDown
+                                moveRocket model.keyDown
                                     world.gravity
+                                    diffTime
+                                    rocket
+                            , str = toString diffTime
                         }
 
             ShowMe s ->
