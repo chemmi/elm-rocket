@@ -68,6 +68,11 @@ background a b =
     filled lightGreen <| rect a b
 
 
+backgroundImage : Int -> Int -> Element
+backgroundImage a b =
+    image a b "../../textures/space.jpg"
+
+
 frameForm : Float -> Float -> Form
 frameForm a b =
     let
@@ -117,12 +122,14 @@ drawScene world rocket =
         ( a, b ) =
             world.size
     in
-        collage (round a) (round b)
-            <| [ background a b
-               , worldForm world
-               , move rocket.position
-                    << rotate (degrees rocket.angle)
-                    <| (rocketForm rocket)
-               , platformsForm world.platforms
-               , frameForm a b
-               ]
+        layers
+            [ backgroundImage (round a) (round b)
+            , collage (round a) (round b)
+                <| [ worldForm world
+                   , move rocket.position
+                        << rotate (degrees rocket.angle)
+                        <| (rocketForm rocket)
+                   , platformsForm world.platforms
+                   , frameForm a b
+                   ]
+            ]
