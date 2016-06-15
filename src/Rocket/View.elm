@@ -70,7 +70,7 @@ background a b =
 
 backgroundImage : Int -> Int -> Element
 backgroundImage a b =
-    image a b "../../textures/space.jpg"
+    image a b "textures/space.jpg"
 
 
 frameForm : Float -> Float -> Form

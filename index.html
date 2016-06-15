@@ -10040,6 +10040,10 @@ var _chemmi$elm_rocket$Rocket_View$frameForm = F2(
 				{width: 2}),
 			A2(_evancz$elm_graphics$Collage$rect, a, b));
 	});
+var _chemmi$elm_rocket$Rocket_View$backgroundImage = F2(
+	function (a, b) {
+		return A3(_evancz$elm_graphics$Element$image, a, b, 'textures/space.jpg');
+	});
 var _chemmi$elm_rocket$Rocket_View$background = F2(
 	function (a, b) {
 		return A2(
@@ -10107,26 +10111,33 @@ var _chemmi$elm_rocket$Rocket_View$drawScene = F2(
 		var _p2 = world.size;
 		var a = _p2._0;
 		var b = _p2._1;
-		return A3(
-			_evancz$elm_graphics$Collage$collage,
-			_elm_lang$core$Basics$round(a),
-			_elm_lang$core$Basics$round(b),
+		return _evancz$elm_graphics$Element$layers(
 			_elm_lang$core$Native_List.fromArray(
 				[
-					A2(_chemmi$elm_rocket$Rocket_View$background, a, b),
-					_chemmi$elm_rocket$Rocket_View$worldForm(world),
-					function (_p3) {
-					return A2(
-						_evancz$elm_graphics$Collage$move,
-						rocket.position,
-						A2(
-							_evancz$elm_graphics$Collage$rotate,
-							_elm_lang$core$Basics$degrees(rocket.angle),
-							_p3));
-				}(
-					_chemmi$elm_rocket$Rocket_View$rocketForm(rocket)),
-					_chemmi$elm_rocket$Rocket_View$platformsForm(world.platforms),
-					A2(_chemmi$elm_rocket$Rocket_View$frameForm, a, b)
+					A2(
+					_chemmi$elm_rocket$Rocket_View$backgroundImage,
+					_elm_lang$core$Basics$round(a),
+					_elm_lang$core$Basics$round(b)),
+					A3(
+					_evancz$elm_graphics$Collage$collage,
+					_elm_lang$core$Basics$round(a),
+					_elm_lang$core$Basics$round(b),
+					_elm_lang$core$Native_List.fromArray(
+						[
+							_chemmi$elm_rocket$Rocket_View$worldForm(world),
+							function (_p3) {
+							return A2(
+								_evancz$elm_graphics$Collage$move,
+								rocket.position,
+								A2(
+									_evancz$elm_graphics$Collage$rotate,
+									_elm_lang$core$Basics$degrees(rocket.angle),
+									_p3));
+						}(
+							_chemmi$elm_rocket$Rocket_View$rocketForm(rocket)),
+							_chemmi$elm_rocket$Rocket_View$platformsForm(world.platforms),
+							A2(_chemmi$elm_rocket$Rocket_View$frameForm, a, b)
+						]))
 				]));
 	});
 var _chemmi$elm_rocket$Rocket_Intersection$pathToSegments = function (path) {
