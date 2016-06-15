@@ -1,10 +1,6 @@
 module Rocket.Types exposing (..)
 
 
-type alias Point =
-    ( Float, Float )
-
-
 type alias Model =
     { keyDown : KeyDown
     , updateInterval : Float
@@ -38,18 +34,32 @@ type alias Rocket =
 
 
 type alias World =
-    { path : List Point
-    , pointsOutside : ( Point, Point )
-    , size : ( Float, Float )
-    , gravity : Float
+    { size : ( Float, Float )
+    , axisParallelRects : List AxisParallelRect
+    , polygons : List Polygon
     , platforms : List Platform
     , rocketStartPosition : Point
+    , gravity : Float
     }
 
 
 type alias Platform =
-    { height : Float
-    , from : Float
-    , to : Float
+    { center : Point
+    , width : Float
     , marked : Bool
     }
+
+
+type alias AxisParallelRect =
+    { topLeft : Point
+    , height : Float
+    , width : Float
+    }
+
+
+type alias Polygon =
+    List Point
+
+
+type alias Point =
+    ( Float, Float )

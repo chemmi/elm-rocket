@@ -6,7 +6,10 @@ import Rocket.Types exposing (..)
 import Rocket.Worlds exposing (..)
 import Rocket.Movement exposing (..)
 import Rocket.View exposing (..)
-import Rocket.Intersection exposing (intersectionsSegmentPath)
+
+
+--import Rocket.Intersection exposing (intersectionsSegmentPath)
+
 import List exposing (..)
 import Maybe exposing (andThen)
 import Keyboard
@@ -19,7 +22,7 @@ import Time exposing (..)
 initModel =
     let
         world =
-            hole
+            initWorld
     in
         { keyDown = noKeyDown
         , updateInterval = 15
@@ -206,11 +209,12 @@ update msg model =
             Step diffTime ->
                 let
                     touch =
-                        touchesWorld rocket world
+                        --touchesWorld rocket world
+                        False
 
                     platform =
                         if touch then
-                            atPlatform rocket world
+                            rocket.onPlatform
                         else
                             rocket.onPlatform
 
@@ -331,13 +335,16 @@ landing model platform =
 
         vyTolerance =
             2
+
+        (platx,platy) = platform.center
+        plathw = platform.width / 2
     in
         if
             ((roundedAngle < angleTolerance)
                 || (roundedAngle > 360 - angleTolerance)
             )
-                && (b1x + px > platform.from)
-                && (b2x + px < platform.to)
+                && (b1x + px > platx-plathw)
+                && (b2x + px < platx+plathw)
                 && (abs vx < vxTolerance)
                 && (abs vy < vyTolerance)
         then
@@ -346,7 +353,7 @@ landing model platform =
                     | rocket =
                         { rocket
                             | angle = 0
-                            , position = ( px, platform.height - b1y )
+                            , position = ( px, platy - b1y )
                             , landed = True
                             , velocity = ( 0, 0 )
                             , fire = False
@@ -355,24 +362,29 @@ landing model platform =
                     , keyDown = noKeyDown
                     , world =
                         { world
-                            | platforms = markPlatform platform world.platforms
+                            | platforms = world.platforms
+                            --, platforms = markPlatform platform world.platforms
                         }
                 }
         else
             Nothing
 
 
-markPlatform : Platform -> List Platform -> List Platform
-markPlatform p ps =
-    case ps of
-        [] ->
-            []
 
-        p' :: ps' ->
-            if p == p' then
-                { p | marked = True } :: ps'
-            else
-                p' :: markPlatform p ps'
+{-
+   markPlatform : Platform -> List Platform -> List Platform
+   markPlatform p ps =
+       case ps of
+           [] ->
+               []
+
+           p' :: ps' ->
+               if p == p' then
+                   { p | marked = True } :: ps'
+               else
+                   p' :: markPlatform p ps'
+
+-}
 
 
 main =
@@ -386,80 +398,84 @@ main =
 
 
 {- Some Helpers : -}
+{-
+   touchesWorld rocket world =
+       let
+           ( p1, p2 ) =
+               world.pointsOutside
+
+           ( b1, b2 ) =
+               rocket.base
+
+           t =
+               rocket.top
+
+           pos =
+               rocket.position
+
+           path =
+               world.path
+
+           isOdd =
+               (\x ->
+                   if x % 2 == 1 then
+                       True
+                   else
+                       False
+               )
+
+           checkPoint =
+               \p ->
+                   (isOdd <| intersectionsSegmentPath ( p1, p ) path)
+                       && (isOdd <| intersectionsSegmentPath ( p2, p ) path)
+
+           outOfScope =
+               let
+                   ( a, b ) =
+                       world.size
+               in
+                   \p ->
+                       let
+                           ( px, py ) =
+                               p
+                       in
+                           px < -a / 2 || px > a / 2 || py < -b / 2 || py > b / 2
+       in
+           any checkPoint (map (addPoints pos) [ b1, b2, t ])
+               || any outOfScope (map (addPoints pos) [ b1, b2, t ])
+
+-}
 
 
-touchesWorld rocket world =
-    let
-        ( p1, p2 ) =
-            world.pointsOutside
-
-        ( b1, b2 ) =
-            rocket.base
-
-        t =
-            rocket.top
-
-        pos =
-            rocket.position
-
-        path =
-            world.path
-
-        isOdd =
-            (\x ->
-                if x % 2 == 1 then
-                    True
-                else
-                    False
-            )
-
-        checkPoint =
-            \p ->
-                (isOdd <| intersectionsSegmentPath ( p1, p ) path)
-                    && (isOdd <| intersectionsSegmentPath ( p2, p ) path)
-
-        outOfScope =
-            let
-                ( a, b ) =
-                    world.size
-            in
-                \p ->
-                    let
-                        ( px, py ) =
-                            p
-                    in
-                        px < -a / 2 || px > a / 2 || py < -b / 2 || py > b / 2
-    in
-        any checkPoint (map (addPoints pos) [ b1, b2, t ])
-            || any outOfScope (map (addPoints pos) [ b1, b2, t ])
-
-
-addPoints : ( Float, Float ) -> ( Float, Float ) -> ( Float, Float )
+addPoints : Point -> Point -> Point
 addPoints ( px, py ) ( qx, qy ) =
     ( px + qx, py + qy )
 
 
-atPlatform : Rocket -> World -> Maybe Platform
-atPlatform rocket world =
-    let
-        ( b1, b2 ) =
-            rocket.base
 
-        pos =
-            rocket.position
+{-
+   atPlatform : Rocket -> World -> Maybe Platform
+   atPlatform rocket world =
+       let
+           ( b1, b2 ) =
+               rocket.base
 
-        platforms =
-            world.platforms
+           pos =
+               rocket.position
 
-        nearplatform =
-            \( px, py ) platform ->
-                if platform.from < px && platform.to > px then
-                    platform.height - 10 < py && platform.height > py
-                else
-                    False
+           platforms =
+               world.platforms
 
-        candidates =
-            append (filter (nearplatform (addPoints b1 pos)) platforms)
-                (filter (nearplatform (addPoints b2 pos)) platforms)
-    in
-        head candidates
+           nearplatform =
+               \( px, py ) platform ->
+                   if platform.from < px && platform.to > px then
+                       platform.height - 10 < py && platform.height > py
+                   else
+                       False
+
+           candidates =
+               append (filter (nearplatform (addPoints b1 pos)) platforms)
+                   (filter (nearplatform (addPoints b2 pos)) platforms)
+       in
+           head candidates
+-}
