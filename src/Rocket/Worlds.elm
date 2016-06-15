@@ -43,6 +43,16 @@ initWorld =
     }
 
 
+world2 : World
+world2 =
+    { initWorld
+        | axisParallelRects =
+            [ { topLeft = ( -400, -150 ), height = 150, width = 800 }
+            , { topLeft = ( 300, 150 ), height = 150, width = 100 }
+            ]
+    }
+
+
 
 {- -
    world1 =

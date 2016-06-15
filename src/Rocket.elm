@@ -6,10 +6,7 @@ import Rocket.Types exposing (..)
 import Rocket.Worlds exposing (..)
 import Rocket.Movement exposing (..)
 import Rocket.View exposing (..)
-
-
---import Rocket.Intersection exposing (intersectionsSegmentPath)
-
+import Rocket.Collision exposing (collision)
 import List exposing (..)
 import Maybe exposing (andThen)
 import Keyboard
@@ -22,7 +19,7 @@ import Time exposing (..)
 initModel =
     let
         world =
-            initWorld
+            world2
     in
         { keyDown = noKeyDown
         , updateInterval = 15
@@ -208,12 +205,11 @@ update msg model =
 
             Step diffTime ->
                 let
-                    touch =
-                        --touchesWorld rocket world
-                        False
+                    coll =
+                        collision rocket world
 
                     platform =
-                        if touch then
+                        if coll then
                             rocket.onPlatform
                         else
                             rocket.onPlatform
@@ -238,7 +234,7 @@ update msg model =
                                 }
                         else
                             model
-                    else if touch then
+                    else if coll then
                         case andThen platform (landing model) of
                             Just m ->
                                 m
@@ -336,15 +332,18 @@ landing model platform =
         vyTolerance =
             2
 
-        (platx,platy) = platform.center
-        plathw = platform.width / 2
+        ( platx, platy ) =
+            platform.center
+
+        plathw =
+            platform.width / 2
     in
         if
             ((roundedAngle < angleTolerance)
                 || (roundedAngle > 360 - angleTolerance)
             )
-                && (b1x + px > platx-plathw)
-                && (b2x + px < platx+plathw)
+                && (b1x + px > platx - plathw)
+                && (b2x + px < platx + plathw)
                 && (abs vx < vxTolerance)
                 && (abs vy < vyTolerance)
         then
@@ -362,8 +361,9 @@ landing model platform =
                     , keyDown = noKeyDown
                     , world =
                         { world
-                            | platforms = world.platforms
-                            --, platforms = markPlatform platform world.platforms
+                            | platforms =
+                                world.platforms
+                                --, platforms = markPlatform platform world.platforms
                         }
                 }
         else
