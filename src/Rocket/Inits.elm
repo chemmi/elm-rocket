@@ -4,7 +4,7 @@ import Rocket.Types exposing (..)
 import Rocket.Worlds exposing (..)
 
 init =
-    initStartscreen
+    Startscreen initStartscreen
 
 
 initPlay =
@@ -24,15 +24,15 @@ initPlay =
 
 
 initStartscreen =
-    Startscreen "Startscreen"
+    "Startscreen"
 
 
 initGameover =
-    Gameover "Gameover"
+    "Gameover"
 
 
 initWin =
-    Win "Win"
+    "Win"
 
 
 noKeyDown =

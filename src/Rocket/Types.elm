@@ -1,5 +1,6 @@
 module Rocket.Types exposing (..)
 
+import Time exposing (Time)
 
 type Model
     = Play PlayData

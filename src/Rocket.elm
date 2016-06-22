@@ -198,7 +198,7 @@ update msg model =
                     updatePlay msg data
             in
                 if updatedData.gameover then
-                    initGameover
+                    Gameover initGameover
                 else
                     Play updatedData
 
