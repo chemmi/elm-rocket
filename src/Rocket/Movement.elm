@@ -27,7 +27,8 @@ moveRocket keyDown gravity diffTime rocket =
         twist =
             rocket.twist
 
-        diffSeconds = inSeconds diffTime
+        diffSeconds =
+            inSeconds diffTime
     in
         { rocket
             | angle =
@@ -57,16 +58,19 @@ startRocket rocket =
             rocket.position
     in
         { rocket
-            | landed = False
+            | movement = Flying
             , position = ( px, py + 1 )
             , fire = True
             , onPlatform = Nothing
         }
 
 
-tryLanding : Rocket -> List Platform -> Maybe Platform
-tryLanding rocket platforms =
+tryLanding : Rocket -> World -> Maybe Platform
+tryLanding rocket world =
     let
+        platforms =
+            world.platforms
+
         (( vx, vy ) as v) =
             rocket.velocity
 
@@ -125,7 +129,6 @@ tryLanding rocket platforms =
         oneOf (map landOnPlatform platforms)
 
 
-
 landOn : Platform -> Rocket -> Rocket
 landOn platform rocket =
     let
@@ -139,7 +142,7 @@ landOn platform rocket =
             platform.center
     in
         { rocket
-            | landed = True
+            | movement = Landed platform
             , position = ( rx, cy - b1y )
             , velocity = ( 0, 0 )
             , angle = 0

@@ -72,7 +72,7 @@ viewRocketStatus r =
             , viewValue "Acceleration" r.acceleration
             , viewValue "Twist" r.twist
             , viewValue "touches World" r.touchesWorld
-            , viewValue "landed" r.landed
+            , viewValue "Movement" r.movement
             , viewValue "on Platform" r.onPlatform
             ]
         ]

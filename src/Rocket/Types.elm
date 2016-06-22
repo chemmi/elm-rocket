@@ -38,7 +38,7 @@ type alias KeyDown =
 
 type alias Rocket =
     { position : Point
-    , landed : Bool
+    , movement : Movement
     , onPlatform : Maybe Platform
     , fire : Bool
     , angle : Float
@@ -49,6 +49,13 @@ type alias Rocket =
     , base : ( Point, Point )
     , top : Point
     }
+
+
+type Movement
+    = Landed Platform
+    | Landing Platform
+    | Flying
+    | Colliding
 
 
 type alias World =

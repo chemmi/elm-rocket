@@ -6,7 +6,6 @@ import Rocket.Worlds exposing (..)
 import Rocket.Movement exposing (..)
 import Rocket.View exposing (..)
 import Rocket.Collision exposing (collision)
-import List exposing (..)
 import Keyboard
 import Char exposing (KeyCode, fromCode)
 import AnimationFrame exposing (..)
@@ -55,7 +54,7 @@ noKeyDown =
 initRocket =
     { acceleration = initWorld.gravity * 3
     , position = ( 0, 0 )
-    , landed = False
+    , movement = Flying
     , onPlatform = Nothing
     , fire = False
     , angle = 0
@@ -161,51 +160,117 @@ updatePlay msg data =
                 { data | keyDown = updateKeyDown keyDown (KeyUpMsg key) }
 
             Step diffTime ->
-                let
-                    coll =
-                        collision rocket world
-
-                    platforms =
-                        world.platforms
-
-                    landed =
-                        rocket.landed
-                in
-                    if landed then
+                case rocket.movement of
+                    Landed _ ->
                         updateLanded data
-                    else
-                        case tryLanding rocket platforms of
-                            Just platform ->
-                                { data
-                                    | rocket =
-                                        landOn platform rocket
-                                    , world =
-                                        { world
-                                            | platforms = markPlatform platform platforms
-                                        }
-                                }
 
-                            Nothing ->
-                                if collision rocket world then
-                                    { data | gameover = True }
-                                else
-                                    { data
-                                        | rocket =
-                                            moveRocket keyDown
-                                                world.gravity
-                                                diffTime
-                                                rocket
-                                    }
+                    Landing _ ->
+                        updateLanding data
+
+                    Colliding ->
+                        updateColliding data
+
+                    Flying ->
+                        updateFlying data diffTime
 
             _ ->
                 data
+
+
+updateFlying : PlayData -> Time -> PlayData
+updateFlying data diffTime =
+    let
+        world =
+            data.world
+
+        rocket =
+            data.rocket
+
+        keyDown =
+            data.keyDown
+
+        movedRocket =
+            moveRocket keyDown
+                world.gravity
+                diffTime
+                rocket
+    in
+        case tryLanding movedRocket world of
+            Just platform ->
+                { data
+                    | rocket =
+                        { movedRocket | movement = Landing platform }
+                }
+
+            Nothing ->
+                if collision movedRocket world then
+                    { data
+                        | rocket =
+                            { movedRocket | movement = Colliding }
+                    }
+                else
+                    { data | rocket = movedRocket }
+
+
+updateColliding : PlayData -> PlayData
+updateColliding data =
+    { data | gameover = True }
+
+
+updateLanding : PlayData -> PlayData
+updateLanding data =
+    let
+        world =
+            data.world
+
+        platforms =
+            world.platforms
+
+        rocket =
+            data.rocket
+    in
+        case rocket.movement of
+            Landing platform ->
+                { data
+                    | rocket = landOn platform rocket
+                    , world =
+                        { world
+                            | platforms = markPlatform platform platforms
+                        }
+                }
+
+            -- others should not happen when calling updateLanding
+            _ ->
+                data
+
+
+updateLanded : PlayData -> PlayData
+updateLanded data =
+    let
+        keyDown =
+            data.keyDown
+
+        rocket =
+            data.rocket
+    in
+        if keyDown.forward then
+            { data | rocket = startRocket rocket }
+        else
+            data
 
 
 update : Msg -> Model -> Model
 update msg model =
     case model of
         Play data ->
-            Play (updatePlay msg data)
+            let
+                updatedData =
+                    updatePlay msg data
+            in
+                if updatedData.gameover then
+                    initGameover
+                else
+                    Play updatedData
 
         _ ->
             case msg of
@@ -250,20 +315,6 @@ updateKeyDown keyDown msg =
         _ ->
             keyDown
 
-
-updateLanded : PlayData -> PlayData
-updateLanded data =
-    let
-        keyDown =
-            data.keyDown
-
-        rocket =
-            data.rocket
-    in
-        if keyDown.forward then
-            { data | rocket = startRocket rocket }
-        else
-            data
 
 
 markPlatform : Platform -> List Platform -> List Platform
