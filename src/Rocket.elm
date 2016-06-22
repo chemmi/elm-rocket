@@ -2,68 +2,14 @@ module Rocket exposing (..)
 
 import Html.App exposing (program)
 import Rocket.Types exposing (..)
-import Rocket.Worlds exposing (..)
+import Rocket.Inits exposing (..)
 import Rocket.Movement exposing (..)
-import Rocket.View exposing (..)
+import Rocket.Views exposing (..)
 import Rocket.Collision exposing (collision)
 import Keyboard
 import Char exposing (KeyCode, fromCode)
 import AnimationFrame exposing (..)
 import Time exposing (..)
-
-
-init =
-    initStartscreen
-
-
-initPlay =
-    let
-        world =
-            world2
-    in
-        { keyDown = noKeyDown
-        , updateInterval = 15
-        , world = world
-        , rocket =
-            { initRocket
-                | position = world.rocketStartPosition
-            }
-        , gameover = False
-        }
-
-
-initStartscreen =
-    Startscreen "Startscreen"
-
-
-initGameover =
-    Gameover "Gameover"
-
-
-initWin =
-    Win "Win"
-
-
-noKeyDown =
-    { left = False
-    , right = False
-    , forward = False
-    }
-
-
-initRocket =
-    { acceleration = initWorld.gravity * 3
-    , position = ( 0, 0 )
-    , movement = Flying
-    , onPlatform = Nothing
-    , fire = False
-    , angle = 0
-    , velocity = ( 0, 0 )
-    , twist = 2
-    , touchesWorld = False
-    , base = ( ( -10, -5 ), ( 10, -5 ) )
-    , top = ( 0, 20 )
-    }
 
 
 type Msg
@@ -98,14 +44,13 @@ keyBinding model code =
                 _ ->
                     NotBound
 
-        Gameover _ ->
-            Start
+        _ ->
+            case fromCode code of
+                ' ' ->
+                    Start
 
-        Startscreen _ ->
-            Start
-
-        Win _ ->
-            Start
+                _ ->
+                    NotBound
 
 
 subscriptions : Model -> Sub Msg
@@ -314,7 +259,6 @@ updateKeyDown keyDown msg =
 
         _ ->
             keyDown
-
 
 
 markPlatform : Platform -> List Platform -> List Platform

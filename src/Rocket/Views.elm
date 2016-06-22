@@ -1,4 +1,4 @@
-module Rocket.View exposing (..)
+module Rocket.Views exposing (..)
 
 import Rocket.Types exposing (..)
 import Rocket.Scene exposing (..)
