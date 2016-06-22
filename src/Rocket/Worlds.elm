@@ -50,6 +50,8 @@ world2 =
             [ { topLeft = ( -400, -150 ), height = 150, width = 800 }
             , { topLeft = ( 300, 150 ), height = 150, width = 100 }
             ]
+        , platforms =
+            [ { center = ( 0, -140 ), width = 50, marked = False } ]
     }
 
 

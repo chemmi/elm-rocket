@@ -1,7 +1,7 @@
 module Rocket.Collision exposing (..)
 
 import Rocket.Types exposing (..)
-import List exposing (any)
+import List exposing (any, all)
 
 
 collision : Rocket -> World -> Bool
@@ -15,26 +15,28 @@ collisionRocketRects rocket rects =
         angle =
             rocket.angle
 
+        -- maybe add lazy here
+        cosAngle =
+            cos <| degrees angle
+
+        sinAngle =
+            sin <| degrees angle
+
         rotate =
             \( x, y ) ->
-                let
-                    cosA =
-                        cos <| degrees angle
+                ( cosAngle * x - sinAngle * y
+                , sinAngle * x + cosAngle * y
+                )
 
-                    sinA =
-                        sin <| degrees angle
-                in
-                    ( cosA * x - sinA * y, sinA * x + cosA * y )
-
-        ( tx, ty ) =
+        (( tx, ty ) as t) =
             addPoints rocket.position
                 <| rotate rocket.top
 
-        ( b1x, b1y ) =
+        (( b1x, b1y ) as b1) =
             addPoints rocket.position
                 <| rotate (fst rocket.base)
 
-        ( b2x, b2y ) =
+        (( b2x, b2y ) as b2) =
             addPoints rocket.position
                 <| rotate (snd rocket.base)
 
@@ -51,7 +53,8 @@ collisionRocketRects rocket rects =
         xmin =
             min tx (min b1x b2x)
 
-        collRect =
+        {- coarse collision test -}
+        collRectCoarse =
             \r ->
                 let
                     ( rx, ry ) =
@@ -66,14 +69,46 @@ collisionRocketRects rocket rects =
                     {- rocket rect collides with rect r
                        == not (rocket rect outside of rect r)
                     -}
-                    (not
+                    not
                         ((rx > xmax)
                             || (ry < ymin)
                             || (rx + w < xmin)
                             || (ry - h > ymax)
                         )
-                    )
-                        && {- TODO: Add fine collision -} True
+
+        {- fine collision test (uses collRectCoarse)-}
+        collRectFine =
+            \r ->
+                let
+                    ( rx, ry ) =
+                        r.topLeft
+
+                    h =
+                        r.height
+
+                    w =
+                        r.width
+
+                    edges =
+                        [ ( rx, ry )
+                        , ( rx + w, ry )
+                        , ( rx + w, ry - h )
+                        , ( rx, ry - h )
+                        ]
+
+                    ot =
+                        orientationTest
+                in
+                    collRectCoarse r
+                        && not
+                            (all (ot t b2) edges
+                                || all (ot b1 t) edges
+                                || all (ot b2 b1) edges
+                            )
+
+        collRect =
+            \r ->
+                collRectFine r
     in
         any collRect rects
 
@@ -81,3 +116,16 @@ collisionRocketRects rocket rects =
 addPoints : Point -> Point -> Point
 addPoints ( px, py ) ( qx, qy ) =
     ( px + qx, py + qy )
+
+
+{-| This function takes three points. The output will be True, if and only if these points are in positive orientation (counter-clockwise).
+
+(Reference: Signed area of a parallelogram)
+-}
+orientationTest : Point -> Point -> Point -> Bool
+orientationTest ( px, py ) ( qx, qy ) ( rx, ry ) =
+    let
+        signedArea =
+            (qx - px) * (ry - py) - (rx - px) * (qy - py)
+    in
+        signedArea > 0
