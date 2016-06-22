@@ -1,6 +1,5 @@
 module Rocket exposing (..)
 
-import Html exposing (..)
 import Html.App exposing (program)
 import Rocket.Types exposing (..)
 import Rocket.Worlds exposing (..)
@@ -10,12 +9,15 @@ import Rocket.Collision exposing (collision)
 import List exposing (..)
 import Keyboard
 import Char exposing (KeyCode, fromCode)
-import Element exposing (toHtml)
 import AnimationFrame exposing (..)
 import Time exposing (..)
 
 
-initModel =
+init =
+    initStartscreen
+
+
+initPlay =
     let
         world =
             world2
@@ -27,9 +29,20 @@ initModel =
             { initRocket
                 | position = world.rocketStartPosition
             }
-        , str = "Show Me Debug"
         , gameover = False
         }
+
+
+initStartscreen =
+    Startscreen "Startscreen"
+
+
+initGameover =
+    Gameover "Gameover"
+
+
+initWin =
+    Win "Win"
 
 
 noKeyDown =
@@ -59,8 +72,6 @@ type Msg
     | KeyUpMsg Key
     | Step Time
     | NoMsg
-      -- ShowMe used for debugging
-    | ShowMe String
 
 
 type Key
@@ -71,136 +82,83 @@ type Key
     | NotBound
 
 
-keyBinding : KeyCode -> Key
-keyBinding code =
-    case fromCode code of
-        'W' ->
-            Forward
+keyBinding : Model -> KeyCode -> Key
+keyBinding model code =
+    case model of
+        Play _ ->
+            case fromCode code of
+                'W' ->
+                    Forward
 
-        'A' ->
-            Left
+                'A' ->
+                    Left
 
-        'D' ->
-            Right
+                'D' ->
+                    Right
 
-        _ ->
-            NotBound
+                _ ->
+                    NotBound
 
-
-keyBindingGameover : KeyCode -> Key
-keyBindingGameover code =
-    case fromCode code of
-        'R' ->
+        Gameover _ ->
             Start
 
-        _ ->
-            NotBound
+        Startscreen _ ->
+            Start
+
+        Win _ ->
+            Start
 
 
-init =
-    ( initModel, Cmd.none )
-
-
+subscriptions : Model -> Sub Msg
 subscriptions model =
-    if not model.gameover then
-        Sub.batch
-            [ Keyboard.downs (KeyDownMsg << keyBinding)
-            , Keyboard.ups (KeyUpMsg << keyBinding)
-            , diffs Step
-              --, every (model.updateInterval * millisecond) (\_ -> Step)
-            ]
-    else
-        Sub.batch
-            [ Keyboard.ups (KeyUpMsg << keyBindingGameover)
-            , Keyboard.downs (KeyDownMsg << keyBindingGameover)
-            ]
+    Sub.batch
+        ([ Keyboard.downs (KeyDownMsg << (keyBinding model))
+         , Keyboard.ups (KeyUpMsg << (keyBinding model))
+         ]
+            ++ case model of
+                Play _ ->
+                    [ diffs Step
+                      --, every (playModel.updateInterval * millisecond) (\_ -> Step)
+                    ]
+
+                _ ->
+                    []
+        )
 
 
 view model =
-    let
-        rocket =
-            model.rocket
+    case model of
+        Play data ->
+            viewPlay data
 
-        world =
-            model.world
-    in
-        div []
-            [ toHtml <| drawScene world rocket
-            , viewRocketStatus rocket
-            , viewStatus model
-            ]
+        Startscreen data ->
+            viewStartscreen data
 
+        Gameover data ->
+            viewGameover data
 
-viewStatus : Model -> Html a
-viewStatus model =
-    div []
-        [ h3 [] [ text "Model Status" ]
-        , table []
-            [ viewValue "Gameover" model.gameover
-            , viewValue "Show Me" model.str
-            ]
-        ]
+        Win data ->
+            viewWin data
 
 
-viewRocketStatus : Rocket -> Html a
-viewRocketStatus r =
-    div []
-        [ h3 [] [ text "Rocket Status" ]
-        , table []
-            [ viewValue "Position"
-                <| let
-                    ( x, y ) =
-                        r.position
-                   in
-                    ( round x, round y )
-            , viewValue "Angle" <| round r.angle
-            , viewValue "Velocity"
-                <| let
-                    ( vx, vy ) =
-                        r.velocity
-                   in
-                    ( round vx, round vy )
-            , viewValue "Fire" r.fire
-            , viewValue "Acceleration" r.acceleration
-            , viewValue "Twist" r.twist
-            , viewValue "touches World" r.touchesWorld
-            , viewValue "landed" r.landed
-            , viewValue "on Platform" r.onPlatform
-            ]
-        ]
-
-
-viewValue : String -> a -> Html b
-viewValue name value =
-    tr []
-        [ td [] [ text name ]
-        , td []
-            [ text <| toString value
-            ]
-        ]
-
-
-update : Msg -> Model -> Model
-update msg model =
+updatePlay : Msg -> PlayData -> PlayData
+updatePlay msg data =
     let
         world =
-            model.world
+            data.world
 
         rocket =
-            model.rocket
+            data.rocket
 
         keyDown =
-            model.keyDown
+            data.keyDown
     in
         case msg of
-            KeyUpMsg Start ->
-                initModel
-
             KeyDownMsg key ->
-                { model | keyDown = updateKeyDown keyDown (KeyDownMsg key) }
+                { data | keyDown = updateKeyDown keyDown (KeyDownMsg key) }
 
             KeyUpMsg key ->
-                { model | keyDown = updateKeyDown keyDown (KeyUpMsg key) }
+                { data | keyDown = updateKeyDown keyDown (KeyUpMsg key) }
 
             Step diffTime ->
                 let
@@ -214,11 +172,11 @@ update msg model =
                         rocket.landed
                 in
                     if landed then
-                        updateLanded model
+                        updateLanded data
                     else
                         case tryLanding rocket platforms of
                             Just platform ->
-                                { model
+                                { data
                                     | rocket =
                                         landOn platform rocket
                                     , world =
@@ -229,22 +187,33 @@ update msg model =
 
                             Nothing ->
                                 if collision rocket world then
-                                    { model | gameover = True }
+                                    { data | gameover = True }
                                 else
-                                    { model
+                                    { data
                                         | rocket =
-                                            moveRocket model.keyDown
+                                            moveRocket keyDown
                                                 world.gravity
                                                 diffTime
                                                 rocket
-                                        , str = toString diffTime
                                     }
 
-            ShowMe s ->
-                { model | str = s }
-
             _ ->
-                model
+                data
+
+
+update : Msg -> Model -> Model
+update msg model =
+    case model of
+        Play data ->
+            Play (updatePlay msg data)
+
+        _ ->
+            case msg of
+                KeyUpMsg Start ->
+                    Play initPlay
+
+                _ ->
+                    model
 
 
 landOn : Platform -> Rocket -> Rocket
@@ -303,19 +272,19 @@ updateKeyDown keyDown msg =
             keyDown
 
 
-updateLanded : Model -> Model
-updateLanded model =
+updateLanded : PlayData -> PlayData
+updateLanded data =
     let
         keyDown =
-            model.keyDown
+            data.keyDown
 
         rocket =
-            model.rocket
+            data.rocket
     in
         if keyDown.forward then
-            { model | rocket = startRocket rocket }
+            { data | rocket = startRocket rocket }
         else
-            model
+            data
 
 
 markPlatform : Platform -> List Platform -> List Platform
@@ -333,9 +302,9 @@ markPlatform p ps =
 
 main =
     program
-        { init = init
+        { init = ( init, Cmd.none )
         , view = view
-        , update = \msg model -> ( update msg model, Cmd.none )
+        , update = \msg playModel -> ( update msg playModel, Cmd.none )
         , subscriptions = subscriptions
         }
 

@@ -1,12 +1,30 @@
 module Rocket.Types exposing (..)
 
 
-type alias Model =
+type Model
+    = Play PlayData
+    | Startscreen StartscreenData
+    | Gameover GameoverData
+    | Win WinData
+
+
+type alias StartscreenData =
+    String
+
+
+type alias GameoverData =
+    String
+
+
+type alias WinData =
+    String
+
+
+type alias PlayData =
     { keyDown : KeyDown
     , updateInterval : Float
     , rocket : Rocket
     , world : World
-    , str : String
     , gameover : Bool
     }
 
