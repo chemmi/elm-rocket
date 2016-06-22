@@ -216,27 +216,6 @@ update msg model =
                     model
 
 
-landOn : Platform -> Rocket -> Rocket
-landOn platform rocket =
-    let
-        ( rx, ry ) =
-            rocket.position
-
-        ( b1x, b1y ) =
-            fst (rocket.base)
-
-        ( cx, cy ) =
-            platform.center
-    in
-        { rocket
-            | landed = True
-            , position = ( rx, cy - b1y )
-            , velocity = ( 0, 0 )
-            , angle = 0
-            , fire = False
-        }
-
-
 updateKeyDown : KeyDown -> Msg -> KeyDown
 updateKeyDown keyDown msg =
     case msg of
@@ -307,12 +286,3 @@ main =
         , update = \msg playModel -> ( update msg playModel, Cmd.none )
         , subscriptions = subscriptions
         }
-
-
-
-{- Some Helpers : -}
-
-
-addPoints : Point -> Point -> Point
-addPoints ( px, py ) ( qx, qy ) =
-    ( px + qx, py + qy )

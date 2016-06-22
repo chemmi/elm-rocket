@@ -126,6 +126,27 @@ tryLanding rocket platforms =
 
 
 
+landOn : Platform -> Rocket -> Rocket
+landOn platform rocket =
+    let
+        ( rx, ry ) =
+            rocket.position
+
+        ( b1x, b1y ) =
+            fst (rocket.base)
+
+        ( cx, cy ) =
+            platform.center
+    in
+        { rocket
+            | landed = True
+            , position = ( rx, cy - b1y )
+            , velocity = ( 0, 0 )
+            , angle = 0
+            , fire = False
+        }
+
+
 accelerate : Float -> Float -> ( Float, Float ) -> ( Float, Float )
 accelerate acceleration angle ( x, y ) =
     let
