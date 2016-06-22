@@ -12,21 +12,6 @@ import AnimationFrame exposing (..)
 import Time exposing (..)
 
 
-type Msg
-    = KeyDownMsg Key
-    | KeyUpMsg Key
-    | Step Time
-    | NoMsg
-
-
-type Key
-    = Left
-    | Right
-    | Forward
-    | Start
-    | NotBound
-
-
 keyBinding : Model -> KeyCode -> Key
 keyBinding model code =
     case model of

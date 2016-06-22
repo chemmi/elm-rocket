@@ -8,6 +8,21 @@ type Model
     | Win WinData
 
 
+type Msg
+    = KeyDownMsg Key
+    | KeyUpMsg Key
+    | Step Time
+    | NoMsg
+
+
+type Key
+    = Left
+    | Right
+    | Forward
+    | Start
+    | NotBound
+
+
 type alias StartscreenData =
     String
 
