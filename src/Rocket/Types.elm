@@ -1,6 +1,8 @@
 module Rocket.Types exposing (..)
 
 import Time exposing (Time)
+import Element exposing (Element)
+
 
 type Model
     = Play PlayData
@@ -25,11 +27,15 @@ type Key
 
 
 type alias StartscreenData =
-    String
+    { message : String
+    , background : Element
+    }
 
 
 type alias GameoverData =
-    String
+    { message : String
+    , background : Element
+    }
 
 
 type alias WinData =

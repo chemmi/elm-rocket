@@ -5,6 +5,7 @@ import Rocket.Types exposing (..)
 import Rocket.Inits exposing (..)
 import Rocket.Updates exposing (..)
 import Rocket.Views exposing (..)
+import Rocket.Scene exposing (drawScene)
 import Keyboard
 import Char exposing (KeyCode, fromCode)
 import AnimationFrame exposing (..)
@@ -61,7 +62,10 @@ update msg model =
                     updatePlay msg data
             in
                 if updatedPlay.gameover then
-                    Gameover initGameover
+                    Gameover
+                        { initGameover
+                            | background = drawScene data.world data.rocket
+                        }
                 else
                     Play updatedPlay
 

@@ -3,19 +3,29 @@ module Rocket.Views exposing (..)
 import Rocket.Types exposing (..)
 import Rocket.Scene exposing (..)
 import Html exposing (..)
-import Element exposing (toHtml)
+import Element exposing (..)
 
 
 viewStartscreen : StartscreenData -> Html a
 viewStartscreen data =
     div []
-        [ text data ]
+        [ toHtml
+            <| layers
+                [ data.background
+                , container 800 600 middle (show data.message)
+                ]
+        ]
 
 
 viewGameover : GameoverData -> Html a
 viewGameover data =
     div []
-        [ text data ]
+        [ toHtml
+            <| layers
+                [ data.background
+                , container 800 600 middle (show data.message)
+                ]
+        ]
 
 
 viewWin : WinData -> Html a

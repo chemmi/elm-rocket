@@ -2,6 +2,9 @@ module Rocket.Inits exposing (..)
 
 import Rocket.Types exposing (..)
 import Rocket.Worlds exposing (..)
+import Rocket.Scene exposing (drawScene)
+import Element exposing (show)
+
 
 init =
     Startscreen initStartscreen
@@ -24,11 +27,15 @@ initPlay =
 
 
 initStartscreen =
-    "Startscreen"
+    { message = "Startscreen"
+    , background = drawScene initPlay.world initPlay.rocket
+    }
 
 
 initGameover =
-    "Gameover"
+    { message = "Gameover"
+    , background = show "No Image...."
+    }
 
 
 initWin =
