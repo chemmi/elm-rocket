@@ -27,13 +27,13 @@ initPlay =
 
 
 initStartscreen =
-    { message = "Startscreen"
+    { message = "Startscreen - Press SPACE to start"
     , background = drawScene initPlay.world initPlay.rocket
     }
 
 
 initGameover =
-    { message = "Gameover"
+    { message = "Gameover - Press SPACE to restart"
     , background = show "No Image...."
     }
 
