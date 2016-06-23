@@ -6739,95 +6739,6 @@ var _elm_lang$html$Html_App$beginnerProgram = function (_p1) {
 		});
 };
 var _elm_lang$html$Html_App$map = _elm_lang$virtual_dom$VirtualDom$map;
-var _chemmi$elm_rocket$Rocket_Types$Model = F6(
-	function (a, b, c, d, e, f) {
-		return {keyDown: a, updateInterval: b, rocket: c, world: d, str: e, gameover: f};
-	});
-var _chemmi$elm_rocket$Rocket_Types$KeyDown = F3(
-	function (a, b, c) {
-		return {left: a, right: b, forward: c};
-	});
-var _chemmi$elm_rocket$Rocket_Types$Rocket = function (a) {
-	return function (b) {
-		return function (c) {
-			return function (d) {
-				return function (e) {
-					return function (f) {
-						return function (g) {
-							return function (h) {
-								return function (i) {
-									return function (j) {
-										return function (k) {
-											return {position: a, landed: b, onPlatform: c, fire: d, angle: e, velocity: f, acceleration: g, twist: h, touchesWorld: i, base: j, top: k};
-										};
-									};
-								};
-							};
-						};
-					};
-				};
-			};
-		};
-	};
-};
-var _chemmi$elm_rocket$Rocket_Types$World = F6(
-	function (a, b, c, d, e, f) {
-		return {path: a, pointsOutside: b, size: c, gravity: d, platforms: e, rocketStartPosition: f};
-	});
-var _chemmi$elm_rocket$Rocket_Types$Platform = F4(
-	function (a, b, c, d) {
-		return {height: a, from: b, to: c, marked: d};
-	});
-var _chemmi$elm_rocket$Rocket_Worlds$initWorld = {
-	size: {ctor: '_Tuple2', _0: 800, _1: 600},
-	pointsOutside: {
-		ctor: '_Tuple2',
-		_0: {ctor: '_Tuple2', _0: 0, _1: 600},
-		_1: {ctor: '_Tuple2', _0: -200, _1: 200}
-	},
-	path: _elm_lang$core$Native_List.fromArray(
-		[
-			{ctor: '_Tuple2', _0: -400, _1: -150},
-			{ctor: '_Tuple2', _0: 400, _1: -150}
-		]),
-	gravity: 5,
-	platforms: _elm_lang$core$Native_List.fromArray(
-		[]),
-	rocketStartPosition: {ctor: '_Tuple2', _0: 0, _1: 0}
-};
-var _chemmi$elm_rocket$Rocket_Worlds$world1 = _elm_lang$core$Native_Utils.update(
-	_chemmi$elm_rocket$Rocket_Worlds$initWorld,
-	{
-		path: _elm_lang$core$Native_List.fromArray(
-			[
-				{ctor: '_Tuple2', _0: -400, _1: 150},
-				{ctor: '_Tuple2', _0: -200, _1: -200},
-				{ctor: '_Tuple2', _0: -100, _1: -200},
-				{ctor: '_Tuple2', _0: 0, _1: -100},
-				{ctor: '_Tuple2', _0: 100, _1: -100},
-				{ctor: '_Tuple2', _0: 400, _1: -200}
-			])
-	});
-var _chemmi$elm_rocket$Rocket_Worlds$hole = _elm_lang$core$Native_Utils.update(
-	_chemmi$elm_rocket$Rocket_Worlds$initWorld,
-	{
-		path: _elm_lang$core$Native_List.fromArray(
-			[
-				{ctor: '_Tuple2', _0: -400, _1: 200},
-				{ctor: '_Tuple2', _0: -100, _1: 200},
-				{ctor: '_Tuple2', _0: -100, _1: -150},
-				{ctor: '_Tuple2', _0: -120, _1: -150},
-				{ctor: '_Tuple2', _0: -120, _1: 150},
-				{ctor: '_Tuple2', _0: -380, _1: 150},
-				{ctor: '_Tuple2', _0: -380, _1: -280},
-				{ctor: '_Tuple2', _0: 400, _1: -280}
-			]),
-		rocketStartPosition: {ctor: '_Tuple2', _0: 250, _1: -200},
-		platforms: _elm_lang$core$Native_List.fromArray(
-			[
-				{height: -280, from: 200, to: 300, marked: false}
-			])
-	});
 //import Native.Scheduler //
 
 var _elm_lang$core$Native_Time = function() {
@@ -7274,43 +7185,6 @@ var _elm_lang$core$Time$subMap = F2(
 			});
 	});
 _elm_lang$core$Native_Platform.effectManagers['Time'] = {pkg: 'elm-lang/core', init: _elm_lang$core$Time$init, onEffects: _elm_lang$core$Time$onEffects, onSelfMsg: _elm_lang$core$Time$onSelfMsg, tag: 'sub', subMap: _elm_lang$core$Time$subMap};
-var _chemmi$elm_rocket$Rocket_Movement$accelerate = F3(
-	function (acceleration, angle, _p0) {
-		var _p1 = _p0;
-		var deg = _elm_lang$core$Basics$degrees(angle + 90);
-		return {
-			ctor: '_Tuple2',
-			_0: (acceleration * _elm_lang$core$Basics$cos(deg)) + _p1._0,
-			_1: (acceleration * _elm_lang$core$Basics$sin(deg)) + _p1._1
-		};
-	});
-var _chemmi$elm_rocket$Rocket_Movement$moveRocket = F4(
-	function (keyDown, gravity, diffTime, rocket) {
-		var diffSeconds = _elm_lang$core$Time$inSeconds(diffTime);
-		var twist = rocket.twist;
-		var acceleration = rocket.acceleration;
-		var _p2 = rocket.velocity;
-		var vx = _p2._0;
-		var vy = _p2._1;
-		var fire = rocket.fire;
-		var angle = rocket.angle;
-		var _p3 = rocket.position;
-		var x = _p3._0;
-		var y = _p3._1;
-		return _elm_lang$core$Native_Utils.update(
-			rocket,
-			{
-				angle: keyDown.left ? (angle + twist) : (keyDown.right ? (angle - twist) : angle),
-				velocity: A3(
-					_chemmi$elm_rocket$Rocket_Movement$accelerate,
-					gravity * diffSeconds,
-					180,
-					(keyDown.forward ? A2(_chemmi$elm_rocket$Rocket_Movement$accelerate, acceleration * diffSeconds, angle) : _elm_lang$core$Basics$identity)(
-						{ctor: '_Tuple2', _0: vx, _1: vy})),
-				position: {ctor: '_Tuple2', _0: vx + x, _1: vy + y},
-				fire: keyDown.forward
-			});
-	});
 var _elm_lang$core$Color$fmod = F2(
 	function (f, n) {
 		var integer = _elm_lang$core$Basics$floor(f);
@@ -8954,6 +8828,134 @@ var _evancz$elm_graphics$Element$below = F2(
 var _evancz$elm_graphics$Element$down = _evancz$elm_graphics$Element$DDown;
 var _evancz$elm_graphics$Element$DUp = {ctor: 'DUp'};
 var _evancz$elm_graphics$Element$up = _evancz$elm_graphics$Element$DUp;
+var _chemmi$elm_rocket$Rocket_Types$StartscreenData = F2(
+	function (a, b) {
+		return {message: a, background: b};
+	});
+var _chemmi$elm_rocket$Rocket_Types$GameoverData = F2(
+	function (a, b) {
+		return {message: a, background: b};
+	});
+var _chemmi$elm_rocket$Rocket_Types$PlayData = F5(
+	function (a, b, c, d, e) {
+		return {keyDown: a, updateInterval: b, rocket: c, world: d, gameover: e};
+	});
+var _chemmi$elm_rocket$Rocket_Types$KeyDown = F3(
+	function (a, b, c) {
+		return {left: a, right: b, forward: c};
+	});
+var _chemmi$elm_rocket$Rocket_Types$Rocket = function (a) {
+	return function (b) {
+		return function (c) {
+			return function (d) {
+				return function (e) {
+					return function (f) {
+						return function (g) {
+							return function (h) {
+								return function (i) {
+									return function (j) {
+										return function (k) {
+											return {position: a, movement: b, onPlatform: c, fire: d, angle: e, velocity: f, acceleration: g, twist: h, touchesWorld: i, base: j, top: k};
+										};
+									};
+								};
+							};
+						};
+					};
+				};
+			};
+		};
+	};
+};
+var _chemmi$elm_rocket$Rocket_Types$World = F6(
+	function (a, b, c, d, e, f) {
+		return {size: a, axisParallelRects: b, polygons: c, platforms: d, rocketStartPosition: e, gravity: f};
+	});
+var _chemmi$elm_rocket$Rocket_Types$Platform = F3(
+	function (a, b, c) {
+		return {center: a, width: b, marked: c};
+	});
+var _chemmi$elm_rocket$Rocket_Types$AxisParallelRect = F3(
+	function (a, b, c) {
+		return {topLeft: a, height: b, width: c};
+	});
+var _chemmi$elm_rocket$Rocket_Types$Win = function (a) {
+	return {ctor: 'Win', _0: a};
+};
+var _chemmi$elm_rocket$Rocket_Types$Gameover = function (a) {
+	return {ctor: 'Gameover', _0: a};
+};
+var _chemmi$elm_rocket$Rocket_Types$Startscreen = function (a) {
+	return {ctor: 'Startscreen', _0: a};
+};
+var _chemmi$elm_rocket$Rocket_Types$Play = function (a) {
+	return {ctor: 'Play', _0: a};
+};
+var _chemmi$elm_rocket$Rocket_Types$NoMsg = {ctor: 'NoMsg'};
+var _chemmi$elm_rocket$Rocket_Types$Step = function (a) {
+	return {ctor: 'Step', _0: a};
+};
+var _chemmi$elm_rocket$Rocket_Types$KeyUpMsg = function (a) {
+	return {ctor: 'KeyUpMsg', _0: a};
+};
+var _chemmi$elm_rocket$Rocket_Types$KeyDownMsg = function (a) {
+	return {ctor: 'KeyDownMsg', _0: a};
+};
+var _chemmi$elm_rocket$Rocket_Types$NotBound = {ctor: 'NotBound'};
+var _chemmi$elm_rocket$Rocket_Types$Start = {ctor: 'Start'};
+var _chemmi$elm_rocket$Rocket_Types$Forward = {ctor: 'Forward'};
+var _chemmi$elm_rocket$Rocket_Types$Right = {ctor: 'Right'};
+var _chemmi$elm_rocket$Rocket_Types$Left = {ctor: 'Left'};
+var _chemmi$elm_rocket$Rocket_Types$Colliding = {ctor: 'Colliding'};
+var _chemmi$elm_rocket$Rocket_Types$Flying = {ctor: 'Flying'};
+var _chemmi$elm_rocket$Rocket_Types$Landing = function (a) {
+	return {ctor: 'Landing', _0: a};
+};
+var _chemmi$elm_rocket$Rocket_Types$Landed = function (a) {
+	return {ctor: 'Landed', _0: a};
+};
+var _chemmi$elm_rocket$Rocket_Worlds$initWorld = {
+	size: {ctor: '_Tuple2', _0: 800, _1: 600},
+	axisParallelRects: _elm_lang$core$Native_List.fromArray(
+		[
+			{
+			topLeft: {ctor: '_Tuple2', _0: -400, _1: -150},
+			height: 150,
+			width: 800
+		}
+		]),
+	polygons: _elm_lang$core$Native_List.fromArray(
+		[]),
+	gravity: 5,
+	platforms: _elm_lang$core$Native_List.fromArray(
+		[]),
+	rocketStartPosition: {ctor: '_Tuple2', _0: 0, _1: 0}
+};
+var _chemmi$elm_rocket$Rocket_Worlds$world2 = _elm_lang$core$Native_Utils.update(
+	_chemmi$elm_rocket$Rocket_Worlds$initWorld,
+	{
+		axisParallelRects: _elm_lang$core$Native_List.fromArray(
+			[
+				{
+				topLeft: {ctor: '_Tuple2', _0: -400, _1: -150},
+				height: 150,
+				width: 800
+			},
+				{
+				topLeft: {ctor: '_Tuple2', _0: 300, _1: 150},
+				height: 150,
+				width: 100
+			}
+			]),
+		platforms: _elm_lang$core$Native_List.fromArray(
+			[
+				{
+				center: {ctor: '_Tuple2', _0: 0, _1: -140},
+				width: 50,
+				marked: false
+			}
+			])
+	});
 var _evancz$elm_graphics$Native_Collage = function()
 {
 
@@ -9997,7 +9999,7 @@ var _evancz$elm_graphics$Collage$ngon = F2(
 				f,
 				_elm_lang$core$Native_List.range(0, m - 1)));
 	});
-var _chemmi$elm_rocket$Rocket_View$rocketForm = function (rocket) {
+var _chemmi$elm_rocket$Rocket_Scene$rocketForm = function (rocket) {
 	var fireShape = _evancz$elm_graphics$Collage$polygon(
 		_elm_lang$core$Native_List.fromArray(
 			[
@@ -10030,205 +10032,746 @@ var _chemmi$elm_rocket$Rocket_View$rocketForm = function (rocket) {
 				A2(_evancz$elm_graphics$Collage$outlined, _evancz$elm_graphics$Collage$defaultLine, bodyShape)
 			]));
 };
-var _chemmi$elm_rocket$Rocket_View$frameForm = F2(
+var _chemmi$elm_rocket$Rocket_Scene$frameForm = F2(
 	function (a, b) {
-		var l = _evancz$elm_graphics$Collage$solid(_elm_lang$core$Color$black);
+		var line = _evancz$elm_graphics$Collage$solid(_elm_lang$core$Color$black);
 		return A2(
 			_evancz$elm_graphics$Collage$outlined,
 			_elm_lang$core$Native_Utils.update(
-				l,
+				line,
 				{width: 2}),
 			A2(_evancz$elm_graphics$Collage$rect, a, b));
 	});
-var _chemmi$elm_rocket$Rocket_View$backgroundImage = F2(
-	function (a, b) {
-		return A3(_evancz$elm_graphics$Element$image, a, b, 'textures/space.jpg');
-	});
-var _chemmi$elm_rocket$Rocket_View$background = F2(
+var _chemmi$elm_rocket$Rocket_Scene$background = F2(
 	function (a, b) {
 		return A2(
 			_evancz$elm_graphics$Collage$filled,
 			_elm_lang$core$Color$lightGreen,
 			A2(_evancz$elm_graphics$Collage$rect, a, b));
 	});
-var _chemmi$elm_rocket$Rocket_View$platformsForm = function (platforms) {
+var _chemmi$elm_rocket$Rocket_Scene$platformShape = function (platform) {
+	var height = 10;
+	var hWidth = platform.width / 2;
+	var _p1 = platform.center;
+	var x = _p1._0;
+	var y = _p1._1;
+	return _evancz$elm_graphics$Collage$polygon(
+		_elm_lang$core$Native_List.fromArray(
+			[
+				{ctor: '_Tuple2', _0: x - hWidth, _1: y},
+				{ctor: '_Tuple2', _0: x + hWidth, _1: y},
+				{ctor: '_Tuple2', _0: x + hWidth, _1: y - height},
+				{ctor: '_Tuple2', _0: x - hWidth, _1: y - height}
+			]));
+};
+var _chemmi$elm_rocket$Rocket_Scene$platformsForm = function (platforms) {
 	var unmarkedColor = _elm_lang$core$Color$red;
 	var markedColor = _elm_lang$core$Color$green;
+	var pColor = function (p) {
+		return p.marked ? markedColor : unmarkedColor;
+	};
 	var line = _evancz$elm_graphics$Collage$solid(_elm_lang$core$Color$black);
-	var toForm = function (p) {
-		var color = p.marked ? markedColor : unmarkedColor;
-		var form = _evancz$elm_graphics$Collage$polygon(
-			_elm_lang$core$Native_List.fromArray(
-				[
-					{ctor: '_Tuple2', _0: p.from, _1: p.height},
-					{ctor: '_Tuple2', _0: p.to, _1: p.height},
-					{ctor: '_Tuple2', _0: p.to, _1: p.height - 10},
-					{ctor: '_Tuple2', _0: p.from, _1: p.height - 10}
-				]));
+	var pForm = function (p) {
+		var pS = _chemmi$elm_rocket$Rocket_Scene$platformShape(p);
 		return _evancz$elm_graphics$Collage$group(
 			_elm_lang$core$Native_List.fromArray(
 				[
-					A2(_evancz$elm_graphics$Collage$filled, color, form),
 					A2(
-					_evancz$elm_graphics$Collage$outlined,
-					_elm_lang$core$Native_Utils.update(
-						line,
-						{width: 1}),
-					form)
+					_evancz$elm_graphics$Collage$filled,
+					pColor(p),
+					pS),
+					A2(_evancz$elm_graphics$Collage$outlined, line, pS)
 				]));
 	};
 	return _evancz$elm_graphics$Collage$group(
-		A2(_elm_lang$core$List$map, toForm, platforms));
+		A2(_elm_lang$core$List$map, pForm, platforms));
 };
-var _chemmi$elm_rocket$Rocket_View$worldForm = function (world) {
-	var l = _evancz$elm_graphics$Collage$solid(_elm_lang$core$Color$black);
-	var path = world.path;
-	var _p1 = world.size;
-	var a = _p1._0;
-	var b = _p1._1;
-	var poly = _evancz$elm_graphics$Collage$polygon(
-		A2(
-			_elm_lang$core$List_ops['::'],
-			{ctor: '_Tuple2', _0: a / 2, _1: (0 - b) / 2},
-			A2(
-				_elm_lang$core$List_ops['::'],
-				{ctor: '_Tuple2', _0: (0 - a) / 2, _1: (0 - b) / 2},
-				path)));
-	return _evancz$elm_graphics$Collage$group(
+var _chemmi$elm_rocket$Rocket_Scene$polyShape = function (poly) {
+	return _evancz$elm_graphics$Collage$polygon(poly);
+};
+var _chemmi$elm_rocket$Rocket_Scene$rectShape = function (rect) {
+	var w = rect.width;
+	var h = rect.height;
+	var _p2 = rect.topLeft;
+	var x = _p2._0;
+	var y = _p2._1;
+	return _evancz$elm_graphics$Collage$polygon(
 		_elm_lang$core$Native_List.fromArray(
 			[
-				A2(_evancz$elm_graphics$Collage$filled, _elm_lang$core$Color$lightCharcoal, poly),
-				A2(
-				_evancz$elm_graphics$Collage$outlined,
-				_elm_lang$core$Native_Utils.update(
-					l,
-					{width: 1}),
-				poly)
+				{ctor: '_Tuple2', _0: x, _1: y},
+				{ctor: '_Tuple2', _0: x + w, _1: y},
+				{ctor: '_Tuple2', _0: x + w, _1: y - h},
+				{ctor: '_Tuple2', _0: x, _1: y - h}
 			]));
 };
-var _chemmi$elm_rocket$Rocket_View$drawScene = F2(
+var _chemmi$elm_rocket$Rocket_Scene$worldForm = function (world) {
+	var color = _elm_lang$core$Color$lightCharcoal;
+	var polys = world.polygons;
+	var rects = world.axisParallelRects;
+	var _p3 = world.size;
+	var a = _p3._0;
+	var b = _p3._1;
+	return _evancz$elm_graphics$Collage$group(
+		A2(
+			_elm_lang$core$List$append,
+			A2(
+				_elm_lang$core$List$map,
+				function (_p4) {
+					return A2(
+						_evancz$elm_graphics$Collage$filled,
+						color,
+						_chemmi$elm_rocket$Rocket_Scene$rectShape(_p4));
+				},
+				rects),
+			A2(
+				_elm_lang$core$List$map,
+				function (_p5) {
+					return A2(
+						_evancz$elm_graphics$Collage$filled,
+						color,
+						_chemmi$elm_rocket$Rocket_Scene$polyShape(_p5));
+				},
+				polys)));
+};
+var _chemmi$elm_rocket$Rocket_Scene$drawScene = F2(
 	function (world, rocket) {
-		var _p2 = world.size;
-		var a = _p2._0;
-		var b = _p2._1;
-		return _evancz$elm_graphics$Element$layers(
+		var _p6 = world.size;
+		var a = _p6._0;
+		var b = _p6._1;
+		return A3(
+			_evancz$elm_graphics$Collage$collage,
+			_elm_lang$core$Basics$round(a),
+			_elm_lang$core$Basics$round(b),
+			_elm_lang$core$Native_List.fromArray(
+				[
+					A2(_chemmi$elm_rocket$Rocket_Scene$background, a, b),
+					_chemmi$elm_rocket$Rocket_Scene$worldForm(world),
+					function (_p7) {
+					return A2(
+						_evancz$elm_graphics$Collage$move,
+						rocket.position,
+						A2(
+							_evancz$elm_graphics$Collage$rotate,
+							_elm_lang$core$Basics$degrees(rocket.angle),
+							_p7));
+				}(
+					_chemmi$elm_rocket$Rocket_Scene$rocketForm(rocket)),
+					_chemmi$elm_rocket$Rocket_Scene$platformsForm(world.platforms),
+					A2(_chemmi$elm_rocket$Rocket_Scene$frameForm, a, b)
+				]));
+	});
+var _chemmi$elm_rocket$Rocket_Inits$initRocket = {
+	acceleration: _chemmi$elm_rocket$Rocket_Worlds$initWorld.gravity * 3,
+	position: {ctor: '_Tuple2', _0: 0, _1: 0},
+	movement: _chemmi$elm_rocket$Rocket_Types$Flying,
+	onPlatform: _elm_lang$core$Maybe$Nothing,
+	fire: false,
+	angle: 0,
+	velocity: {ctor: '_Tuple2', _0: 0, _1: 0},
+	twist: 2,
+	touchesWorld: false,
+	base: {
+		ctor: '_Tuple2',
+		_0: {ctor: '_Tuple2', _0: -10, _1: -5},
+		_1: {ctor: '_Tuple2', _0: 10, _1: -5}
+	},
+	top: {ctor: '_Tuple2', _0: 0, _1: 20}
+};
+var _chemmi$elm_rocket$Rocket_Inits$noKeyDown = {left: false, right: false, forward: false};
+var _chemmi$elm_rocket$Rocket_Inits$initWin = 'Win';
+var _chemmi$elm_rocket$Rocket_Inits$initGameover = {
+	message: 'Gameover',
+	background: _evancz$elm_graphics$Element$show('No Image....')
+};
+var _chemmi$elm_rocket$Rocket_Inits$initPlay = function () {
+	var world = _chemmi$elm_rocket$Rocket_Worlds$world2;
+	return {
+		keyDown: _chemmi$elm_rocket$Rocket_Inits$noKeyDown,
+		updateInterval: 15,
+		world: world,
+		rocket: _elm_lang$core$Native_Utils.update(
+			_chemmi$elm_rocket$Rocket_Inits$initRocket,
+			{position: world.rocketStartPosition}),
+		gameover: false
+	};
+}();
+var _chemmi$elm_rocket$Rocket_Inits$initStartscreen = {
+	message: 'Startscreen',
+	background: A2(_chemmi$elm_rocket$Rocket_Scene$drawScene, _chemmi$elm_rocket$Rocket_Inits$initPlay.world, _chemmi$elm_rocket$Rocket_Inits$initPlay.rocket)
+};
+var _chemmi$elm_rocket$Rocket_Inits$init = _chemmi$elm_rocket$Rocket_Types$Startscreen(_chemmi$elm_rocket$Rocket_Inits$initStartscreen);
+var _chemmi$elm_rocket$Rocket_Movement$accelerate = F3(
+	function (acceleration, angle, _p0) {
+		var _p1 = _p0;
+		var deg = _elm_lang$core$Basics$degrees(angle + 90);
+		return {
+			ctor: '_Tuple2',
+			_0: (acceleration * _elm_lang$core$Basics$cos(deg)) + _p1._0,
+			_1: (acceleration * _elm_lang$core$Basics$sin(deg)) + _p1._1
+		};
+	});
+var _chemmi$elm_rocket$Rocket_Movement$landOn = F2(
+	function (platform, rocket) {
+		var _p2 = platform.center;
+		var cx = _p2._0;
+		var cy = _p2._1;
+		var _p3 = _elm_lang$core$Basics$fst(rocket.base);
+		var b1x = _p3._0;
+		var b1y = _p3._1;
+		var _p4 = rocket.position;
+		var rx = _p4._0;
+		var ry = _p4._1;
+		return _elm_lang$core$Native_Utils.update(
+			rocket,
+			{
+				movement: _chemmi$elm_rocket$Rocket_Types$Landed(platform),
+				position: {ctor: '_Tuple2', _0: rx, _1: cy - b1y},
+				velocity: {ctor: '_Tuple2', _0: 0, _1: 0},
+				angle: 0,
+				fire: false
+			});
+	});
+var _chemmi$elm_rocket$Rocket_Movement$tryLanding = F2(
+	function (rocket, world) {
+		var vyTolerance = 2;
+		var vxTolerance = 1;
+		var angleTolerance = 10;
+		var roundedAngle = A2(
+			_elm_lang$core$Basics_ops['%'],
+			_elm_lang$core$Basics$round(rocket.angle),
+			360);
+		var _p5 = rocket.base;
+		var b1 = _p5._0;
+		var b2 = _p5._1;
+		var _p6 = b1;
+		var b1x = _p6._0;
+		var b1y = _p6._1;
+		var _p7 = b2;
+		var b2x = _p7._0;
+		var b2y = _p7._1;
+		var _p8 = rocket.position;
+		var pos = _p8;
+		var rx = _p8._0;
+		var ry = _p8._1;
+		var _p9 = rocket.velocity;
+		var v = _p9;
+		var vx = _p9._0;
+		var vy = _p9._1;
+		var landOnPlatform = function (platform) {
+			var plathw = platform.width / 2;
+			var _p10 = platform.center;
+			var cx = _p10._0;
+			var cy = _p10._1;
+			return (((_elm_lang$core$Native_Utils.cmp(roundedAngle, angleTolerance) < 0) || (_elm_lang$core$Native_Utils.cmp(roundedAngle, 360 - angleTolerance) > 0)) && ((_elm_lang$core$Native_Utils.cmp(b1x + rx, cx - plathw) > 0) && ((_elm_lang$core$Native_Utils.cmp(b2x + rx, cx + plathw) < 0) && ((((_elm_lang$core$Native_Utils.cmp(b1y + ry, cy) < 1) && (_elm_lang$core$Native_Utils.cmp(b1y + ry, cy - 10) > 0)) || ((_elm_lang$core$Native_Utils.cmp(b2y + ry, cy) < 1) && (_elm_lang$core$Native_Utils.cmp(b2y + ry, cy - 10) > 0))) && ((_elm_lang$core$Native_Utils.cmp(
+				_elm_lang$core$Basics$abs(vx),
+				vxTolerance) < 0) && (_elm_lang$core$Native_Utils.cmp(
+				_elm_lang$core$Basics$abs(vy),
+				vyTolerance) < 0)))))) ? _elm_lang$core$Maybe$Just(platform) : _elm_lang$core$Maybe$Nothing;
+		};
+		var platforms = world.platforms;
+		return _elm_lang$core$Maybe$oneOf(
+			A2(_elm_lang$core$List$map, landOnPlatform, platforms));
+	});
+var _chemmi$elm_rocket$Rocket_Movement$startRocket = function (rocket) {
+	var _p11 = rocket.position;
+	var px = _p11._0;
+	var py = _p11._1;
+	return _elm_lang$core$Native_Utils.update(
+		rocket,
+		{
+			movement: _chemmi$elm_rocket$Rocket_Types$Flying,
+			position: {ctor: '_Tuple2', _0: px, _1: py + 1},
+			fire: true,
+			onPlatform: _elm_lang$core$Maybe$Nothing
+		});
+};
+var _chemmi$elm_rocket$Rocket_Movement$moveRocket = F4(
+	function (keyDown, gravity, diffTime, rocket) {
+		var diffSeconds = _elm_lang$core$Time$inSeconds(diffTime);
+		var twist = rocket.twist;
+		var acceleration = rocket.acceleration;
+		var _p12 = rocket.velocity;
+		var vx = _p12._0;
+		var vy = _p12._1;
+		var fire = rocket.fire;
+		var angle = rocket.angle;
+		var _p13 = rocket.position;
+		var x = _p13._0;
+		var y = _p13._1;
+		return _elm_lang$core$Native_Utils.update(
+			rocket,
+			{
+				angle: keyDown.left ? (angle + twist) : (keyDown.right ? (angle - twist) : angle),
+				velocity: A3(
+					_chemmi$elm_rocket$Rocket_Movement$accelerate,
+					gravity * diffSeconds,
+					180,
+					(keyDown.forward ? A2(_chemmi$elm_rocket$Rocket_Movement$accelerate, acceleration * diffSeconds, angle) : _elm_lang$core$Basics$identity)(
+						{ctor: '_Tuple2', _0: vx, _1: vy})),
+				position: {ctor: '_Tuple2', _0: vx + x, _1: vy + y},
+				fire: keyDown.forward
+			});
+	});
+var _chemmi$elm_rocket$Rocket_Collision$orientationTest = F3(
+	function (_p2, _p1, _p0) {
+		var _p3 = _p2;
+		var _p7 = _p3._1;
+		var _p6 = _p3._0;
+		var _p4 = _p1;
+		var _p5 = _p0;
+		var signedArea = ((_p4._0 - _p6) * (_p5._1 - _p7)) - ((_p5._0 - _p6) * (_p4._1 - _p7));
+		return _elm_lang$core$Native_Utils.cmp(signedArea, 0) > 0;
+	});
+var _chemmi$elm_rocket$Rocket_Collision$addPoints = F2(
+	function (_p9, _p8) {
+		var _p10 = _p9;
+		var _p11 = _p8;
+		return {ctor: '_Tuple2', _0: _p10._0 + _p11._0, _1: _p10._1 + _p11._1};
+	});
+var _chemmi$elm_rocket$Rocket_Collision$collisionRocketRects = F2(
+	function (rocket, rects) {
+		var angle = rocket.angle;
+		var cosAngle = _elm_lang$core$Basics$cos(
+			_elm_lang$core$Basics$degrees(angle));
+		var sinAngle = _elm_lang$core$Basics$sin(
+			_elm_lang$core$Basics$degrees(angle));
+		var rotate = function (_p12) {
+			var _p13 = _p12;
+			var _p15 = _p13._1;
+			var _p14 = _p13._0;
+			return {ctor: '_Tuple2', _0: (cosAngle * _p14) - (sinAngle * _p15), _1: (sinAngle * _p14) + (cosAngle * _p15)};
+		};
+		var _p16 = A2(
+			_chemmi$elm_rocket$Rocket_Collision$addPoints,
+			rocket.position,
+			rotate(rocket.top));
+		var t = _p16;
+		var tx = _p16._0;
+		var ty = _p16._1;
+		var _p17 = A2(
+			_chemmi$elm_rocket$Rocket_Collision$addPoints,
+			rocket.position,
+			rotate(
+				_elm_lang$core$Basics$fst(rocket.base)));
+		var b1 = _p17;
+		var b1x = _p17._0;
+		var b1y = _p17._1;
+		var _p18 = A2(
+			_chemmi$elm_rocket$Rocket_Collision$addPoints,
+			rocket.position,
+			rotate(
+				_elm_lang$core$Basics$snd(rocket.base)));
+		var b2 = _p18;
+		var b2x = _p18._0;
+		var b2y = _p18._1;
+		var ymax = A2(
+			_elm_lang$core$Basics$max,
+			ty,
+			A2(_elm_lang$core$Basics$max, b1y, b2y));
+		var ymin = A2(
+			_elm_lang$core$Basics$min,
+			ty,
+			A2(_elm_lang$core$Basics$min, b1y, b2y));
+		var xmax = A2(
+			_elm_lang$core$Basics$max,
+			tx,
+			A2(_elm_lang$core$Basics$max, b1x, b2x));
+		var xmin = A2(
+			_elm_lang$core$Basics$min,
+			tx,
+			A2(_elm_lang$core$Basics$min, b1x, b2x));
+		var collRectCoarse = function (r) {
+			var w = r.width;
+			var h = r.height;
+			var _p19 = r.topLeft;
+			var rx = _p19._0;
+			var ry = _p19._1;
+			return _elm_lang$core$Basics$not(
+				(_elm_lang$core$Native_Utils.cmp(rx, xmax) > 0) || ((_elm_lang$core$Native_Utils.cmp(ry, ymin) < 0) || ((_elm_lang$core$Native_Utils.cmp(rx + w, xmin) < 0) || (_elm_lang$core$Native_Utils.cmp(ry - h, ymax) > 0))));
+		};
+		var collRectFine = function (r) {
+			var ot = _chemmi$elm_rocket$Rocket_Collision$orientationTest;
+			var w = r.width;
+			var h = r.height;
+			var _p20 = r.topLeft;
+			var rx = _p20._0;
+			var ry = _p20._1;
+			var edges = _elm_lang$core$Native_List.fromArray(
+				[
+					{ctor: '_Tuple2', _0: rx, _1: ry},
+					{ctor: '_Tuple2', _0: rx + w, _1: ry},
+					{ctor: '_Tuple2', _0: rx + w, _1: ry - h},
+					{ctor: '_Tuple2', _0: rx, _1: ry - h}
+				]);
+			return collRectCoarse(r) && _elm_lang$core$Basics$not(
+				A2(
+					_elm_lang$core$List$all,
+					A2(ot, t, b2),
+					edges) || (A2(
+					_elm_lang$core$List$all,
+					A2(ot, b1, t),
+					edges) || A2(
+					_elm_lang$core$List$all,
+					A2(ot, b2, b1),
+					edges)));
+		};
+		var collRect = function (r) {
+			return collRectFine(r);
+		};
+		return A2(_elm_lang$core$List$any, collRect, rects);
+	});
+var _chemmi$elm_rocket$Rocket_Collision$collision = F2(
+	function (rocket, world) {
+		return A2(_chemmi$elm_rocket$Rocket_Collision$collisionRocketRects, rocket, world.axisParallelRects);
+	});
+var _chemmi$elm_rocket$Rocket_Updates$markPlatform = F2(
+	function (p, ps) {
+		var _p0 = ps;
+		if (_p0.ctor === '[]') {
+			return _elm_lang$core$Native_List.fromArray(
+				[]);
+		} else {
+			var _p2 = _p0._1;
+			var _p1 = _p0._0;
+			return _elm_lang$core$Native_Utils.eq(p, _p1) ? A2(
+				_elm_lang$core$List_ops['::'],
+				_elm_lang$core$Native_Utils.update(
+					p,
+					{marked: true}),
+				_p2) : A2(
+				_elm_lang$core$List_ops['::'],
+				_p1,
+				A2(_chemmi$elm_rocket$Rocket_Updates$markPlatform, p, _p2));
+		}
+	});
+var _chemmi$elm_rocket$Rocket_Updates$updateKeyDown = F2(
+	function (keyDown, msg) {
+		var _p3 = msg;
+		switch (_p3.ctor) {
+			case 'KeyDownMsg':
+				var _p4 = _p3._0;
+				switch (_p4.ctor) {
+					case 'Left':
+						return _elm_lang$core$Native_Utils.update(
+							keyDown,
+							{left: true});
+					case 'Right':
+						return _elm_lang$core$Native_Utils.update(
+							keyDown,
+							{right: true});
+					case 'Forward':
+						return _elm_lang$core$Native_Utils.update(
+							keyDown,
+							{forward: true});
+					default:
+						return keyDown;
+				}
+			case 'KeyUpMsg':
+				var _p5 = _p3._0;
+				switch (_p5.ctor) {
+					case 'Left':
+						return _elm_lang$core$Native_Utils.update(
+							keyDown,
+							{left: false});
+					case 'Right':
+						return _elm_lang$core$Native_Utils.update(
+							keyDown,
+							{right: false});
+					case 'Forward':
+						return _elm_lang$core$Native_Utils.update(
+							keyDown,
+							{forward: false});
+					default:
+						return keyDown;
+				}
+			default:
+				return keyDown;
+		}
+	});
+var _chemmi$elm_rocket$Rocket_Updates$updateLanded = function (data) {
+	var rocket = data.rocket;
+	var keyDown = data.keyDown;
+	return keyDown.forward ? _elm_lang$core$Native_Utils.update(
+		data,
+		{
+			rocket: _chemmi$elm_rocket$Rocket_Movement$startRocket(rocket)
+		}) : data;
+};
+var _chemmi$elm_rocket$Rocket_Updates$updateLanding = function (data) {
+	var rocket = data.rocket;
+	var world = data.world;
+	var platforms = world.platforms;
+	var _p6 = rocket.movement;
+	if (_p6.ctor === 'Landing') {
+		var _p7 = _p6._0;
+		return _elm_lang$core$Native_Utils.update(
+			data,
+			{
+				rocket: A2(_chemmi$elm_rocket$Rocket_Movement$landOn, _p7, rocket),
+				world: _elm_lang$core$Native_Utils.update(
+					world,
+					{
+						platforms: A2(_chemmi$elm_rocket$Rocket_Updates$markPlatform, _p7, platforms)
+					})
+			});
+	} else {
+		return data;
+	}
+};
+var _chemmi$elm_rocket$Rocket_Updates$updateColliding = function (data) {
+	return _elm_lang$core$Native_Utils.update(
+		data,
+		{gameover: true});
+};
+var _chemmi$elm_rocket$Rocket_Updates$updateFlying = F2(
+	function (data, diffTime) {
+		var keyDown = data.keyDown;
+		var rocket = data.rocket;
+		var world = data.world;
+		var movedRocket = A4(_chemmi$elm_rocket$Rocket_Movement$moveRocket, keyDown, world.gravity, diffTime, rocket);
+		var _p8 = A2(_chemmi$elm_rocket$Rocket_Movement$tryLanding, movedRocket, world);
+		if (_p8.ctor === 'Just') {
+			return _elm_lang$core$Native_Utils.update(
+				data,
+				{
+					rocket: _elm_lang$core$Native_Utils.update(
+						movedRocket,
+						{
+							movement: _chemmi$elm_rocket$Rocket_Types$Landing(_p8._0)
+						})
+				});
+		} else {
+			return A2(_chemmi$elm_rocket$Rocket_Collision$collision, movedRocket, world) ? _elm_lang$core$Native_Utils.update(
+				data,
+				{
+					rocket: _elm_lang$core$Native_Utils.update(
+						movedRocket,
+						{movement: _chemmi$elm_rocket$Rocket_Types$Colliding})
+				}) : _elm_lang$core$Native_Utils.update(
+				data,
+				{rocket: movedRocket});
+		}
+	});
+var _chemmi$elm_rocket$Rocket_Updates$updatePlay = F2(
+	function (msg, data) {
+		var keyDown = data.keyDown;
+		var rocket = data.rocket;
+		var world = data.world;
+		var _p9 = msg;
+		switch (_p9.ctor) {
+			case 'KeyDownMsg':
+				return _elm_lang$core$Native_Utils.update(
+					data,
+					{
+						keyDown: A2(
+							_chemmi$elm_rocket$Rocket_Updates$updateKeyDown,
+							keyDown,
+							_chemmi$elm_rocket$Rocket_Types$KeyDownMsg(_p9._0))
+					});
+			case 'KeyUpMsg':
+				return _elm_lang$core$Native_Utils.update(
+					data,
+					{
+						keyDown: A2(
+							_chemmi$elm_rocket$Rocket_Updates$updateKeyDown,
+							keyDown,
+							_chemmi$elm_rocket$Rocket_Types$KeyUpMsg(_p9._0))
+					});
+			case 'Step':
+				var _p10 = rocket.movement;
+				switch (_p10.ctor) {
+					case 'Landed':
+						return _chemmi$elm_rocket$Rocket_Updates$updateLanded(data);
+					case 'Landing':
+						return _chemmi$elm_rocket$Rocket_Updates$updateLanding(data);
+					case 'Colliding':
+						return _chemmi$elm_rocket$Rocket_Updates$updateColliding(data);
+					default:
+						return A2(_chemmi$elm_rocket$Rocket_Updates$updateFlying, data, _p9._0);
+				}
+			default:
+				return data;
+		}
+	});
+var _chemmi$elm_rocket$Rocket_Views$viewValue = F2(
+	function (name, value) {
+		return A2(
+			_elm_lang$html$Html$tr,
+			_elm_lang$core$Native_List.fromArray(
+				[]),
 			_elm_lang$core$Native_List.fromArray(
 				[
 					A2(
-					_chemmi$elm_rocket$Rocket_View$backgroundImage,
-					_elm_lang$core$Basics$round(a),
-					_elm_lang$core$Basics$round(b)),
-					A3(
-					_evancz$elm_graphics$Collage$collage,
-					_elm_lang$core$Basics$round(a),
-					_elm_lang$core$Basics$round(b),
+					_elm_lang$html$Html$td,
+					_elm_lang$core$Native_List.fromArray(
+						[]),
 					_elm_lang$core$Native_List.fromArray(
 						[
-							_chemmi$elm_rocket$Rocket_View$worldForm(world),
-							function (_p3) {
-							return A2(
-								_evancz$elm_graphics$Collage$move,
-								rocket.position,
-								A2(
-									_evancz$elm_graphics$Collage$rotate,
-									_elm_lang$core$Basics$degrees(rocket.angle),
-									_p3));
-						}(
-							_chemmi$elm_rocket$Rocket_View$rocketForm(rocket)),
-							_chemmi$elm_rocket$Rocket_View$platformsForm(world.platforms),
-							A2(_chemmi$elm_rocket$Rocket_View$frameForm, a, b)
+							_elm_lang$html$Html$text(name)
+						])),
+					A2(
+					_elm_lang$html$Html$td,
+					_elm_lang$core$Native_List.fromArray(
+						[]),
+					_elm_lang$core$Native_List.fromArray(
+						[
+							_elm_lang$html$Html$text(
+							_elm_lang$core$Basics$toString(value))
 						]))
 				]));
 	});
-var _chemmi$elm_rocket$Rocket_Intersection$pathToSegments = function (path) {
-	var _p0 = path;
-	if (_p0.ctor === '[]') {
-		return _elm_lang$core$Native_List.fromArray(
-			[]);
-	} else {
-		if (_p0._1.ctor === '[]') {
-			var _p1 = _p0._0;
-			return _elm_lang$core$Native_List.fromArray(
-				[
-					{ctor: '_Tuple2', _0: _p1, _1: _p1}
-				]);
-		} else {
-			if (_p0._1._1.ctor === '[]') {
-				return _elm_lang$core$Native_List.fromArray(
+var _chemmi$elm_rocket$Rocket_Views$viewRocketStatus = function (r) {
+	return A2(
+		_elm_lang$html$Html$div,
+		_elm_lang$core$Native_List.fromArray(
+			[]),
+		_elm_lang$core$Native_List.fromArray(
+			[
+				A2(
+				_elm_lang$html$Html$h3,
+				_elm_lang$core$Native_List.fromArray(
+					[]),
+				_elm_lang$core$Native_List.fromArray(
 					[
-						{ctor: '_Tuple2', _0: _p0._0, _1: _p0._1._0}
-					]);
-			} else {
-				var _p2 = _p0._1._0;
-				return A2(
-					_elm_lang$core$List_ops['::'],
-					{ctor: '_Tuple2', _0: _p0._0, _1: _p2},
-					_chemmi$elm_rocket$Rocket_Intersection$pathToSegments(
-						A2(_elm_lang$core$List_ops['::'], _p2, _p0._1._1)));
-			}
-		}
-	}
+						_elm_lang$html$Html$text('Rocket Status')
+					])),
+				A2(
+				_elm_lang$html$Html$table,
+				_elm_lang$core$Native_List.fromArray(
+					[]),
+				_elm_lang$core$Native_List.fromArray(
+					[
+						A2(
+						_chemmi$elm_rocket$Rocket_Views$viewValue,
+						'Position',
+						function () {
+							var _p0 = r.position;
+							var x = _p0._0;
+							var y = _p0._1;
+							return {
+								ctor: '_Tuple2',
+								_0: _elm_lang$core$Basics$round(x),
+								_1: _elm_lang$core$Basics$round(y)
+							};
+						}()),
+						A2(
+						_chemmi$elm_rocket$Rocket_Views$viewValue,
+						'Angle',
+						_elm_lang$core$Basics$round(r.angle)),
+						A2(
+						_chemmi$elm_rocket$Rocket_Views$viewValue,
+						'Velocity',
+						function () {
+							var _p1 = r.velocity;
+							var vx = _p1._0;
+							var vy = _p1._1;
+							return {
+								ctor: '_Tuple2',
+								_0: _elm_lang$core$Basics$round(vx),
+								_1: _elm_lang$core$Basics$round(vy)
+							};
+						}()),
+						A2(_chemmi$elm_rocket$Rocket_Views$viewValue, 'Fire', r.fire),
+						A2(_chemmi$elm_rocket$Rocket_Views$viewValue, 'Acceleration', r.acceleration),
+						A2(_chemmi$elm_rocket$Rocket_Views$viewValue, 'Twist', r.twist),
+						A2(_chemmi$elm_rocket$Rocket_Views$viewValue, 'touches World', r.touchesWorld),
+						A2(_chemmi$elm_rocket$Rocket_Views$viewValue, 'Movement', r.movement),
+						A2(_chemmi$elm_rocket$Rocket_Views$viewValue, 'on Platform', r.onPlatform)
+					]))
+			]));
 };
-var _chemmi$elm_rocket$Rocket_Intersection$orientationTest = F3(
-	function (_p5, _p4, _p3) {
-		var _p6 = _p5;
-		var _p10 = _p6._1;
-		var _p9 = _p6._0;
-		var _p7 = _p4;
-		var _p8 = _p3;
-		var signedArea = ((_p7._0 - _p9) * (_p8._1 - _p10)) - ((_p8._0 - _p9) * (_p7._1 - _p10));
-		return (_elm_lang$core$Native_Utils.cmp(signedArea, 0) > 0) ? 1 : (_elm_lang$core$Native_Utils.eq(signedArea, 0) ? 0 : -1);
-	});
-var _chemmi$elm_rocket$Rocket_Intersection$inSegment = F2(
-	function (p, l) {
-		var _p11 = p;
-		var px = _p11._0;
-		var py = _p11._1;
-		var _p12 = l;
-		var lp = _p12._0;
-		var lq = _p12._1;
-		var _p13 = lp;
-		var lpx = _p13._0;
-		var lpy = _p13._1;
-		var _p14 = lq;
-		var lqx = _p14._0;
-		var lqy = _p14._1;
-		if (_elm_lang$core$Native_Utils.eq(
-			A3(_chemmi$elm_rocket$Rocket_Intersection$orientationTest, p, lp, lq),
-			0)) {
-			var factor = (!_elm_lang$core$Native_Utils.eq(lpx, lqx)) ? ((px - lpx) / (lqx - lpx)) : ((!_elm_lang$core$Native_Utils.eq(lpx, lqx)) ? ((py - lpy) / (lqy - lpy)) : -1);
-			return ((_elm_lang$core$Native_Utils.cmp(factor, 0) > -1) && (_elm_lang$core$Native_Utils.cmp(factor, 1) < 1)) ? true : false;
-		} else {
-			return false;
-		}
-	});
-var _chemmi$elm_rocket$Rocket_Intersection$segmentsIntersect = F2(
-	function (l, l$) {
-		var otLinePoint = F2(
-			function (_p15, r) {
-				var _p16 = _p15;
-				return A3(_chemmi$elm_rocket$Rocket_Intersection$orientationTest, _p16._0, _p16._1, r);
-			});
-		var _p17 = l$;
-		var l$p = _p17._0;
-		var l$q = _p17._1;
-		var _p18 = l;
-		var lp = _p18._0;
-		var lq = _p18._1;
-		return ((!_elm_lang$core$Native_Utils.eq(
-			A2(otLinePoint, l, l$p),
-			A2(otLinePoint, l, l$q))) && (!_elm_lang$core$Native_Utils.eq(
-			A2(otLinePoint, l$, lp),
-			A2(otLinePoint, l$, lq)))) ? true : ((A2(_chemmi$elm_rocket$Rocket_Intersection$inSegment, lp, l$) || (A2(_chemmi$elm_rocket$Rocket_Intersection$inSegment, lq, l$) || (A2(_chemmi$elm_rocket$Rocket_Intersection$inSegment, l$p, l) || A2(_chemmi$elm_rocket$Rocket_Intersection$inSegment, l$q, l)))) ? true : false);
-	});
-var _chemmi$elm_rocket$Rocket_Intersection$intersectionsSegmentPath = F2(
-	function (l, path) {
-		return _elm_lang$core$List$length(
-			A2(
-				_elm_lang$core$List$filter,
-				_chemmi$elm_rocket$Rocket_Intersection$segmentsIntersect(l),
-				_chemmi$elm_rocket$Rocket_Intersection$pathToSegments(path)));
-	});
+var _chemmi$elm_rocket$Rocket_Views$viewPlayStatus = function (data) {
+	return A2(
+		_elm_lang$html$Html$div,
+		_elm_lang$core$Native_List.fromArray(
+			[]),
+		_elm_lang$core$Native_List.fromArray(
+			[
+				A2(
+				_elm_lang$html$Html$h3,
+				_elm_lang$core$Native_List.fromArray(
+					[]),
+				_elm_lang$core$Native_List.fromArray(
+					[
+						_elm_lang$html$Html$text('Play Status')
+					])),
+				A2(
+				_elm_lang$html$Html$table,
+				_elm_lang$core$Native_List.fromArray(
+					[]),
+				_elm_lang$core$Native_List.fromArray(
+					[
+						A2(_chemmi$elm_rocket$Rocket_Views$viewValue, 'Gameover', data.gameover)
+					]))
+			]));
+};
+var _chemmi$elm_rocket$Rocket_Views$viewPlay = function (data) {
+	var world = data.world;
+	var rocket = data.rocket;
+	return A2(
+		_elm_lang$html$Html$div,
+		_elm_lang$core$Native_List.fromArray(
+			[]),
+		_elm_lang$core$Native_List.fromArray(
+			[
+				_evancz$elm_graphics$Element$toHtml(
+				A2(_chemmi$elm_rocket$Rocket_Scene$drawScene, world, rocket)),
+				_chemmi$elm_rocket$Rocket_Views$viewRocketStatus(rocket),
+				_chemmi$elm_rocket$Rocket_Views$viewPlayStatus(data)
+			]));
+};
+var _chemmi$elm_rocket$Rocket_Views$viewWin = function (data) {
+	return A2(
+		_elm_lang$html$Html$div,
+		_elm_lang$core$Native_List.fromArray(
+			[]),
+		_elm_lang$core$Native_List.fromArray(
+			[
+				_elm_lang$html$Html$text(data)
+			]));
+};
+var _chemmi$elm_rocket$Rocket_Views$viewGameover = function (data) {
+	return A2(
+		_elm_lang$html$Html$div,
+		_elm_lang$core$Native_List.fromArray(
+			[]),
+		_elm_lang$core$Native_List.fromArray(
+			[
+				_evancz$elm_graphics$Element$toHtml(
+				_evancz$elm_graphics$Element$layers(
+					_elm_lang$core$Native_List.fromArray(
+						[
+							data.background,
+							A4(
+							_evancz$elm_graphics$Element$container,
+							800,
+							600,
+							_evancz$elm_graphics$Element$middle,
+							_evancz$elm_graphics$Element$show(data.message))
+						])))
+			]));
+};
+var _chemmi$elm_rocket$Rocket_Views$viewStartscreen = function (data) {
+	return A2(
+		_elm_lang$html$Html$div,
+		_elm_lang$core$Native_List.fromArray(
+			[]),
+		_elm_lang$core$Native_List.fromArray(
+			[
+				_evancz$elm_graphics$Element$toHtml(
+				_evancz$elm_graphics$Element$layers(
+					_elm_lang$core$Native_List.fromArray(
+						[
+							data.background,
+							A4(
+							_evancz$elm_graphics$Element$container,
+							800,
+							600,
+							_evancz$elm_graphics$Element$middle,
+							_evancz$elm_graphics$Element$show(data.message))
+						])))
+			]));
+};
 var _elm_lang$dom$Native_Dom = function() {
 
 function on(node)
@@ -10611,528 +11154,104 @@ var _elm_lang$animation_frame$AnimationFrame$subMap = F2(
 		}
 	});
 _elm_lang$core$Native_Platform.effectManagers['AnimationFrame'] = {pkg: 'elm-lang/animation-frame', init: _elm_lang$animation_frame$AnimationFrame$init, onEffects: _elm_lang$animation_frame$AnimationFrame$onEffects, onSelfMsg: _elm_lang$animation_frame$AnimationFrame$onSelfMsg, tag: 'sub', subMap: _elm_lang$animation_frame$AnimationFrame$subMap};
-var _chemmi$elm_rocket$Rocket$addPoints = F2(
-	function (_p1, _p0) {
-		var _p2 = _p1;
-		var _p3 = _p0;
-		return {ctor: '_Tuple2', _0: _p2._0 + _p3._0, _1: _p2._1 + _p3._1};
-	});
-var _chemmi$elm_rocket$Rocket$atPlatform = F2(
-	function (rocket, world) {
-		var nearplatform = F2(
-			function (_p4, platform) {
-				var _p5 = _p4;
-				var _p7 = _p5._1;
-				var _p6 = _p5._0;
-				return ((_elm_lang$core$Native_Utils.cmp(platform.from, _p6) < 0) && (_elm_lang$core$Native_Utils.cmp(platform.to, _p6) > 0)) ? ((_elm_lang$core$Native_Utils.cmp(platform.height - 10, _p7) < 0) && (_elm_lang$core$Native_Utils.cmp(platform.height, _p7) > 0)) : false;
-			});
-		var platforms = world.platforms;
-		var pos = rocket.position;
-		var _p8 = rocket.base;
-		var b1 = _p8._0;
-		var b2 = _p8._1;
-		var candidates = A2(
-			_elm_lang$core$List$append,
-			A2(
-				_elm_lang$core$List$filter,
-				nearplatform(
-					A2(_chemmi$elm_rocket$Rocket$addPoints, b1, pos)),
-				platforms),
-			A2(
-				_elm_lang$core$List$filter,
-				nearplatform(
-					A2(_chemmi$elm_rocket$Rocket$addPoints, b2, pos)),
-				platforms));
-		return _elm_lang$core$List$head(candidates);
-	});
-var _chemmi$elm_rocket$Rocket$touchesWorld = F2(
-	function (rocket, world) {
-		var outOfScope = function () {
-			var _p9 = world.size;
-			var a = _p9._0;
-			var b = _p9._1;
-			return function (p) {
-				var _p10 = p;
-				var px = _p10._0;
-				var py = _p10._1;
-				return (_elm_lang$core$Native_Utils.cmp(px, (0 - a) / 2) < 0) || ((_elm_lang$core$Native_Utils.cmp(px, a / 2) > 0) || ((_elm_lang$core$Native_Utils.cmp(py, (0 - b) / 2) < 0) || (_elm_lang$core$Native_Utils.cmp(py, b / 2) > 0)));
-			};
-		}();
-		var isOdd = function (x) {
-			return _elm_lang$core$Native_Utils.eq(
-				A2(_elm_lang$core$Basics_ops['%'], x, 2),
-				1) ? true : false;
-		};
-		var path = world.path;
-		var pos = rocket.position;
-		var t = rocket.top;
-		var _p11 = rocket.base;
-		var b1 = _p11._0;
-		var b2 = _p11._1;
-		var _p12 = world.pointsOutside;
-		var p1 = _p12._0;
-		var p2 = _p12._1;
-		var checkPoint = function (p) {
-			return isOdd(
-				A2(
-					_chemmi$elm_rocket$Rocket_Intersection$intersectionsSegmentPath,
-					{ctor: '_Tuple2', _0: p1, _1: p},
-					path)) && isOdd(
-				A2(
-					_chemmi$elm_rocket$Rocket_Intersection$intersectionsSegmentPath,
-					{ctor: '_Tuple2', _0: p2, _1: p},
-					path));
-		};
-		return A2(
-			_elm_lang$core$List$any,
-			checkPoint,
-			A2(
-				_elm_lang$core$List$map,
-				_chemmi$elm_rocket$Rocket$addPoints(pos),
-				_elm_lang$core$Native_List.fromArray(
-					[b1, b2, t]))) || A2(
-			_elm_lang$core$List$any,
-			outOfScope,
-			A2(
-				_elm_lang$core$List$map,
-				_chemmi$elm_rocket$Rocket$addPoints(pos),
-				_elm_lang$core$Native_List.fromArray(
-					[b1, b2, t])));
-	});
-var _chemmi$elm_rocket$Rocket$markPlatform = F2(
-	function (p, ps) {
-		var _p13 = ps;
-		if (_p13.ctor === '[]') {
-			return _elm_lang$core$Native_List.fromArray(
-				[]);
-		} else {
-			var _p15 = _p13._1;
-			var _p14 = _p13._0;
-			return _elm_lang$core$Native_Utils.eq(p, _p14) ? A2(
-				_elm_lang$core$List_ops['::'],
-				_elm_lang$core$Native_Utils.update(
-					p,
-					{marked: true}),
-				_p15) : A2(
-				_elm_lang$core$List_ops['::'],
-				_p14,
-				A2(_chemmi$elm_rocket$Rocket$markPlatform, p, _p15));
-		}
-	});
-var _chemmi$elm_rocket$Rocket$updateKeyDown = F2(
-	function (keyDown, msg) {
-		var _p16 = msg;
-		switch (_p16.ctor) {
-			case 'KeyDownMsg':
-				var _p17 = _p16._0;
-				switch (_p17.ctor) {
-					case 'Left':
-						return _elm_lang$core$Native_Utils.update(
-							keyDown,
-							{left: true});
-					case 'Right':
-						return _elm_lang$core$Native_Utils.update(
-							keyDown,
-							{right: true});
-					case 'Forward':
-						return _elm_lang$core$Native_Utils.update(
-							keyDown,
-							{forward: true});
-					default:
-						return keyDown;
-				}
-			case 'KeyUpMsg':
-				var _p18 = _p16._0;
-				switch (_p18.ctor) {
-					case 'Left':
-						return _elm_lang$core$Native_Utils.update(
-							keyDown,
-							{left: false});
-					case 'Right':
-						return _elm_lang$core$Native_Utils.update(
-							keyDown,
-							{right: false});
-					case 'Forward':
-						return _elm_lang$core$Native_Utils.update(
-							keyDown,
-							{forward: false});
-					default:
-						return keyDown;
-				}
-			default:
-				return keyDown;
-		}
-	});
-var _chemmi$elm_rocket$Rocket$viewValue = F2(
-	function (name, value) {
-		return A2(
-			_elm_lang$html$Html$tr,
-			_elm_lang$core$Native_List.fromArray(
-				[]),
-			_elm_lang$core$Native_List.fromArray(
-				[
-					A2(
-					_elm_lang$html$Html$td,
-					_elm_lang$core$Native_List.fromArray(
-						[]),
-					_elm_lang$core$Native_List.fromArray(
-						[
-							_elm_lang$html$Html$text(name)
-						])),
-					A2(
-					_elm_lang$html$Html$td,
-					_elm_lang$core$Native_List.fromArray(
-						[]),
-					_elm_lang$core$Native_List.fromArray(
-						[
-							_elm_lang$html$Html$text(
-							_elm_lang$core$Basics$toString(value))
-						]))
-				]));
-	});
-var _chemmi$elm_rocket$Rocket$viewRocketStatus = function (r) {
-	return A2(
-		_elm_lang$html$Html$div,
-		_elm_lang$core$Native_List.fromArray(
-			[]),
-		_elm_lang$core$Native_List.fromArray(
-			[
-				A2(
-				_elm_lang$html$Html$h3,
-				_elm_lang$core$Native_List.fromArray(
-					[]),
-				_elm_lang$core$Native_List.fromArray(
-					[
-						_elm_lang$html$Html$text('Rocket Status')
-					])),
-				A2(
-				_elm_lang$html$Html$table,
-				_elm_lang$core$Native_List.fromArray(
-					[]),
-				_elm_lang$core$Native_List.fromArray(
-					[
-						A2(
-						_chemmi$elm_rocket$Rocket$viewValue,
-						'Position',
-						function () {
-							var _p19 = r.position;
-							var x = _p19._0;
-							var y = _p19._1;
-							return {
-								ctor: '_Tuple2',
-								_0: _elm_lang$core$Basics$round(x),
-								_1: _elm_lang$core$Basics$round(y)
-							};
-						}()),
-						A2(
-						_chemmi$elm_rocket$Rocket$viewValue,
-						'Angle',
-						_elm_lang$core$Basics$round(r.angle)),
-						A2(
-						_chemmi$elm_rocket$Rocket$viewValue,
-						'Velocity',
-						function () {
-							var _p20 = r.velocity;
-							var vx = _p20._0;
-							var vy = _p20._1;
-							return {
-								ctor: '_Tuple2',
-								_0: _elm_lang$core$Basics$round(vx),
-								_1: _elm_lang$core$Basics$round(vy)
-							};
-						}()),
-						A2(_chemmi$elm_rocket$Rocket$viewValue, 'Fire', r.fire),
-						A2(_chemmi$elm_rocket$Rocket$viewValue, 'Acceleration', r.acceleration),
-						A2(_chemmi$elm_rocket$Rocket$viewValue, 'Twist', r.twist),
-						A2(_chemmi$elm_rocket$Rocket$viewValue, 'touches World', r.touchesWorld),
-						A2(_chemmi$elm_rocket$Rocket$viewValue, 'landed', r.landed),
-						A2(_chemmi$elm_rocket$Rocket$viewValue, 'on Platform', r.onPlatform)
-					]))
-			]));
-};
-var _chemmi$elm_rocket$Rocket$viewStatus = function (model) {
-	return A2(
-		_elm_lang$html$Html$div,
-		_elm_lang$core$Native_List.fromArray(
-			[]),
-		_elm_lang$core$Native_List.fromArray(
-			[
-				A2(
-				_elm_lang$html$Html$h3,
-				_elm_lang$core$Native_List.fromArray(
-					[]),
-				_elm_lang$core$Native_List.fromArray(
-					[
-						_elm_lang$html$Html$text('Model Status')
-					])),
-				A2(
-				_elm_lang$html$Html$table,
-				_elm_lang$core$Native_List.fromArray(
-					[]),
-				_elm_lang$core$Native_List.fromArray(
-					[
-						A2(_chemmi$elm_rocket$Rocket$viewValue, 'Gameover', model.gameover),
-						A2(_chemmi$elm_rocket$Rocket$viewValue, 'Show Me', model.str)
-					]))
-			]));
-};
-var _chemmi$elm_rocket$Rocket$view = function (model) {
-	var world = model.world;
-	var rocket = model.rocket;
-	return A2(
-		_elm_lang$html$Html$div,
-		_elm_lang$core$Native_List.fromArray(
-			[]),
-		_elm_lang$core$Native_List.fromArray(
-			[
-				_evancz$elm_graphics$Element$toHtml(
-				A2(_chemmi$elm_rocket$Rocket_View$drawScene, world, rocket)),
-				_chemmi$elm_rocket$Rocket$viewRocketStatus(rocket),
-				_chemmi$elm_rocket$Rocket$viewStatus(model)
-			]));
-};
-var _chemmi$elm_rocket$Rocket$initRocket = {
-	acceleration: _chemmi$elm_rocket$Rocket_Worlds$initWorld.gravity * 3,
-	position: {ctor: '_Tuple2', _0: 0, _1: 0},
-	landed: false,
-	onPlatform: _elm_lang$core$Maybe$Nothing,
-	fire: false,
-	angle: 0,
-	velocity: {ctor: '_Tuple2', _0: 0, _1: 0},
-	twist: 3,
-	touchesWorld: false,
-	base: {
-		ctor: '_Tuple2',
-		_0: {ctor: '_Tuple2', _0: -10, _1: -5},
-		_1: {ctor: '_Tuple2', _0: 10, _1: -5}
-	},
-	top: {ctor: '_Tuple2', _0: 0, _1: 20}
-};
-var _chemmi$elm_rocket$Rocket$noKeyDown = {left: false, right: false, forward: false};
-var _chemmi$elm_rocket$Rocket$landing = F2(
-	function (model, platform) {
-		var vyTolerance = 2;
-		var vxTolerance = 1;
-		var angleTolerance = 10;
-		var world = model.world;
-		var rocket = model.rocket;
-		var _p21 = rocket.velocity;
-		var vx = _p21._0;
-		var vy = _p21._1;
-		var pos = rocket.position;
-		var _p22 = pos;
-		var px = _p22._0;
-		var py = _p22._1;
-		var _p23 = rocket.base;
-		var b1 = _p23._0;
-		var b2 = _p23._1;
-		var _p24 = b1;
-		var b1x = _p24._0;
-		var b1y = _p24._1;
-		var _p25 = b2;
-		var b2x = _p25._0;
-		var b2y = _p25._1;
-		var roundedAngle = A2(
-			_elm_lang$core$Basics_ops['%'],
-			_elm_lang$core$Basics$round(rocket.angle),
-			360);
-		return (((_elm_lang$core$Native_Utils.cmp(roundedAngle, angleTolerance) < 0) || (_elm_lang$core$Native_Utils.cmp(roundedAngle, 360 - angleTolerance) > 0)) && ((_elm_lang$core$Native_Utils.cmp(b1x + px, platform.from) > 0) && ((_elm_lang$core$Native_Utils.cmp(b2x + px, platform.to) < 0) && ((_elm_lang$core$Native_Utils.cmp(
-			_elm_lang$core$Basics$abs(vx),
-			vxTolerance) < 0) && (_elm_lang$core$Native_Utils.cmp(
-			_elm_lang$core$Basics$abs(vy),
-			vyTolerance) < 0))))) ? _elm_lang$core$Maybe$Just(
-			_elm_lang$core$Native_Utils.update(
-				model,
-				{
-					rocket: _elm_lang$core$Native_Utils.update(
-						rocket,
-						{
-							angle: 0,
-							position: {ctor: '_Tuple2', _0: px, _1: platform.height - b1y},
-							landed: true,
-							velocity: {ctor: '_Tuple2', _0: 0, _1: 0},
-							fire: false,
-							onPlatform: _elm_lang$core$Maybe$Just(platform)
-						}),
-					keyDown: _chemmi$elm_rocket$Rocket$noKeyDown,
-					world: _elm_lang$core$Native_Utils.update(
-						world,
-						{
-							platforms: A2(_chemmi$elm_rocket$Rocket$markPlatform, platform, world.platforms)
-						})
-				})) : _elm_lang$core$Maybe$Nothing;
-	});
-var _chemmi$elm_rocket$Rocket$initModel = function () {
-	var world = _chemmi$elm_rocket$Rocket_Worlds$hole;
-	return {
-		keyDown: _chemmi$elm_rocket$Rocket$noKeyDown,
-		updateInterval: 15,
-		world: world,
-		rocket: _elm_lang$core$Native_Utils.update(
-			_chemmi$elm_rocket$Rocket$initRocket,
-			{position: world.rocketStartPosition}),
-		str: 'Show Me Debug',
-		gameover: false
-	};
-}();
-var _chemmi$elm_rocket$Rocket$init = {ctor: '_Tuple2', _0: _chemmi$elm_rocket$Rocket$initModel, _1: _elm_lang$core$Platform_Cmd$none};
 var _chemmi$elm_rocket$Rocket$update = F2(
 	function (msg, model) {
-		var keyDown = model.keyDown;
-		var rocket = model.rocket;
-		var world = model.world;
-		var _p26 = msg;
-		switch (_p26.ctor) {
-			case 'KeyDownMsg':
-				return _elm_lang$core$Native_Utils.update(
-					model,
+		var _p0 = model;
+		if (_p0.ctor === 'Play') {
+			var _p1 = _p0._0;
+			var updatedPlay = A2(_chemmi$elm_rocket$Rocket_Updates$updatePlay, msg, _p1);
+			return updatedPlay.gameover ? _chemmi$elm_rocket$Rocket_Types$Gameover(
+				_elm_lang$core$Native_Utils.update(
+					_chemmi$elm_rocket$Rocket_Inits$initGameover,
 					{
-						keyDown: A2(_chemmi$elm_rocket$Rocket$updateKeyDown, keyDown, msg)
-					});
-			case 'KeyUpMsg':
-				if (_p26._0.ctor === 'Start') {
-					return _chemmi$elm_rocket$Rocket$initModel;
-				} else {
-					return _elm_lang$core$Native_Utils.update(
-						model,
-						{
-							keyDown: A2(_chemmi$elm_rocket$Rocket$updateKeyDown, keyDown, msg)
-						});
-				}
-			case 'Step':
-				var _p29 = _p26._0;
-				var landed = rocket.landed;
-				var touch = A2(_chemmi$elm_rocket$Rocket$touchesWorld, rocket, world);
-				var platform = touch ? A2(_chemmi$elm_rocket$Rocket$atPlatform, rocket, world) : rocket.onPlatform;
-				if (landed) {
-					if (model.keyDown.forward) {
-						var _p27 = rocket.position;
-						var px = _p27._0;
-						var py = _p27._1;
-						return _elm_lang$core$Native_Utils.update(
-							model,
-							{
-								rocket: _elm_lang$core$Native_Utils.update(
-									rocket,
-									{
-										landed: false,
-										position: {ctor: '_Tuple2', _0: px, _1: py + 1},
-										fire: true,
-										onPlatform: _elm_lang$core$Maybe$Nothing
-									})
-							});
-					} else {
-						return model;
-					}
-				} else {
-					if (touch) {
-						var _p28 = A2(
-							_elm_lang$core$Maybe$andThen,
-							platform,
-							_chemmi$elm_rocket$Rocket$landing(model));
-						if (_p28.ctor === 'Just') {
-							return _p28._0;
-						} else {
-							return _elm_lang$core$Native_Utils.update(
-								model,
-								{gameover: true});
-						}
-					} else {
-						return _elm_lang$core$Native_Utils.update(
-							model,
-							{
-								rocket: A4(_chemmi$elm_rocket$Rocket_Movement$moveRocket, model.keyDown, world.gravity, _p29, rocket),
-								str: _elm_lang$core$Basics$toString(_p29)
-							});
-					}
-				}
-			case 'ShowMe':
-				return _elm_lang$core$Native_Utils.update(
-					model,
-					{str: _p26._0});
-			default:
+						background: A2(_chemmi$elm_rocket$Rocket_Scene$drawScene, _p1.world, _p1.rocket)
+					})) : _chemmi$elm_rocket$Rocket_Types$Play(updatedPlay);
+		} else {
+			var _p2 = msg;
+			if ((_p2.ctor === 'KeyUpMsg') && (_p2._0.ctor === 'Start')) {
+				return _chemmi$elm_rocket$Rocket_Types$Play(_chemmi$elm_rocket$Rocket_Inits$initPlay);
+			} else {
 				return model;
+			}
 		}
 	});
-var _chemmi$elm_rocket$Rocket$ShowMe = function (a) {
-	return {ctor: 'ShowMe', _0: a};
-};
-var _chemmi$elm_rocket$Rocket$NoMsg = {ctor: 'NoMsg'};
-var _chemmi$elm_rocket$Rocket$Step = function (a) {
-	return {ctor: 'Step', _0: a};
-};
-var _chemmi$elm_rocket$Rocket$KeyUpMsg = function (a) {
-	return {ctor: 'KeyUpMsg', _0: a};
-};
-var _chemmi$elm_rocket$Rocket$KeyDownMsg = function (a) {
-	return {ctor: 'KeyDownMsg', _0: a};
-};
-var _chemmi$elm_rocket$Rocket$NotBound = {ctor: 'NotBound'};
-var _chemmi$elm_rocket$Rocket$Start = {ctor: 'Start'};
-var _chemmi$elm_rocket$Rocket$keyBindingGameover = function (code) {
-	var _p30 = _elm_lang$core$Char$fromCode(code);
-	if (_p30.valueOf() === 'R') {
-		return _chemmi$elm_rocket$Rocket$Start;
-	} else {
-		return _chemmi$elm_rocket$Rocket$NotBound;
-	}
-};
-var _chemmi$elm_rocket$Rocket$Forward = {ctor: 'Forward'};
-var _chemmi$elm_rocket$Rocket$Right = {ctor: 'Right'};
-var _chemmi$elm_rocket$Rocket$Left = {ctor: 'Left'};
-var _chemmi$elm_rocket$Rocket$keyBinding = function (code) {
-	var _p31 = _elm_lang$core$Char$fromCode(code);
-	switch (_p31.valueOf()) {
-		case 'W':
-			return _chemmi$elm_rocket$Rocket$Forward;
-		case 'A':
-			return _chemmi$elm_rocket$Rocket$Left;
-		case 'D':
-			return _chemmi$elm_rocket$Rocket$Right;
+var _chemmi$elm_rocket$Rocket$view = function (model) {
+	var _p3 = model;
+	switch (_p3.ctor) {
+		case 'Play':
+			return _chemmi$elm_rocket$Rocket_Views$viewPlay(_p3._0);
+		case 'Startscreen':
+			return _chemmi$elm_rocket$Rocket_Views$viewStartscreen(_p3._0);
+		case 'Gameover':
+			return _chemmi$elm_rocket$Rocket_Views$viewGameover(_p3._0);
 		default:
-			return _chemmi$elm_rocket$Rocket$NotBound;
+			return _chemmi$elm_rocket$Rocket_Views$viewWin(_p3._0);
 	}
 };
+var _chemmi$elm_rocket$Rocket$keyBinding = F2(
+	function (model, code) {
+		var _p4 = model;
+		if (_p4.ctor === 'Play') {
+			var _p5 = _elm_lang$core$Char$fromCode(code);
+			switch (_p5.valueOf()) {
+				case 'W':
+					return _chemmi$elm_rocket$Rocket_Types$Forward;
+				case 'A':
+					return _chemmi$elm_rocket$Rocket_Types$Left;
+				case 'D':
+					return _chemmi$elm_rocket$Rocket_Types$Right;
+				default:
+					return _chemmi$elm_rocket$Rocket_Types$NotBound;
+			}
+		} else {
+			var _p6 = _elm_lang$core$Char$fromCode(code);
+			if (_p6.valueOf() === ' ') {
+				return _chemmi$elm_rocket$Rocket_Types$Start;
+			} else {
+				return _chemmi$elm_rocket$Rocket_Types$NotBound;
+			}
+		}
+	});
 var _chemmi$elm_rocket$Rocket$subscriptions = function (model) {
-	return _elm_lang$core$Basics$not(model.gameover) ? _elm_lang$core$Platform_Sub$batch(
-		_elm_lang$core$Native_List.fromArray(
-			[
-				_elm_lang$keyboard$Keyboard$downs(
-				function (_p32) {
-					return _chemmi$elm_rocket$Rocket$KeyDownMsg(
-						_chemmi$elm_rocket$Rocket$keyBinding(_p32));
-				}),
-				_elm_lang$keyboard$Keyboard$ups(
-				function (_p33) {
-					return _chemmi$elm_rocket$Rocket$KeyUpMsg(
-						_chemmi$elm_rocket$Rocket$keyBinding(_p33));
-				}),
-				_elm_lang$animation_frame$AnimationFrame$diffs(_chemmi$elm_rocket$Rocket$Step)
-			])) : _elm_lang$core$Platform_Sub$batch(
-		_elm_lang$core$Native_List.fromArray(
-			[
-				_elm_lang$keyboard$Keyboard$ups(
-				function (_p34) {
-					return _chemmi$elm_rocket$Rocket$KeyUpMsg(
-						_chemmi$elm_rocket$Rocket$keyBindingGameover(_p34));
-				}),
-				_elm_lang$keyboard$Keyboard$downs(
-				function (_p35) {
-					return _chemmi$elm_rocket$Rocket$KeyDownMsg(
-						_chemmi$elm_rocket$Rocket$keyBindingGameover(_p35));
-				})
-			]));
+	return _elm_lang$core$Platform_Sub$batch(
+		A2(
+			_elm_lang$core$Basics_ops['++'],
+			_elm_lang$core$Native_List.fromArray(
+				[
+					_elm_lang$keyboard$Keyboard$downs(
+					function (_p7) {
+						return _chemmi$elm_rocket$Rocket_Types$KeyDownMsg(
+							A2(_chemmi$elm_rocket$Rocket$keyBinding, model, _p7));
+					}),
+					_elm_lang$keyboard$Keyboard$ups(
+					function (_p8) {
+						return _chemmi$elm_rocket$Rocket_Types$KeyUpMsg(
+							A2(_chemmi$elm_rocket$Rocket$keyBinding, model, _p8));
+					})
+				]),
+			function () {
+				var _p9 = model;
+				if (_p9.ctor === 'Play') {
+					return _elm_lang$core$Native_List.fromArray(
+						[
+							_elm_lang$animation_frame$AnimationFrame$diffs(_chemmi$elm_rocket$Rocket_Types$Step)
+						]);
+				} else {
+					return _elm_lang$core$Native_List.fromArray(
+						[]);
+				}
+			}()));
 };
 var _chemmi$elm_rocket$Rocket$main = {
 	main: _elm_lang$html$Html_App$program(
 		{
-			init: _chemmi$elm_rocket$Rocket$init,
+			init: {ctor: '_Tuple2', _0: _chemmi$elm_rocket$Rocket_Inits$init, _1: _elm_lang$core$Platform_Cmd$none},
 			view: _chemmi$elm_rocket$Rocket$view,
 			update: F2(
-				function (msg, model) {
+				function (msg, playModel) {
 					return {
 						ctor: '_Tuple2',
-						_0: A2(_chemmi$elm_rocket$Rocket$update, msg, model),
+						_0: A2(_chemmi$elm_rocket$Rocket$update, msg, playModel),
 						_1: _elm_lang$core$Platform_Cmd$none
 					};
 				}),
