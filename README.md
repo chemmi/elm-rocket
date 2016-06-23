@@ -28,8 +28,6 @@ Check out the latest build [here](https://chemmi.github.io/elm-rocket/).
 
 ### List of ToDos
 
-* gameover when touching the border
-
 * a timer
 
 * "scrolling" and "scoping" (permit bigger levels)

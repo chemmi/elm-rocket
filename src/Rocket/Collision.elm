@@ -6,7 +6,8 @@ import List exposing (any, all)
 
 collision : Rocket -> World -> Bool
 collision rocket world =
-    collisionRocketRects rocket world.rects
+    (collisionRocketRects rocket world.rects)
+        || (collisionRocketBorder rocket world.size)
 
 
 collisionRocketRects : Rocket -> List Rect -> Bool
@@ -76,7 +77,7 @@ collisionRocketRects rocket rects =
                             || (ry - h > ymax)
                         )
 
-        {- fine collision test (uses collRectCoarse)-}
+        {- fine collision test (uses collRectCoarse) -}
         collRectFine =
             \r ->
                 let
@@ -111,6 +112,50 @@ collisionRocketRects rocket rects =
                 collRectFine r
     in
         any collRect rects
+
+
+collisionRocketBorder : Rocket -> ( Float, Float ) -> Bool
+collisionRocketBorder rocket size =
+    let
+        ( w, h ) =
+            size
+
+        angle =
+            rocket.angle
+
+        -- maybe add lazy here
+        cosAngle =
+            cos <| degrees angle
+
+        sinAngle =
+            sin <| degrees angle
+
+        rotate =
+            \( x, y ) ->
+                ( cosAngle * x - sinAngle * y
+                , sinAngle * x + cosAngle * y
+                )
+
+        t =
+            addPoints rocket.position
+                <| rotate rocket.top
+
+        b1 =
+            addPoints rocket.position
+                <| rotate (fst rocket.base)
+
+        b2 =
+            addPoints rocket.position
+                <| rotate (snd rocket.base)
+
+        inBorder =
+            \( x, y ) ->
+                (-w / 2 < x)
+                    && (x < w / 2)
+                    && (-h / 2 < y)
+                    && (y < h / 2)
+    in
+        any (not << inBorder) [ t, b1, b2 ]
 
 
 addPoints : Point -> Point -> Point
