@@ -113,7 +113,7 @@ subscriptions model =
             ++ case model of
                 Play _ ->
                     [ diffs Step
-                      --, every (playModel.updateInterval * millisecond) (\_ -> Step)
+                    , every second (\_ -> TimerTick)
                     ]
 
                 _ ->

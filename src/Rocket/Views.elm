@@ -4,6 +4,7 @@ import Rocket.Types exposing (..)
 import Rocket.Scene exposing (..)
 import Html exposing (..)
 import Element exposing (..)
+import Time exposing (inSeconds)
 
 
 viewStartscreen : StartscreenData -> Html a
@@ -50,7 +51,7 @@ viewPlay data =
     in
         div []
             [ toHtml <| drawScene world rocket
-            , viewRocketStatus rocket
+              --, viewRocketStatus rocket
             , viewPlayStatus data
             ]
 
@@ -60,7 +61,7 @@ viewPlayStatus data =
     div []
         [ h3 [] [ text "Play Status" ]
         , table []
-            [ viewValue "Gameover" data.gameover
+            [ viewValue "Time Remaining" (inSeconds (data.timeRemaining))
             ]
         ]
 

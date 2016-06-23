@@ -16,7 +16,7 @@ initPlay =
             world2
     in
         { keyDown = noKeyDown
-        , updateInterval = 15
+        , timeRemaining = world.totalTime
         , world = world
         , rocket =
             { initRocket

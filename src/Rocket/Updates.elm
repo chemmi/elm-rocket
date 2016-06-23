@@ -3,7 +3,7 @@ module Rocket.Updates exposing (..)
 import Rocket.Types exposing (..)
 import Rocket.Movement exposing (..)
 import Rocket.Collision exposing (..)
-import Time exposing (Time)
+import Time exposing (Time, second)
 
 
 updatePlay : Msg -> PlayData -> PlayData
@@ -38,6 +38,12 @@ updatePlay msg data =
 
                     Flying ->
                         updateFlying data diffTime
+
+            TimerTick ->
+                if data.timeRemaining <= 0 * second then
+                    { data | gameover = True }
+                else
+                    { data | timeRemaining = data.timeRemaining - 1 * second }
 
             _ ->
                 data
@@ -171,4 +177,3 @@ markPlatform p ps =
                 { p | marked = True } :: ps'
             else
                 p' :: markPlatform p ps'
-

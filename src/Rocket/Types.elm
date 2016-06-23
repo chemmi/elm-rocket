@@ -15,6 +15,7 @@ type Msg
     = KeyDownMsg Key
     | KeyUpMsg Key
     | Step Time
+    | TimerTick
     | NoMsg
 
 
@@ -46,7 +47,7 @@ type alias WinData =
 
 type alias PlayData =
     { keyDown : KeyDown
-    , updateInterval : Float
+    , timeRemaining : Time
     , rocket : Rocket
     , world : World
     , gameover : Bool
@@ -89,6 +90,7 @@ type alias World =
     , platforms : List Platform
     , rocketStartPosition : Point
     , gravity : Float
+    , totalTime : Time
     , isWin : List Platform -> Bool
     }
 

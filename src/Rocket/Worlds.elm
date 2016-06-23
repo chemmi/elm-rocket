@@ -2,6 +2,7 @@ module Rocket.Worlds exposing (..)
 
 import Rocket.Types exposing (World, Platform)
 import List exposing (all)
+import Time exposing (Time, second)
 
 
 initWorld : World
@@ -14,6 +15,7 @@ initWorld =
     , gravity = 5
     , platforms = []
     , rocketStartPosition = ( 0, 0 )
+    , totalTime = 60 * second
     , isWin = (\ps -> all (\p -> p.marked) ps)
     }
 
