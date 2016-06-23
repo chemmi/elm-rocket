@@ -5,6 +5,7 @@ import Rocket.Scene exposing (..)
 import Html exposing (..)
 import Element exposing (..)
 import Time exposing (inSeconds)
+import Color exposing (..)
 
 
 viewStartscreen : StartscreenData -> Html a
@@ -48,11 +49,22 @@ viewPlay data =
 
         world =
             data.world
+
+        ( w, h ) =
+            world.size
     in
         div []
-            [ toHtml <| drawScene world rocket
+            [ toHtml
+                <| layers
+                    [ drawScene world rocket
+                    , container (round w)
+                        (round h)
+                        (midRightAt (absolute 10) (absolute 20))
+                        <| show
+                        <| inSeconds data.timeRemaining
+                    ]
               --, viewRocketStatus rocket
-            , viewPlayStatus data
+              --, viewPlayStatus data
             ]
 
 
