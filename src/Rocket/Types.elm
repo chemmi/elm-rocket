@@ -1,16 +1,52 @@
 module Rocket.Types exposing (..)
 
+import Time exposing (Time)
+import Element exposing (Element)
 
-type alias Point =
-    ( Float, Float )
+
+type Model
+    = Play PlayData
+    | Startscreen StartscreenData
+    | Gameover GameoverData
+    | Win WinData
 
 
-type alias Model =
+type Msg
+    = KeyDownMsg Key
+    | KeyUpMsg Key
+    | Step Time
+    | NoMsg
+
+
+type Key
+    = Left
+    | Right
+    | Forward
+    | Start
+    | NotBound
+
+
+type alias StartscreenData =
+    { message : String
+    , background : Element
+    }
+
+
+type alias GameoverData =
+    { message : String
+    , background : Element
+    }
+
+
+type alias WinData =
+    String
+
+
+type alias PlayData =
     { keyDown : KeyDown
     , updateInterval : Float
     , rocket : Rocket
     , world : World
-    , str : String
     , gameover : Bool
     }
 
@@ -24,7 +60,7 @@ type alias KeyDown =
 
 type alias Rocket =
     { position : Point
-    , landed : Bool
+    , movement : Movement
     , onPlatform : Maybe Platform
     , fire : Bool
     , angle : Float
@@ -37,19 +73,40 @@ type alias Rocket =
     }
 
 
+type Movement
+    = Landed Platform
+    | Landing Platform
+    | Flying
+    | Colliding
+
+
 type alias World =
-    { path : List Point
-    , pointsOutside : ( Point, Point )
-    , size : ( Float, Float )
-    , gravity : Float
+    { size : ( Float, Float )
+    , axisParallelRects : List AxisParallelRect
+    , polygons : List Polygon
     , platforms : List Platform
     , rocketStartPosition : Point
+    , gravity : Float
     }
 
 
 type alias Platform =
-    { height : Float
-    , from : Float
-    , to : Float
+    { center : Point
+    , width : Float
     , marked : Bool
     }
+
+
+type alias AxisParallelRect =
+    { topLeft : Point
+    , height : Float
+    , width : Float
+    }
+
+
+type alias Polygon =
+    List Point
+
+
+type alias Point =
+    ( Float, Float )

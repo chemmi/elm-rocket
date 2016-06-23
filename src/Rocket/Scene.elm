@@ -1,10 +1,56 @@
-module Rocket.View exposing (..)
+module Rocket.Scene exposing (..)
 
+import Rocket.Types exposing (..)
 import Collage exposing (..)
 import Element exposing (..)
 import Html exposing (..)
 import Color exposing (..)
-import List exposing (map)
+import List exposing (map, append)
+
+
+rectShape : AxisParallelRect -> Shape
+rectShape rect =
+    let
+        ( x, y ) =
+            rect.topLeft
+
+        h =
+            rect.height
+
+        w =
+            rect.width
+    in
+        Collage.polygon
+            [ ( x, y )
+            , ( x + w, y )
+            , ( x + w, y - h )
+            , ( x, y - h )
+            ]
+
+
+polyShape : Polygon -> Shape
+polyShape poly =
+    Collage.polygon poly
+
+
+platformShape : Platform -> Shape
+platformShape platform =
+    let
+        ( x, y ) =
+            platform.center
+
+        hWidth =
+            platform.width / 2
+
+        height =
+            10
+    in
+        Collage.polygon
+            [ ( x - hWidth, y )
+            , ( x + hWidth, y )
+            , ( x + hWidth, y - height )
+            , ( x - hWidth, y - height )
+            ]
 
 
 worldForm world =
@@ -12,19 +58,18 @@ worldForm world =
         ( a, b ) =
             world.size
 
-        path =
-            world.path
+        rects =
+            world.axisParallelRects
 
-        poly =
-            polygon (( a / 2, -b / 2 ) :: ( -a / 2, -b / 2 ) :: path)
+        polys =
+            world.polygons
 
-        l =
-            solid black
+        color =
+            lightCharcoal
     in
         group
-            [ filled lightCharcoal poly
-            , outlined { l | width = 1 } poly
-            ]
+            <| append (map (filled color << rectShape) rects)
+                (map (filled color << polyShape) polys)
 
 
 platformsForm platforms =
@@ -38,29 +83,25 @@ platformsForm platforms =
         unmarkedColor =
             red
 
-        toForm =
+        pColor =
+            \p ->
+                if p.marked then
+                    markedColor
+                else
+                    unmarkedColor
+
+        pForm =
             \p ->
                 let
-                    form =
-                        polygon
-                            [ ( p.from, p.height )
-                            , ( p.to, p.height )
-                            , ( p.to, p.height - 10 )
-                            , ( p.from, p.height - 10 )
-                            ]
-
-                    color =
-                        if p.marked then
-                            markedColor
-                        else
-                            unmarkedColor
+                    pS =
+                        platformShape p
                 in
                     group
-                        [ filled color form
-                        , outlined { line | width = 1 } form
+                        [ filled (pColor p) pS
+                        , outlined line pS
                         ]
     in
-        group (map toForm platforms)
+        group <| map pForm platforms
 
 
 background : Float -> Float -> Form
@@ -71,11 +112,10 @@ background a b =
 frameForm : Float -> Float -> Form
 frameForm a b =
     let
-        l : LineStyle
-        l =
+        line =
             solid black
     in
-        outlined { l | width = 2 } <| rect a b
+        outlined { line | width = 2 } <| rect a b
 
 
 rocketForm rocket =
