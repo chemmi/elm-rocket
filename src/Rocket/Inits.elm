@@ -3,7 +3,7 @@ module Rocket.Inits exposing (..)
 import Rocket.Types exposing (..)
 import Rocket.Worlds exposing (..)
 import Rocket.Scene exposing (drawScene)
-import Element exposing (show)
+import Element exposing (empty)
 
 
 init =
@@ -34,13 +34,13 @@ initStartscreen =
 
 initGameover =
     { message = "Gameover - Press SPACE to restart"
-    , background = show "No Image...."
+    , background = empty
     }
 
 
 initWin =
     { message = "Win - Press SPACE to restart"
-    , background = show "No Image...."
+    , background = empty
     }
 
 
