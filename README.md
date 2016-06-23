@@ -4,6 +4,8 @@
 
 In this game the player controls a rocket and tries to land it on a planet with gravity.
 
+Check out the latest build [here](https://chemmi.github.io/elm-rocket/).
+
 ### General set-up:
 
 * The player can control the rocket via three possible commands: Turn left, turn right and accelerate.
