@@ -84,7 +84,7 @@ type Movement
 
 type alias World =
     { size : ( Float, Float )
-    , axisParallelRects : List AxisParallelRect
+    , rects : List Rect
     , polygons : List Polygon
     , platforms : List Platform
     , rocketStartPosition : Point
@@ -100,7 +100,7 @@ type alias Platform =
     }
 
 
-type alias AxisParallelRect =
+type alias Rect =
     { topLeft : Point
     , height : Float
     , width : Float

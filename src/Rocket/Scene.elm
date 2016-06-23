@@ -8,7 +8,7 @@ import Color exposing (..)
 import List exposing (map, append)
 
 
-rectShape : AxisParallelRect -> Shape
+rectShape : Rect -> Shape
 rectShape rect =
     let
         ( x, y ) =
@@ -59,7 +59,7 @@ worldForm world =
             world.size
 
         rects =
-            world.axisParallelRects
+            world.rects
 
         polys =
             world.polygons

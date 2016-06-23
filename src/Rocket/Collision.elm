@@ -6,10 +6,10 @@ import List exposing (any, all)
 
 collision : Rocket -> World -> Bool
 collision rocket world =
-    collisionRocketRects rocket world.axisParallelRects
+    collisionRocketRects rocket world.rects
 
 
-collisionRocketRects : Rocket -> List AxisParallelRect -> Bool
+collisionRocketRects : Rocket -> List Rect -> Bool
 collisionRocketRects rocket rects =
     let
         angle =

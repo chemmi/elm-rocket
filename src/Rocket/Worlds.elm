@@ -7,7 +7,7 @@ import List exposing (all)
 initWorld : World
 initWorld =
     { size = ( 800, 600 )
-    , axisParallelRects =
+    , rects =
         [ { topLeft = ( -400, -150 ), height = 150, width = 800 }
         ]
     , polygons = []
@@ -21,7 +21,7 @@ initWorld =
 world2 : World
 world2 =
     { initWorld
-        | axisParallelRects =
+        | rects =
             [ { topLeft = ( -400, -150 ), height = 150, width = 800 }
             , { topLeft = ( 300, 150 ), height = 150, width = 100 }
             ]
