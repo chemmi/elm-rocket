@@ -8872,6 +8872,10 @@ var _chemmi$elm_rocket$Rocket_Types$GameoverData = F2(
 	function (a, b) {
 		return {message: a, background: b};
 	});
+var _chemmi$elm_rocket$Rocket_Types$WinData = F2(
+	function (a, b) {
+		return {message: a, background: b};
+	});
 var _chemmi$elm_rocket$Rocket_Types$PlayData = F5(
 	function (a, b, c, d, e) {
 		return {keyDown: a, updateInterval: b, rocket: c, world: d, gameover: e};
@@ -8903,9 +8907,9 @@ var _chemmi$elm_rocket$Rocket_Types$Rocket = function (a) {
 		};
 	};
 };
-var _chemmi$elm_rocket$Rocket_Types$World = F6(
-	function (a, b, c, d, e, f) {
-		return {size: a, axisParallelRects: b, polygons: c, platforms: d, rocketStartPosition: e, gravity: f};
+var _chemmi$elm_rocket$Rocket_Types$World = F7(
+	function (a, b, c, d, e, f, g) {
+		return {size: a, axisParallelRects: b, polygons: c, platforms: d, rocketStartPosition: e, gravity: f, isWin: g};
 	});
 var _chemmi$elm_rocket$Rocket_Types$Platform = F3(
 	function (a, b, c) {
@@ -8966,7 +8970,15 @@ var _chemmi$elm_rocket$Rocket_Worlds$initWorld = {
 	gravity: 5,
 	platforms: _elm_lang$core$Native_List.fromArray(
 		[]),
-	rocketStartPosition: {ctor: '_Tuple2', _0: 0, _1: 0}
+	rocketStartPosition: {ctor: '_Tuple2', _0: 0, _1: 0},
+	isWin: function (ps) {
+		return A2(
+			_elm_lang$core$List$all,
+			function (p) {
+				return p.marked;
+			},
+			ps);
+	}
 };
 var _chemmi$elm_rocket$Rocket_Worlds$world2 = _elm_lang$core$Native_Utils.update(
 	_chemmi$elm_rocket$Rocket_Worlds$initWorld,
@@ -10221,7 +10233,10 @@ var _chemmi$elm_rocket$Rocket_Inits$initRocket = {
 	top: {ctor: '_Tuple2', _0: 0, _1: 20}
 };
 var _chemmi$elm_rocket$Rocket_Inits$noKeyDown = {left: false, right: false, forward: false};
-var _chemmi$elm_rocket$Rocket_Inits$initWin = 'Win';
+var _chemmi$elm_rocket$Rocket_Inits$initWin = {
+	message: 'Win - Press SPACE to restart',
+	background: _evancz$elm_graphics$Element$show('No Image....')
+};
 var _chemmi$elm_rocket$Rocket_Inits$initGameover = {
 	message: 'Gameover - Press SPACE to restart',
 	background: _evancz$elm_graphics$Element$show('No Image....')
@@ -10774,7 +10789,18 @@ var _chemmi$elm_rocket$Rocket_Views$viewWin = function (data) {
 			[]),
 		_elm_lang$core$Native_List.fromArray(
 			[
-				_elm_lang$html$Html$text(data)
+				_evancz$elm_graphics$Element$toHtml(
+				_evancz$elm_graphics$Element$layers(
+					_elm_lang$core$Native_List.fromArray(
+						[
+							data.background,
+							A4(
+							_evancz$elm_graphics$Element$container,
+							800,
+							600,
+							_evancz$elm_graphics$Element$middle,
+							_evancz$elm_graphics$Element$show(data.message))
+						])))
 			]));
 };
 var _chemmi$elm_rocket$Rocket_Views$viewGameover = function (data) {
@@ -11208,21 +11234,33 @@ var _elm_lang$animation_frame$AnimationFrame$subMap = F2(
 	});
 _elm_lang$core$Native_Platform.effectManagers['AnimationFrame'] = {pkg: 'elm-lang/animation-frame', init: _elm_lang$animation_frame$AnimationFrame$init, onEffects: _elm_lang$animation_frame$AnimationFrame$onEffects, onSelfMsg: _elm_lang$animation_frame$AnimationFrame$onSelfMsg, tag: 'sub', subMap: _elm_lang$animation_frame$AnimationFrame$subMap};
 
+var _chemmi$elm_rocket$Rocket$isWin = function (data) {
+	var world = data.world;
+	var platforms = world.platforms;
+	return world.isWin(platforms);
+};
+var _chemmi$elm_rocket$Rocket$isGameover = function (data) {
+	return data.gameover;
+};
 var _chemmi$elm_rocket$Rocket$update = F2(
 	function (msg, model) {
 		var _p0 = model;
 		if (_p0.ctor === 'Play') {
-			var _p1 = _p0._0;
-			var updatedPlay = A2(_chemmi$elm_rocket$Rocket_Updates$updatePlay, msg, _p1);
-			return updatedPlay.gameover ? _chemmi$elm_rocket$Rocket_Types$Gameover(
+			var updatedPlay = A2(_chemmi$elm_rocket$Rocket_Updates$updatePlay, msg, _p0._0);
+			return _chemmi$elm_rocket$Rocket$isGameover(updatedPlay) ? _chemmi$elm_rocket$Rocket_Types$Gameover(
 				_elm_lang$core$Native_Utils.update(
 					_chemmi$elm_rocket$Rocket_Inits$initGameover,
 					{
-						background: A2(_chemmi$elm_rocket$Rocket_Scene$drawScene, _p1.world, _p1.rocket)
-					})) : _chemmi$elm_rocket$Rocket_Types$Play(updatedPlay);
+						background: A2(_chemmi$elm_rocket$Rocket_Scene$drawScene, updatedPlay.world, updatedPlay.rocket)
+					})) : (_chemmi$elm_rocket$Rocket$isWin(updatedPlay) ? _chemmi$elm_rocket$Rocket_Types$Win(
+				_elm_lang$core$Native_Utils.update(
+					_chemmi$elm_rocket$Rocket_Inits$initWin,
+					{
+						background: A2(_chemmi$elm_rocket$Rocket_Scene$drawScene, updatedPlay.world, updatedPlay.rocket)
+					})) : _chemmi$elm_rocket$Rocket_Types$Play(updatedPlay));
 		} else {
-			var _p2 = msg;
-			if ((_p2.ctor === 'KeyUpMsg') && (_p2._0.ctor === 'Start')) {
+			var _p1 = msg;
+			if ((_p1.ctor === 'KeyUpMsg') && (_p1._0.ctor === 'Start')) {
 				return _chemmi$elm_rocket$Rocket_Types$Play(_chemmi$elm_rocket$Rocket_Inits$initPlay);
 			} else {
 				return model;
@@ -11230,24 +11268,24 @@ var _chemmi$elm_rocket$Rocket$update = F2(
 		}
 	});
 var _chemmi$elm_rocket$Rocket$view = function (model) {
-	var _p3 = model;
-	switch (_p3.ctor) {
+	var _p2 = model;
+	switch (_p2.ctor) {
 		case 'Play':
-			return _chemmi$elm_rocket$Rocket_Views$viewPlay(_p3._0);
+			return _chemmi$elm_rocket$Rocket_Views$viewPlay(_p2._0);
 		case 'Startscreen':
-			return _chemmi$elm_rocket$Rocket_Views$viewStartscreen(_p3._0);
+			return _chemmi$elm_rocket$Rocket_Views$viewStartscreen(_p2._0);
 		case 'Gameover':
-			return _chemmi$elm_rocket$Rocket_Views$viewGameover(_p3._0);
+			return _chemmi$elm_rocket$Rocket_Views$viewGameover(_p2._0);
 		default:
-			return _chemmi$elm_rocket$Rocket_Views$viewWin(_p3._0);
+			return _chemmi$elm_rocket$Rocket_Views$viewWin(_p2._0);
 	}
 };
 var _chemmi$elm_rocket$Rocket$keyBinding = F2(
 	function (model, code) {
-		var _p4 = model;
-		if (_p4.ctor === 'Play') {
-			var _p5 = _elm_lang$core$Char$fromCode(code);
-			switch (_p5.valueOf()) {
+		var _p3 = model;
+		if (_p3.ctor === 'Play') {
+			var _p4 = _elm_lang$core$Char$fromCode(code);
+			switch (_p4.valueOf()) {
 				case 'W':
 					return _chemmi$elm_rocket$Rocket_Types$Forward;
 				case 'A':
@@ -11258,8 +11296,8 @@ var _chemmi$elm_rocket$Rocket$keyBinding = F2(
 					return _chemmi$elm_rocket$Rocket_Types$NotBound;
 			}
 		} else {
-			var _p6 = _elm_lang$core$Char$fromCode(code);
-			if (_p6.valueOf() === ' ') {
+			var _p5 = _elm_lang$core$Char$fromCode(code);
+			if (_p5.valueOf() === ' ') {
 				return _chemmi$elm_rocket$Rocket_Types$Start;
 			} else {
 				return _chemmi$elm_rocket$Rocket_Types$NotBound;
@@ -11273,19 +11311,19 @@ var _chemmi$elm_rocket$Rocket$subscriptions = function (model) {
 			_elm_lang$core$Native_List.fromArray(
 				[
 					_elm_lang$keyboard$Keyboard$downs(
-					function (_p7) {
+					function (_p6) {
 						return _chemmi$elm_rocket$Rocket_Types$KeyDownMsg(
-							A2(_chemmi$elm_rocket$Rocket$keyBinding, model, _p7));
+							A2(_chemmi$elm_rocket$Rocket$keyBinding, model, _p6));
 					}),
 					_elm_lang$keyboard$Keyboard$ups(
-					function (_p8) {
+					function (_p7) {
 						return _chemmi$elm_rocket$Rocket_Types$KeyUpMsg(
-							A2(_chemmi$elm_rocket$Rocket$keyBinding, model, _p8));
+							A2(_chemmi$elm_rocket$Rocket$keyBinding, model, _p7));
 					})
 				]),
 			function () {
-				var _p9 = model;
-				if (_p9.ctor === 'Play') {
+				var _p8 = model;
+				if (_p8.ctor === 'Play') {
 					return _elm_lang$core$Native_List.fromArray(
 						[
 							_elm_lang$animation_frame$AnimationFrame$diffs(_chemmi$elm_rocket$Rocket_Types$Step)
