@@ -4,6 +4,8 @@
 
 In this game the player controls a rocket and tries to land it on a planet with gravity.
 
+He has to land on all platforms in the given time.
+
 Check out the latest build [here](https://chemmi.github.io/elm-rocket/).
 
 ### General set-up:
@@ -26,17 +28,20 @@ Check out the latest build [here](https://chemmi.github.io/elm-rocket/).
 
 ### List of ToDos
 
-* Model a "Definition of Win"
+* gameover when touching the border
 
-* Gameover- and Win- View
+* a timer
 
-* Better Look
+* "scrolling" and "scoping" (permit bigger levels)
+
+* collision detection for polygons
 
 * several Levels
 
 * Level Choice
 
-* "scrolling" and "scoping" (permit bigger levels)
+* Better Look
+
 
 ## Files
 
