@@ -39,7 +39,9 @@ initGameover =
 
 
 initWin =
-    "Win"
+    { message = "Win - Press SPACE to restart"
+    , background = show "No Image...."
+    }
 
 
 noKeyDown =

@@ -1,6 +1,7 @@
 module Rocket.Worlds exposing (..)
 
 import Rocket.Types exposing (World, Platform)
+import List exposing (all)
 
 
 initWorld : World
@@ -13,6 +14,7 @@ initWorld =
     , gravity = 5
     , platforms = []
     , rocketStartPosition = ( 0, 0 )
+    , isWin = (\ps -> all (\p -> p.marked) ps)
     }
 
 

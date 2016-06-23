@@ -31,7 +31,12 @@ viewGameover data =
 viewWin : WinData -> Html a
 viewWin data =
     div []
-        [ text data ]
+        [ toHtml
+            <| layers
+                [ data.background
+                , container 800 600 middle (show data.message)
+                ]
+        ]
 
 
 viewPlay : PlayData -> Html a

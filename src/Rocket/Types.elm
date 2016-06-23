@@ -39,7 +39,9 @@ type alias GameoverData =
 
 
 type alias WinData =
-    String
+    { message : String
+    , background : Element
+    }
 
 
 type alias PlayData =
@@ -87,6 +89,7 @@ type alias World =
     , platforms : List Platform
     , rocketStartPosition : Point
     , gravity : Float
+    , isWin : List Platform -> Bool
     }
 
 

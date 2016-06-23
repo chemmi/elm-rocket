@@ -61,10 +61,19 @@ update msg model =
                 updatedPlay =
                     updatePlay msg data
             in
-                if updatedPlay.gameover then
+                if isGameover updatedPlay then
                     Gameover
                         { initGameover
-                            | background = drawScene data.world data.rocket
+                            | background =
+                                drawScene updatedPlay.world
+                                    updatedPlay.rocket
+                        }
+                else if isWin updatedPlay then
+                    Win
+                        { initWin
+                            | background =
+                                drawScene updatedPlay.world
+                                    updatedPlay.rocket
                         }
                 else
                     Play updatedPlay
@@ -76,6 +85,23 @@ update msg model =
 
                 _ ->
                     model
+
+
+isGameover : PlayData -> Bool
+isGameover data =
+    data.gameover
+
+
+isWin : PlayData -> Bool
+isWin data =
+    let
+        world =
+            data.world
+
+        platforms =
+            world.platforms
+    in
+        world.isWin platforms
 
 
 subscriptions : Model -> Sub Msg
