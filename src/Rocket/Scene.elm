@@ -60,9 +60,9 @@ worldForm { rects, polygons, platforms } =
             lightCharcoal
     in
         group
-            (platformsForm platforms
-                :: map (filled color << rectShape) rects
+            (map (filled color << rectShape) rects
                 ++ map (filled color << polyShape) polygons
+                ++ [ platformsForm platforms ]
             )
 
 
