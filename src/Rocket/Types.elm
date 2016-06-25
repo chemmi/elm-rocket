@@ -48,6 +48,8 @@ type alias WinData =
 type alias PlayData =
     { keyDown : KeyDown
     , timeRemaining : Time
+    , displaySize : ( Int, Int )
+    , displayPosition : ( Int, Int )
     , rocket : Rocket
     , world : World
     , gameover : Bool

@@ -142,15 +142,18 @@ rocketForm { position, angle, fire, top, base } =
                )
 
 
-drawScene : World -> Rocket -> Element
-drawScene ({ size } as world) rocket =
+drawScene : PlayData -> Element
+drawScene { world, rocket, displaySize, displayPosition } =
     let
-        ( a, b ) =
-            size
+        ( dx, dy ) =
+            ( toFloat <| fst displayPosition, toFloat <| snd displayPosition)
     in
-        collage (round a) (round b)
-            <| [ backgroundForm size
-               , worldForm world
-               , rocketForm rocket
-               , frameForm size
+        uncurry collage displaySize
+            <| [ move ( -dx, -dy )
+                    <| group
+                        [ backgroundForm world.size
+                        , worldForm world
+                        , rocketForm rocket
+                        , frameForm world.size
+                        ]
                ]

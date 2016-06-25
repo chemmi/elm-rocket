@@ -69,15 +69,13 @@ update msg model =
                     Gameover
                         { initGameover
                             | background =
-                                drawScene updatedPlay.world
-                                    updatedPlay.rocket
+                                drawScene updatedPlay
                         }
                 else if isWin updatedPlay then
                     Win
                         { initWin
                             | background =
-                                drawScene updatedPlay.world
-                                    updatedPlay.rocket
+                                drawScene updatedPlay
                         }
                 else
                     Play updatedPlay

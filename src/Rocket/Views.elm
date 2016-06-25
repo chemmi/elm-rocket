@@ -41,23 +41,19 @@ viewWin data =
 
 
 viewPlay : PlayData -> Html a
-viewPlay { rocket, world, timeRemaining } =
-    let
-        ( w, h ) =
-            world.size
-    in
-        div []
-            [ toHtml
-                <| layers
-                    [ drawScene world rocket
-                    , container (round w)
-                        (round h)
-                        (midRightAt (absolute 10) (absolute 20))
-                        <| show
-                        <| inSeconds timeRemaining
-                    ]
-              --, viewRocketStatus rocket
-            ]
+viewPlay ({ rocket, world, timeRemaining, displaySize } as data) =
+    div []
+        [ toHtml
+            <| layers
+                [ drawScene data
+                , uncurry container
+                    displaySize
+                    (midRightAt (absolute 10) (absolute 20))
+                    <| show
+                    <| inSeconds timeRemaining
+                ]
+          --, viewRocketStatus rocket
+        ]
 
 
 viewRocketStatus : Rocket -> Html a

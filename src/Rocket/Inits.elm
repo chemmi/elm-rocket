@@ -19,6 +19,8 @@ initPlay =
     in
         { keyDown = noKeyDown
         , timeRemaining = world.totalTime
+        , displaySize = ( 800, 600 )
+        , displayPosition = ( 0, 0 )
         , world = world
         , rocket =
             { initRocket
@@ -31,7 +33,7 @@ initPlay =
 initStartscreen : StartscreenData
 initStartscreen =
     { message = "Startscreen - Press SPACE to start"
-    , background = drawScene initPlay.world initPlay.rocket
+    , background = drawScene initPlay
     }
 
 
