@@ -5,6 +5,15 @@ import List exposing (all)
 import Time exposing (Time, second)
 
 
+allWorlds : List World
+allWorlds =
+    [ initWorld
+    , twoPlatforms
+    , outOfSight
+    , visitChambers
+    ]
+
+
 initWorld : World
 initWorld =
     let
@@ -18,10 +27,9 @@ initWorld =
             (\ps -> all (\p -> p.marked) ps)
             -- all platforms should be marked
         , rects =
-            [ { topLeft = ( -((fst size) / 2), -((snd size) / 3) ), height = (snd size) / 6, width = fst size }
+            [ Rect ( -((fst size) / 2), -((snd size) / 3) ) (fst size) (snd size / 6)
             ]
-        , polygons =
-            []
+        , polygons = []
         , platforms =
             [ { center = ( 0, -200 ), width = 70, marked = False }
             ]
@@ -85,8 +93,8 @@ visitChambers =
         , polygons = []
         , platforms =
             [ Platform ( 0, -550 ) 70 False
-            , Platform ( -550, 200) 70 False
-            , Platform ( 550, 200) 70 False
+            , Platform ( -550, 200 ) 70 False
+            , Platform ( 550, 200 ) 70 False
             ]
         , rocketStartPosition = ( 0, -540 )
     }
