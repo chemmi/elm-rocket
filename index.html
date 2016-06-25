@@ -8898,15 +8898,15 @@ var _chemmi$elm_rocket$Rocket_Worlds$initWorld = function () {
 		},
 		rects: _elm_lang$core$Native_List.fromArray(
 			[
+				A3(
+				_chemmi$elm_rocket$Rocket_Types$Rect,
 				{
-				topLeft: {
 					ctor: '_Tuple2',
 					_0: 0 - (_elm_lang$core$Basics$fst(size) / 2),
 					_1: 0 - (_elm_lang$core$Basics$snd(size) / 3)
 				},
-				height: _elm_lang$core$Basics$snd(size) / 6,
-				width: _elm_lang$core$Basics$fst(size)
-			}
+				_elm_lang$core$Basics$fst(size),
+				_elm_lang$core$Basics$snd(size) / 6)
 			]),
 		polygons: _elm_lang$core$Native_List.fromArray(
 			[]),
@@ -9066,6 +9066,8 @@ var _chemmi$elm_rocket$Rocket_Worlds$visitChambers = _elm_lang$core$Native_Utils
 			]),
 		rocketStartPosition: {ctor: '_Tuple2', _0: 0, _1: -540}
 	});
+var _chemmi$elm_rocket$Rocket_Worlds$allWorlds = _elm_lang$core$Native_List.fromArray(
+	[_chemmi$elm_rocket$Rocket_Worlds$initWorld, _chemmi$elm_rocket$Rocket_Worlds$twoPlatforms, _chemmi$elm_rocket$Rocket_Worlds$outOfSight, _chemmi$elm_rocket$Rocket_Worlds$visitChambers]);
 var _evancz$elm_graphics$Native_Collage = function()
 {
 
