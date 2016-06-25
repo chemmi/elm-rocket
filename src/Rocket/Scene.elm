@@ -3,10 +3,10 @@ module Rocket.Scene exposing (..)
 import Rocket.Types exposing (..)
 import Collage exposing (..)
 import Element exposing (..)
-import Html exposing (..)
 import Color exposing (..)
 import List exposing (map)
 import Time exposing (inSeconds)
+import Text
 
 
 rectShape : Rect -> Shape
@@ -111,7 +111,7 @@ frameForm =
         line =
             solid black
     in
-        outlined { line | width = 2 } << uncurry rect
+        outlined { line | width = 6 } << uncurry rect
 
 
 rocketForm : Rocket -> Form
@@ -146,22 +146,41 @@ rocketForm { position, angle, fire, top, base } =
 drawScene : PlayData -> Element
 drawScene { world, rocket, displaySize, displayPosition, timeRemaining } =
     let
-        ( dx, dy ) =
-            ( toFloat <| fst displayPosition, toFloat <| snd displayPosition )
+        offset =
+            ( -(toFloat <| fst displayPosition), -(toFloat <| snd displayPosition) )
+
+        timerPos =
+            ( toFloat <| fst displaySize // 2 - 15, toFloat <| snd displaySize // 2 - 12 )
     in
-        layers
-            [ uncurry collage displaySize
-                <| [ move ( -dx, -dy )
-                        <| group
-                            [ backgroundForm world.size
-                            , worldForm world
-                            , rocketForm rocket
-                            , frameForm world.size
-                            ]
-                   ]
-            , uncurry container
-                displaySize
-                (midRightAt (absolute 10) (absolute 20))
-                <| show
-                <| inSeconds timeRemaining
-            ]
+        uncurry collage displaySize
+            <| [ move offset
+                    <| group
+                        [ backgroundForm world.size
+                        , worldForm world
+                        , rocketForm rocket
+                        , frameForm world.size
+                        ]
+               , move timerPos
+                    <| text
+                    <| Text.height 20
+                    <| Text.color red
+                    <| Text.bold
+                    <| Text.fromString
+                    <| toString
+                    <| inSeconds timeRemaining
+               ]
+
+
+
+{- The following should be the Element representing the Timer.
+   Unfortunately, the show function from Graphics Element has a bug
+   (and the Position in a container has one, too...)
+
+   (with layers)
+   uncurry container
+                   displaySize
+                   (midRightAt (absolute 10) (absolute 20))
+                   <| show
+                   <| inSeconds timeRemaining
+
+-}
