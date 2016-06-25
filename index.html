@@ -8936,7 +8936,17 @@ var _chemmi$elm_rocket$Rocket_Worlds$world2 = _elm_lang$core$Native_Utils.update
 var _chemmi$elm_rocket$Rocket_Worlds$world3 = _elm_lang$core$Native_Utils.update(
 	_chemmi$elm_rocket$Rocket_Worlds$world2,
 	{
-		size: {ctor: '_Tuple2', _0: 1600, _1: 600}
+		size: {ctor: '_Tuple2', _0: 1600, _1: 600},
+		polygons: _elm_lang$core$Native_List.fromArray(
+			[
+				_elm_lang$core$Native_List.fromArray(
+				[
+					{ctor: '_Tuple2', _0: -300, _1: 150},
+					{ctor: '_Tuple2', _0: -200, _1: 200},
+					{ctor: '_Tuple2', _0: -100, _1: 100},
+					{ctor: '_Tuple2', _0: -400, _1: 0}
+				])
+			])
 	});
 var _evancz$elm_graphics$Native_Collage = function()
 {
@@ -10324,170 +10334,6 @@ var _chemmi$elm_rocket$Rocket_Movement$moveRocket = F4(
 				fire: keyDown.forward
 			});
 	});
-var _chemmi$elm_rocket$Rocket_Collision$orientationTest = F3(
-	function (_p2, _p1, _p0) {
-		var _p3 = _p2;
-		var _p7 = _p3._1;
-		var _p6 = _p3._0;
-		var _p4 = _p1;
-		var _p5 = _p0;
-		var signedArea = ((_p4._0 - _p6) * (_p5._1 - _p7)) - ((_p5._0 - _p6) * (_p4._1 - _p7));
-		return _elm_lang$core$Native_Utils.cmp(signedArea, 0) > 0;
-	});
-var _chemmi$elm_rocket$Rocket_Collision$addPoints = F2(
-	function (_p9, _p8) {
-		var _p10 = _p9;
-		var _p11 = _p8;
-		return {ctor: '_Tuple2', _0: _p10._0 + _p11._0, _1: _p10._1 + _p11._1};
-	});
-var _chemmi$elm_rocket$Rocket_Collision$collisionRocketBorder = F2(
-	function (_p13, _p12) {
-		var _p14 = _p13;
-		var _p29 = _p14.position;
-		var _p28 = _p14.base;
-		var _p27 = _p14.angle;
-		var _p15 = _p12;
-		var _p26 = _p15._0;
-		var _p25 = _p15._1;
-		var inBorder = function (_p16) {
-			var _p17 = _p16;
-			var _p19 = _p17._1;
-			var _p18 = _p17._0;
-			return (_elm_lang$core$Native_Utils.cmp((0 - _p26) / 2, _p18) < 0) && ((_elm_lang$core$Native_Utils.cmp(_p18, _p26 / 2) < 0) && ((_elm_lang$core$Native_Utils.cmp((0 - _p25) / 2, _p19) < 0) && (_elm_lang$core$Native_Utils.cmp(_p19, _p25 / 2) < 0)));
-		};
-		var sinAngle = _elm_lang$core$Basics$sin(
-			_elm_lang$core$Basics$degrees(_p27));
-		var cosAngle = _elm_lang$core$Basics$cos(
-			_elm_lang$core$Basics$degrees(_p27));
-		var rotate = function (_p20) {
-			var _p21 = _p20;
-			var _p23 = _p21._1;
-			var _p22 = _p21._0;
-			return {ctor: '_Tuple2', _0: (cosAngle * _p22) - (sinAngle * _p23), _1: (sinAngle * _p22) + (cosAngle * _p23)};
-		};
-		var t = A2(
-			_chemmi$elm_rocket$Rocket_Collision$addPoints,
-			_p29,
-			rotate(_p14.top));
-		var b1 = A2(
-			_chemmi$elm_rocket$Rocket_Collision$addPoints,
-			_p29,
-			rotate(
-				_elm_lang$core$Basics$fst(_p28)));
-		var b2 = A2(
-			_chemmi$elm_rocket$Rocket_Collision$addPoints,
-			_p29,
-			rotate(
-				_elm_lang$core$Basics$snd(_p28)));
-		return A2(
-			_elm_lang$core$List$any,
-			function (_p24) {
-				return _elm_lang$core$Basics$not(
-					inBorder(_p24));
-			},
-			_elm_lang$core$Native_List.fromArray(
-				[t, b1, b2]));
-	});
-var _chemmi$elm_rocket$Rocket_Collision$collisionRocketRects = F2(
-	function (_p30, rects) {
-		var _p31 = _p30;
-		var _p43 = _p31.position;
-		var _p42 = _p31.base;
-		var _p41 = _p31.angle;
-		var sinAngle = _elm_lang$core$Basics$sin(
-			_elm_lang$core$Basics$degrees(_p41));
-		var cosAngle = _elm_lang$core$Basics$cos(
-			_elm_lang$core$Basics$degrees(_p41));
-		var rotate = function (_p32) {
-			var _p33 = _p32;
-			var _p35 = _p33._1;
-			var _p34 = _p33._0;
-			return {ctor: '_Tuple2', _0: (cosAngle * _p34) - (sinAngle * _p35), _1: (sinAngle * _p34) + (cosAngle * _p35)};
-		};
-		var _p36 = A2(
-			_chemmi$elm_rocket$Rocket_Collision$addPoints,
-			_p43,
-			rotate(_p31.top));
-		var t = _p36;
-		var tx = _p36._0;
-		var ty = _p36._1;
-		var _p37 = A2(
-			_chemmi$elm_rocket$Rocket_Collision$addPoints,
-			_p43,
-			rotate(
-				_elm_lang$core$Basics$fst(_p42)));
-		var b1 = _p37;
-		var b1x = _p37._0;
-		var b1y = _p37._1;
-		var _p38 = A2(
-			_chemmi$elm_rocket$Rocket_Collision$addPoints,
-			_p43,
-			rotate(
-				_elm_lang$core$Basics$snd(_p42)));
-		var b2 = _p38;
-		var b2x = _p38._0;
-		var b2y = _p38._1;
-		var ymax = A2(
-			_elm_lang$core$Basics$max,
-			ty,
-			A2(_elm_lang$core$Basics$max, b1y, b2y));
-		var ymin = A2(
-			_elm_lang$core$Basics$min,
-			ty,
-			A2(_elm_lang$core$Basics$min, b1y, b2y));
-		var xmax = A2(
-			_elm_lang$core$Basics$max,
-			tx,
-			A2(_elm_lang$core$Basics$max, b1x, b2x));
-		var xmin = A2(
-			_elm_lang$core$Basics$min,
-			tx,
-			A2(_elm_lang$core$Basics$min, b1x, b2x));
-		var collRectCoarse = function (r) {
-			var w = r.width;
-			var h = r.height;
-			var _p39 = r.topLeft;
-			var rx = _p39._0;
-			var ry = _p39._1;
-			return _elm_lang$core$Basics$not(
-				(_elm_lang$core$Native_Utils.cmp(rx, xmax) > 0) || ((_elm_lang$core$Native_Utils.cmp(ry, ymin) < 0) || ((_elm_lang$core$Native_Utils.cmp(rx + w, xmin) < 0) || (_elm_lang$core$Native_Utils.cmp(ry - h, ymax) > 0))));
-		};
-		var collRectFine = function (r) {
-			var ot = _chemmi$elm_rocket$Rocket_Collision$orientationTest;
-			var w = r.width;
-			var h = r.height;
-			var _p40 = r.topLeft;
-			var rx = _p40._0;
-			var ry = _p40._1;
-			var edges = _elm_lang$core$Native_List.fromArray(
-				[
-					{ctor: '_Tuple2', _0: rx, _1: ry},
-					{ctor: '_Tuple2', _0: rx + w, _1: ry},
-					{ctor: '_Tuple2', _0: rx + w, _1: ry - h},
-					{ctor: '_Tuple2', _0: rx, _1: ry - h}
-				]);
-			return collRectCoarse(r) && _elm_lang$core$Basics$not(
-				A2(
-					_elm_lang$core$List$all,
-					A2(ot, t, b2),
-					edges) || (A2(
-					_elm_lang$core$List$all,
-					A2(ot, b1, t),
-					edges) || A2(
-					_elm_lang$core$List$all,
-					A2(ot, b2, b1),
-					edges)));
-		};
-		var collRect = function (r) {
-			return collRectFine(r);
-		};
-		return A2(_elm_lang$core$List$any, collRect, rects);
-	});
-var _chemmi$elm_rocket$Rocket_Collision$collision = F2(
-	function (rocket, _p44) {
-		var _p45 = _p44;
-		return A2(_chemmi$elm_rocket$Rocket_Collision$collisionRocketRects, rocket, _p45.rects) || A2(_chemmi$elm_rocket$Rocket_Collision$collisionRocketBorder, rocket, _p45.size);
-	});
 var _elm_lang$core$Set$foldr = F3(
 	function (f, b, _p0) {
 		var _p1 = _p0;
@@ -11625,6 +11471,275 @@ var _elm_community$list_extra$List_Extra$init = function () {
 }();
 var _elm_community$list_extra$List_Extra$last = _elm_community$list_extra$List_Extra$foldl1(
 	_elm_lang$core$Basics$flip(_elm_lang$core$Basics$always));
+var _chemmi$elm_rocket$Rocket_Collision$polyToSegments = function (poly) {
+	var help = function (poly) {
+		var _p0 = poly;
+		if (_p0.ctor === '[]') {
+			return _elm_lang$core$Native_List.fromArray(
+				[]);
+		} else {
+			if (_p0._1.ctor === '[]') {
+				return _elm_lang$core$Native_List.fromArray(
+					[]);
+			} else {
+				var _p1 = _p0._1._0;
+				return A2(
+					_elm_lang$core$List_ops['::'],
+					{ctor: '_Tuple2', _0: _p0._0, _1: _p1},
+					help(
+						A2(_elm_lang$core$List_ops['::'], _p1, _p0._1._1)));
+			}
+		}
+	};
+	var _p2 = _elm_community$list_extra$List_Extra$last(poly);
+	if (_p2.ctor === 'Just') {
+		var _p3 = _elm_lang$core$List$head(poly);
+		if (_p3.ctor === 'Just') {
+			return A2(
+				_elm_lang$core$List_ops['::'],
+				{ctor: '_Tuple2', _0: _p2._0, _1: _p3._0},
+				help(poly));
+		} else {
+			return _elm_lang$core$Native_Utils.crashCase(
+				'Rocket.Collision',
+				{
+					start: {line: 244, column: 17},
+					end: {line: 249, column: 64}
+				},
+				_p3)('Empty Polygon detected :(');
+		}
+	} else {
+		return _elm_lang$core$Native_Utils.crashCase(
+			'Rocket.Collision',
+			{
+				start: {line: 242, column: 9},
+				end: {line: 252, column: 56}
+			},
+			_p2)('Empty Polygon detected :(');
+	}
+};
+var _chemmi$elm_rocket$Rocket_Collision$orientationTest = F3(
+	function (_p8, _p7, _p6) {
+		var _p9 = _p8;
+		var _p13 = _p9._1;
+		var _p12 = _p9._0;
+		var _p10 = _p7;
+		var _p11 = _p6;
+		var signedArea = ((_p10._0 - _p12) * (_p11._1 - _p13)) - ((_p11._0 - _p12) * (_p10._1 - _p13));
+		return _elm_lang$core$Native_Utils.cmp(signedArea, 0) > 0;
+	});
+var _chemmi$elm_rocket$Rocket_Collision$addPoints = F2(
+	function (_p15, _p14) {
+		var _p16 = _p15;
+		var _p17 = _p14;
+		return {ctor: '_Tuple2', _0: _p16._0 + _p17._0, _1: _p16._1 + _p17._1};
+	});
+var _chemmi$elm_rocket$Rocket_Collision$collisionRocketPolygons = F2(
+	function (_p18, polygons) {
+		var _p19 = _p18;
+		var _p26 = _p19.position;
+		var _p25 = _p19.base;
+		var _p24 = _p19.angle;
+		var ot = _chemmi$elm_rocket$Rocket_Collision$orientationTest;
+		var sinAngle = _elm_lang$core$Basics$sin(
+			_elm_lang$core$Basics$degrees(_p24));
+		var cosAngle = _elm_lang$core$Basics$cos(
+			_elm_lang$core$Basics$degrees(_p24));
+		var rotate = function (_p20) {
+			var _p21 = _p20;
+			var _p23 = _p21._1;
+			var _p22 = _p21._0;
+			return {ctor: '_Tuple2', _0: (cosAngle * _p22) - (sinAngle * _p23), _1: (sinAngle * _p22) + (cosAngle * _p23)};
+		};
+		var t = A2(
+			_chemmi$elm_rocket$Rocket_Collision$addPoints,
+			_p26,
+			rotate(_p19.top));
+		var b1 = A2(
+			_chemmi$elm_rocket$Rocket_Collision$addPoints,
+			_p26,
+			rotate(
+				_elm_lang$core$Basics$fst(_p25)));
+		var b2 = A2(
+			_chemmi$elm_rocket$Rocket_Collision$addPoints,
+			_p26,
+			rotate(
+				_elm_lang$core$Basics$snd(_p25)));
+		var collPolyCoarse = function (poly) {
+			return _elm_lang$core$Basics$not(
+				A2(
+					_elm_lang$core$List$all,
+					A2(ot, t, b2),
+					poly) || (A2(
+					_elm_lang$core$List$all,
+					A2(ot, b1, t),
+					poly) || A2(
+					_elm_lang$core$List$all,
+					A2(ot, b2, b1),
+					poly)));
+		};
+		var otLineRocket = function (l) {
+			return A2(
+				_elm_lang$core$List$all,
+				A2(_elm_lang$core$Basics$uncurry, ot, l),
+				_elm_lang$core$Native_List.fromArray(
+					[t, b1, b2]));
+		};
+		var collPolyFine = function (poly) {
+			var segments = _chemmi$elm_rocket$Rocket_Collision$polyToSegments(poly);
+			return collPolyCoarse(poly) && _elm_lang$core$Basics$not(
+				A2(_elm_lang$core$List$any, otLineRocket, segments));
+		};
+		return A2(_elm_lang$core$List$any, collPolyFine, polygons);
+	});
+var _chemmi$elm_rocket$Rocket_Collision$collisionRocketBorder = F2(
+	function (_p28, _p27) {
+		var _p29 = _p28;
+		var _p44 = _p29.position;
+		var _p43 = _p29.base;
+		var _p42 = _p29.angle;
+		var _p30 = _p27;
+		var _p41 = _p30._0;
+		var _p40 = _p30._1;
+		var inBorder = function (_p31) {
+			var _p32 = _p31;
+			var _p34 = _p32._1;
+			var _p33 = _p32._0;
+			return (_elm_lang$core$Native_Utils.cmp((0 - _p41) / 2, _p33) < 0) && ((_elm_lang$core$Native_Utils.cmp(_p33, _p41 / 2) < 0) && ((_elm_lang$core$Native_Utils.cmp((0 - _p40) / 2, _p34) < 0) && (_elm_lang$core$Native_Utils.cmp(_p34, _p40 / 2) < 0)));
+		};
+		var sinAngle = _elm_lang$core$Basics$sin(
+			_elm_lang$core$Basics$degrees(_p42));
+		var cosAngle = _elm_lang$core$Basics$cos(
+			_elm_lang$core$Basics$degrees(_p42));
+		var rotate = function (_p35) {
+			var _p36 = _p35;
+			var _p38 = _p36._1;
+			var _p37 = _p36._0;
+			return {ctor: '_Tuple2', _0: (cosAngle * _p37) - (sinAngle * _p38), _1: (sinAngle * _p37) + (cosAngle * _p38)};
+		};
+		var t = A2(
+			_chemmi$elm_rocket$Rocket_Collision$addPoints,
+			_p44,
+			rotate(_p29.top));
+		var b1 = A2(
+			_chemmi$elm_rocket$Rocket_Collision$addPoints,
+			_p44,
+			rotate(
+				_elm_lang$core$Basics$fst(_p43)));
+		var b2 = A2(
+			_chemmi$elm_rocket$Rocket_Collision$addPoints,
+			_p44,
+			rotate(
+				_elm_lang$core$Basics$snd(_p43)));
+		return A2(
+			_elm_lang$core$List$any,
+			function (_p39) {
+				return _elm_lang$core$Basics$not(
+					inBorder(_p39));
+			},
+			_elm_lang$core$Native_List.fromArray(
+				[t, b1, b2]));
+	});
+var _chemmi$elm_rocket$Rocket_Collision$collisionRocketRects = F2(
+	function (_p45, rects) {
+		var _p46 = _p45;
+		var _p58 = _p46.position;
+		var _p57 = _p46.base;
+		var _p56 = _p46.angle;
+		var sinAngle = _elm_lang$core$Basics$sin(
+			_elm_lang$core$Basics$degrees(_p56));
+		var cosAngle = _elm_lang$core$Basics$cos(
+			_elm_lang$core$Basics$degrees(_p56));
+		var rotate = function (_p47) {
+			var _p48 = _p47;
+			var _p50 = _p48._1;
+			var _p49 = _p48._0;
+			return {ctor: '_Tuple2', _0: (cosAngle * _p49) - (sinAngle * _p50), _1: (sinAngle * _p49) + (cosAngle * _p50)};
+		};
+		var _p51 = A2(
+			_chemmi$elm_rocket$Rocket_Collision$addPoints,
+			_p58,
+			rotate(_p46.top));
+		var t = _p51;
+		var tx = _p51._0;
+		var ty = _p51._1;
+		var _p52 = A2(
+			_chemmi$elm_rocket$Rocket_Collision$addPoints,
+			_p58,
+			rotate(
+				_elm_lang$core$Basics$fst(_p57)));
+		var b1 = _p52;
+		var b1x = _p52._0;
+		var b1y = _p52._1;
+		var _p53 = A2(
+			_chemmi$elm_rocket$Rocket_Collision$addPoints,
+			_p58,
+			rotate(
+				_elm_lang$core$Basics$snd(_p57)));
+		var b2 = _p53;
+		var b2x = _p53._0;
+		var b2y = _p53._1;
+		var ymax = A2(
+			_elm_lang$core$Basics$max,
+			ty,
+			A2(_elm_lang$core$Basics$max, b1y, b2y));
+		var ymin = A2(
+			_elm_lang$core$Basics$min,
+			ty,
+			A2(_elm_lang$core$Basics$min, b1y, b2y));
+		var xmax = A2(
+			_elm_lang$core$Basics$max,
+			tx,
+			A2(_elm_lang$core$Basics$max, b1x, b2x));
+		var xmin = A2(
+			_elm_lang$core$Basics$min,
+			tx,
+			A2(_elm_lang$core$Basics$min, b1x, b2x));
+		var collRectCoarse = function (r) {
+			var w = r.width;
+			var h = r.height;
+			var _p54 = r.topLeft;
+			var rx = _p54._0;
+			var ry = _p54._1;
+			return _elm_lang$core$Basics$not(
+				(_elm_lang$core$Native_Utils.cmp(rx, xmax) > 0) || ((_elm_lang$core$Native_Utils.cmp(ry, ymin) < 0) || ((_elm_lang$core$Native_Utils.cmp(rx + w, xmin) < 0) || (_elm_lang$core$Native_Utils.cmp(ry - h, ymax) > 0))));
+		};
+		var collRectFine = function (r) {
+			var ot = _chemmi$elm_rocket$Rocket_Collision$orientationTest;
+			var w = r.width;
+			var h = r.height;
+			var _p55 = r.topLeft;
+			var rx = _p55._0;
+			var ry = _p55._1;
+			var edges = _elm_lang$core$Native_List.fromArray(
+				[
+					{ctor: '_Tuple2', _0: rx, _1: ry},
+					{ctor: '_Tuple2', _0: rx + w, _1: ry},
+					{ctor: '_Tuple2', _0: rx + w, _1: ry - h},
+					{ctor: '_Tuple2', _0: rx, _1: ry - h}
+				]);
+			return collRectCoarse(r) && _elm_lang$core$Basics$not(
+				A2(
+					_elm_lang$core$List$all,
+					A2(ot, t, b2),
+					edges) || (A2(
+					_elm_lang$core$List$all,
+					A2(ot, b1, t),
+					edges) || A2(
+					_elm_lang$core$List$all,
+					A2(ot, b2, b1),
+					edges)));
+		};
+		var collRect = function (r) {
+			return collRectFine(r);
+		};
+		return A2(_elm_lang$core$List$any, collRect, rects);
+	});
+var _chemmi$elm_rocket$Rocket_Collision$collision = F2(
+	function (rocket, _p59) {
+		var _p60 = _p59;
+		return A2(_chemmi$elm_rocket$Rocket_Collision$collisionRocketRects, rocket, _p60.rects) || (A2(_chemmi$elm_rocket$Rocket_Collision$collisionRocketBorder, rocket, _p60.size) || A2(_chemmi$elm_rocket$Rocket_Collision$collisionRocketPolygons, rocket, _p60.polygons));
+	});
 var _chemmi$elm_rocket$Rocket_Updates$markPlatform = F2(
 	function (p, ps) {
 		return A3(
