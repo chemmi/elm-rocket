@@ -2,7 +2,7 @@ module Rocket.Inits exposing (..)
 
 import Rocket.Types exposing (..)
 import Rocket.Worlds exposing (..)
-import Rocket.Scene exposing (drawScene)
+import Rocket.Scene exposing (drawScene, drawWorldThumbnail)
 import Element exposing (empty)
 
 
@@ -33,7 +33,7 @@ initPlay =
 initStartscreen : StartscreenData
 initStartscreen =
     { message = "Startscreen - Press SPACE to start"
-    , background = drawScene initPlay
+    , background = drawWorldThumbnail initPlay.world
     }
 
 

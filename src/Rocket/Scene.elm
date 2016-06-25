@@ -184,3 +184,47 @@ drawScene { world, rocket, displaySize, displayPosition, timeRemaining } =
                    <| inSeconds timeRemaining
 
 -}
+
+
+drawWorldThumbnail : World -> Element
+drawWorldThumbnail world =
+    let
+        displaySize =
+            ( 800, 600 )
+
+        -- has to be here to prevent circle...
+        initRocket =
+            { acceleration = 0
+            , position = ( 0, 0 )
+            , movement = Flying
+            , onPlatform = Nothing
+            , fire = False
+            , angle = 0
+            , velocity = ( 0, 0 )
+            , twist = 2
+            , touchesWorld = False
+            , base = ( ( -10, -5 ), ( 10, -5 ) )
+            , top = ( 0, 20 )
+            }
+
+        rocket =
+            { initRocket | position = world.rocketStartPosition }
+
+        factorx =
+            (toFloat <| fst displaySize) / (fst world.size)
+
+        factory =
+            (toFloat <| snd displaySize) / (snd world.size)
+
+        factor =
+            min factorx factory
+    in
+        uncurry collage displaySize
+            <| [ scale factor
+                    <| group
+                        [ backgroundForm world.size
+                        , worldForm world
+                        , rocketForm rocket
+                        , frameForm world.size
+                        ]
+               ]
