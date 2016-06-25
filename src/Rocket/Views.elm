@@ -5,7 +5,6 @@ import Rocket.Scene exposing (..)
 import Html exposing (..)
 import Element exposing (..)
 import Time exposing (inSeconds)
-import Color exposing (..)
 
 
 viewStartscreen : StartscreenData -> Html a
@@ -42,14 +41,8 @@ viewWin data =
 
 
 viewPlay : PlayData -> Html a
-viewPlay data =
+viewPlay { rocket, world, timeRemaining } =
     let
-        rocket =
-            data.rocket
-
-        world =
-            data.world
-
         ( w, h ) =
             world.size
     in
@@ -61,21 +54,10 @@ viewPlay data =
                         (round h)
                         (midRightAt (absolute 10) (absolute 20))
                         <| show
-                        <| inSeconds data.timeRemaining
+                        <| inSeconds timeRemaining
                     ]
               --, viewRocketStatus rocket
-              --, viewPlayStatus data
             ]
-
-
-viewPlayStatus : PlayData -> Html a
-viewPlayStatus data =
-    div []
-        [ h3 [] [ text "Play Status" ]
-        , table []
-            [ viewValue "Time Remaining" (inSeconds (data.timeRemaining))
-            ]
-        ]
 
 
 viewRocketStatus : Rocket -> Html a

@@ -4,63 +4,46 @@ import Rocket.Types exposing (..)
 import Rocket.Movement exposing (..)
 import Rocket.Collision exposing (..)
 import Time exposing (Time, second)
+import List.Extra exposing (updateIf)
+import Debug
 
 
 updatePlay : Msg -> PlayData -> PlayData
-updatePlay msg data =
-    let
-        world =
-            data.world
+updatePlay msg ({ world, rocket, keyDown } as data) =
+    case msg of
+        KeyDownMsg key ->
+            { data | keyDown = updateKeyDown keyDown (KeyDownMsg key) }
 
-        rocket =
-            data.rocket
+        KeyUpMsg key ->
+            { data | keyDown = updateKeyDown keyDown (KeyUpMsg key) }
 
-        keyDown =
-            data.keyDown
-    in
-        case msg of
-            KeyDownMsg key ->
-                { data | keyDown = updateKeyDown keyDown (KeyDownMsg key) }
+        Step diffTime ->
+            case rocket.movement of
+                Landed _ ->
+                    updateLanded data
 
-            KeyUpMsg key ->
-                { data | keyDown = updateKeyDown keyDown (KeyUpMsg key) }
+                Landing _ ->
+                    updateLanding data
 
-            Step diffTime ->
-                case rocket.movement of
-                    Landed _ ->
-                        updateLanded data
+                Colliding ->
+                    updateColliding data
 
-                    Landing _ ->
-                        updateLanding data
+                Flying ->
+                    updateFlying data diffTime
 
-                    Colliding ->
-                        updateColliding data
+        TimerTick ->
+            if data.timeRemaining <= 0 * second then
+                { data | gameover = True }
+            else
+                { data | timeRemaining = data.timeRemaining - 1 * second }
 
-                    Flying ->
-                        updateFlying data diffTime
-
-            TimerTick ->
-                if data.timeRemaining <= 0 * second then
-                    { data | gameover = True }
-                else
-                    { data | timeRemaining = data.timeRemaining - 1 * second }
-
-            _ ->
-                data
+        _ ->
+            data
 
 
 updateFlying : PlayData -> Time -> PlayData
-updateFlying data diffTime =
+updateFlying ({ world, rocket, keyDown } as data) diffTime =
     let
-        world =
-            data.world
-
-        rocket =
-            data.rocket
-
-        keyDown =
-            data.keyDown
-
         movedRocket =
             moveRocket keyDown
                 world.gravity
@@ -90,45 +73,27 @@ updateColliding data =
 
 
 updateLanding : PlayData -> PlayData
-updateLanding data =
-    let
-        world =
-            data.world
+updateLanding ({ world, rocket } as data) =
+    case rocket.movement of
+        Landing platform ->
+            { data
+                | rocket = landOn platform rocket
+                , world =
+                    { world
+                        | platforms = markPlatform platform world.platforms
+                    }
+            }
 
-        platforms =
-            world.platforms
-
-        rocket =
-            data.rocket
-    in
-        case rocket.movement of
-            Landing platform ->
-                { data
-                    | rocket = landOn platform rocket
-                    , world =
-                        { world
-                            | platforms = markPlatform platform platforms
-                        }
-                }
-
-            -- others should not happen when calling updateLanding
-            _ ->
-                data
+        _ ->
+            Debug.crash "update Landing called with non \"Landing ...\" Msg"
 
 
 updateLanded : PlayData -> PlayData
-updateLanded data =
-    let
-        keyDown =
-            data.keyDown
-
-        rocket =
-            data.rocket
-    in
-        if keyDown.forward then
-            { data | rocket = startRocket rocket }
-        else
-            data
+updateLanded ({ rocket, keyDown } as data) =
+    if keyDown.forward then
+        { data | rocket = startRocket rocket }
+    else
+        data
 
 
 updateKeyDown : KeyDown -> Msg -> KeyDown
@@ -163,17 +128,9 @@ updateKeyDown keyDown msg =
                     keyDown
 
         _ ->
-            keyDown
+            Debug.crash "updateKeyDown called with neither KeyDownMsg nor KeyUpMsg"
 
 
 markPlatform : Platform -> List Platform -> List Platform
 markPlatform p ps =
-    case ps of
-        [] ->
-            []
-
-        p' :: ps' ->
-            if p == p' then
-                { p | marked = True } :: ps'
-            else
-                p' :: markPlatform p ps'
+    updateIf ((==) p) (\p' -> { p' | marked = True }) ps

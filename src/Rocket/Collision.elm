@@ -5,17 +5,14 @@ import List exposing (any, all)
 
 
 collision : Rocket -> World -> Bool
-collision rocket world =
-    (collisionRocketRects rocket world.rects)
-        || (collisionRocketBorder rocket world.size)
+collision rocket { rects, size } =
+    (collisionRocketRects rocket rects)
+        || (collisionRocketBorder rocket size)
 
 
 collisionRocketRects : Rocket -> List Rect -> Bool
-collisionRocketRects rocket rects =
+collisionRocketRects { angle, position, top, base } rects =
     let
-        angle =
-            rocket.angle
-
         -- maybe add lazy here
         cosAngle =
             cos <| degrees angle
@@ -30,16 +27,16 @@ collisionRocketRects rocket rects =
                 )
 
         (( tx, ty ) as t) =
-            addPoints rocket.position
-                <| rotate rocket.top
+            addPoints position
+                <| rotate top
 
         (( b1x, b1y ) as b1) =
-            addPoints rocket.position
-                <| rotate (fst rocket.base)
+            addPoints position
+                <| rotate (fst base)
 
         (( b2x, b2y ) as b2) =
-            addPoints rocket.position
-                <| rotate (snd rocket.base)
+            addPoints position
+                <| rotate (snd base)
 
         {- rectangle around rocket (rocket rect) -}
         ymax =
@@ -115,14 +112,8 @@ collisionRocketRects rocket rects =
 
 
 collisionRocketBorder : Rocket -> ( Float, Float ) -> Bool
-collisionRocketBorder rocket size =
+collisionRocketBorder { angle, position, top, base } ( w, h ) =
     let
-        ( w, h ) =
-            size
-
-        angle =
-            rocket.angle
-
         -- maybe add lazy here
         cosAngle =
             cos <| degrees angle
@@ -137,16 +128,16 @@ collisionRocketBorder rocket size =
                 )
 
         t =
-            addPoints rocket.position
-                <| rotate rocket.top
+            addPoints position
+                <| rotate top
 
         b1 =
-            addPoints rocket.position
-                <| rotate (fst rocket.base)
+            addPoints position
+                <| rotate (fst base)
 
         b2 =
-            addPoints rocket.position
-                <| rotate (snd rocket.base)
+            addPoints position
+                <| rotate (snd base)
 
         inBorder =
             \( x, y ) ->

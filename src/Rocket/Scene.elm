@@ -5,7 +5,7 @@ import Collage exposing (..)
 import Element exposing (..)
 import Html exposing (..)
 import Color exposing (..)
-import List exposing (map, append)
+import List exposing (map)
 
 
 rectShape : Rect -> Shape
@@ -53,25 +53,20 @@ platformShape platform =
             ]
 
 
-worldForm world =
+worldForm : World -> Form
+worldForm { rects, polygons, platforms } =
     let
-        ( a, b ) =
-            world.size
-
-        rects =
-            world.rects
-
-        polys =
-            world.polygons
-
         color =
             lightCharcoal
     in
         group
-            <| append (map (filled color << rectShape) rects)
-                (map (filled color << polyShape) polys)
+            (platformsForm platforms
+                :: map (filled color << rectShape) rects
+                ++ map (filled color << polyShape) polygons
+            )
 
 
+platformsForm : List Platform -> Form
 platformsForm platforms =
     let
         line =
@@ -104,30 +99,25 @@ platformsForm platforms =
         group <| map pForm platforms
 
 
-background : Float -> Float -> Form
-background a b =
-    filled lightGreen <| rect a b
+backgroundForm : ( Float, Float ) -> Form
+backgroundForm =
+    filled lightGreen << uncurry rect
 
 
-frameForm : Float -> Float -> Form
-frameForm a b =
+frameForm : ( Float, Float ) -> Form
+frameForm =
     let
         line =
             solid black
     in
-        outlined { line | width = 2 } <| rect a b
+        outlined { line | width = 2 } << uncurry rect
 
 
-rocketForm rocket =
+rocketForm : Rocket -> Form
+rocketForm { position, angle, fire, top, base } =
     let
         ( base1, base2 ) =
-            rocket.base
-
-        top =
-            rocket.top
-
-        fire =
-            rocket.fire
+            base
 
         bodyShape : Shape
         bodyShape =
@@ -137,7 +127,9 @@ rocketForm rocket =
         fireShape =
             polygon [ ( -6, 1 ), ( 0, -6 ), ( 6, 1 ) ]
     in
-        group
+        move position
+            << rotate (degrees angle)
+            <| group
             <| (if fire then
                     [ filled red fireShape
                     , filled blue bodyShape
@@ -150,19 +142,15 @@ rocketForm rocket =
                )
 
 
-{-| drawScene : Float -> Float -> { position : (Float, Float), angle : Float} ->  Element
--}
-drawScene world rocket =
+drawScene : World -> Rocket -> Element
+drawScene ({ size } as world) rocket =
     let
         ( a, b ) =
-            world.size
+            size
     in
         collage (round a) (round b)
-            <| [ background a b
+            <| [ backgroundForm size
                , worldForm world
-               , move rocket.position
-                    << rotate (degrees rocket.angle)
-                    <| (rocketForm rocket)
-               , platformsForm world.platforms
-               , frameForm a b
+               , rocketForm rocket
+               , frameForm size
                ]

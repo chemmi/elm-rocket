@@ -93,15 +93,8 @@ isGameover data =
 
 
 isWin : PlayData -> Bool
-isWin data =
-    let
-        world =
-            data.world
-
-        platforms =
-            world.platforms
-    in
-        world.isWin platforms
+isWin { world } =
+    world.isWin world.platforms
 
 
 subscriptions : Model -> Sub Msg
@@ -113,7 +106,7 @@ subscriptions model =
             ++ case model of
                 Play _ ->
                     [ diffs Step
-                    , every second (\_ -> TimerTick)
+                    , every second <| always TimerTick
                     ]
 
                 _ ->

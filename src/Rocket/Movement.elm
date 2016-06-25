@@ -7,25 +7,13 @@ import Maybe exposing (oneOf)
 
 
 moveRocket : KeyDown -> Float -> Time -> Rocket -> Rocket
-moveRocket keyDown gravity diffTime rocket =
+moveRocket keyDown gravity diffTime ({ angle, position, fire, velocity, acceleration, twist } as rocket) =
     let
         ( x, y ) =
-            rocket.position
-
-        angle =
-            rocket.angle
-
-        fire =
-            rocket.fire
+            position
 
         ( vx, vy ) =
-            rocket.velocity
-
-        acceleration =
-            rocket.acceleration
-
-        twist =
-            rocket.twist
+            velocity
 
         diffSeconds =
             inSeconds diffTime
@@ -66,28 +54,22 @@ startRocket rocket =
 
 
 tryLanding : Rocket -> World -> Maybe Platform
-tryLanding rocket world =
+tryLanding { velocity, position, base, angle } { platforms } =
     let
-        platforms =
-            world.platforms
+        ( vx, vy ) =
+            velocity
 
-        (( vx, vy ) as v) =
-            rocket.velocity
-
-        (( rx, ry ) as pos) =
-            rocket.position
-
-        ( b1, b2 ) =
-            rocket.base
+        ( rx, ry ) =
+            position
 
         ( b1x, b1y ) =
-            b1
+            fst base
 
         ( b2x, b2y ) =
-            b2
+            snd base
 
         roundedAngle =
-            round rocket.angle % 360
+            round angle % 360
 
         angleTolerance =
             10
@@ -151,9 +133,9 @@ landOn platform rocket =
 
 
 accelerate : Float -> Float -> ( Float, Float ) -> ( Float, Float )
-accelerate acceleration angle ( x, y ) =
+accelerate acceleration angle ( vx, vy ) =
     let
         deg =
             degrees (angle + 90)
     in
-        ( acceleration * cos deg + x, acceleration * sin deg + y )
+        ( acceleration * cos deg + vx, acceleration * sin deg + vy )
