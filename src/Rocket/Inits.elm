@@ -15,7 +15,7 @@ initPlay : PlayData
 initPlay =
     let
         world =
-            world2
+            world3
     in
         { keyDown = noKeyDown
         , timeRemaining = world.totalTime
