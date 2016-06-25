@@ -1,8 +1,9 @@
 module Rocket.Collision exposing (..)
 
 import Rocket.Types exposing (..)
-import List exposing (any, all, head)
+import List exposing (any, all, head, map)
 import List.Extra exposing (last)
+import Maybe exposing (oneOf)
 
 
 collision : Rocket -> World -> Bool
@@ -203,6 +204,118 @@ collisionRocketPolygons { angle, position, top, base } polygons =
                         && not (any (otLineRocket) segments)
     in
         any collPolyFine polygons
+
+
+collisionRocketPlatforms : Rocket -> List Platform -> Maybe Platform
+collisionRocketPlatforms { angle, position, top, base } platforms =
+    let
+        -- maybe add lazy here
+        cosAngle =
+            cos <| degrees angle
+
+        sinAngle =
+            sin <| degrees angle
+
+        rotate =
+            \( x, y ) ->
+                ( cosAngle * x - sinAngle * y
+                , sinAngle * x + cosAngle * y
+                )
+
+        (( tx, ty ) as t) =
+            addPoints position
+                <| rotate top
+
+        (( b1x, b1y ) as b1) =
+            addPoints position
+                <| rotate (fst base)
+
+        (( b2x, b2y ) as b2) =
+            addPoints position
+                <| rotate (snd base)
+
+        {- rectangle around rocket (rocket rect) -}
+        ymax =
+            max ty (max b1y b2y)
+
+        ymin =
+            min ty (min b1y b2y)
+
+        xmax =
+            max tx (max b1x b2x)
+
+        xmin =
+            min tx (min b1x b2x)
+
+        {- coarse collision test -}
+        collPlatformCoarse =
+            \platform ->
+                let
+                    ( cx, cy ) =
+                        platform.center
+
+                    h =
+                        10
+
+                    hw =
+                        platform.width / 2
+                in
+                    if
+                        not
+                            ((cx - hw > xmax)
+                                || (cy < ymin)
+                                || (cx + hw < xmin)
+                                || (cy - h > ymax)
+                            )
+                    then
+                        Just platform
+                    else
+                        Nothing
+
+        {- fine collision test (uses collRectCoarse) -}
+        collPlatformFine =
+            \platform ->
+                let
+                    ( cx, cy ) =
+                        platform.center
+
+                    h =
+                        10
+
+                    hw =
+                        platform.width / 2
+
+                    edges =
+                        [ ( cx - hw, cy )
+                        , ( cx + hw, cy )
+                        , ( cx + hw, cy - h )
+                        , ( cx - hw, cy - h )
+                        ]
+
+                    ot =
+                        orientationTest
+                in
+                    case collPlatformCoarse platform of
+                        Just _ ->
+                            if
+                                not
+                                    (all (ot t b2) edges
+                                        || all (ot b1 t) edges
+                                        || all (ot b2 b1) edges
+                                    )
+                            then
+                                Just platform
+                            else
+                                Nothing
+
+                        Nothing ->
+                            Nothing
+
+        collPlatform =
+            \platform ->
+                collPlatformFine platform
+    in
+        oneOf (map collPlatform platforms)
 
 
 addPoints : Point -> Point -> Point

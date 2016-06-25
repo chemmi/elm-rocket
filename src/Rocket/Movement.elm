@@ -1,9 +1,10 @@
 module Rocket.Movement exposing (..)
 
 import Rocket.Types exposing (..)
+import Rocket.Collision exposing (collisionRocketPlatforms)
 import Time exposing (..)
 import List exposing (map)
-import Maybe exposing (oneOf)
+import Maybe exposing (oneOf, andThen)
 
 
 moveRocket : KeyDown -> Float -> Time -> Rocket -> Rocket
@@ -47,14 +48,14 @@ startRocket rocket =
     in
         { rocket
             | movement = Flying
-            , position = ( px, py + 2 )
+            , position = ( px, py + 1 )
             , fire = True
             , onPlatform = Nothing
         }
 
 
 tryLanding : Rocket -> World -> Maybe Platform
-tryLanding { velocity, position, base, angle } { platforms } =
+tryLanding ({ velocity, position, base, angle } as rocket) { platforms } =
     let
         ( vx, vy ) =
             velocity
@@ -97,10 +98,6 @@ tryLanding { velocity, position, base, angle } { platforms } =
                                (b1x + rx > cx - plathw)
                             && -- coarse (base should be rotated)
                                (b2x + rx < cx + plathw)
-                            && -- coarse (base should be rotated)
-                               ((b1y + ry <= cy+1 && b1y + ry > cy - 10)
-                                    || (b2y + ry <= cy+1 && b2y + ry > cy - 10)
-                               )
                             && (abs vx < vxTolerance)
                             && (abs vy < vyTolerance)
                     then
@@ -108,7 +105,7 @@ tryLanding { velocity, position, base, angle } { platforms } =
                     else
                         Nothing
     in
-        oneOf (map landOnPlatform platforms)
+        andThen (collisionRocketPlatforms rocket platforms) landOnPlatform
 
 
 landOn : Platform -> Rocket -> Rocket
