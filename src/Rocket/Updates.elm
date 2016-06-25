@@ -64,7 +64,7 @@ updateFlying ({ world, rocket, keyDown } as data) diffTime =
                             { movedRocket | movement = Colliding }
                     }
                 else
-                    { data | rocket = movedRocket }
+                    updateDisplayPosition { data | rocket = movedRocket }
 
 
 updateColliding : PlayData -> PlayData
@@ -94,6 +94,62 @@ updateLanded ({ rocket, keyDown } as data) =
         { data | rocket = startRocket rocket }
     else
         data
+
+
+updateDisplayPosition : PlayData -> PlayData
+updateDisplayPosition ({ displayPosition, displaySize, world, rocket } as data) =
+    let
+        ( dW, dH ) =
+            displaySize
+
+        ( wW, wH ) =
+            world.size
+
+        tolerancex =
+            dW // 4
+
+        tolerancey =
+            dH // 4
+
+        ( rx, ry ) =
+            rocket.position
+
+        ( rrx, rry ) =
+            ( round rx, round ry )
+
+        fokusRocket =
+            \( dx, dy ) ->
+                let
+                    dx' =
+                        dx + max 0 (rrx - dx - tolerancex) + min 0 (rrx - dx + tolerancex)
+
+                    dy' =
+                        dy + max 0 (rry - dy - tolerancey) + min 0 (rry - dy + tolerancey)
+                in
+                    ( dx', dy' )
+
+        stayInFrame =
+            \( dx, dy ) ->
+                let
+                    -- adjust left
+                    dx' =
+                        max (round (-wW / 2) + dW // 2) dx
+
+                    -- adjust right
+                    dx'' =
+                        min (round (wW / 2) - dW // 2) dx'
+
+                    -- adjust bottom
+                    dy' =
+                        max (round (-wH / 2) + dH // 2) dy
+
+                    -- adjust top
+                    dy'' =
+                        min (round (wH / 2) - dH // 2) dy'
+                in
+                    ( dx'', dy'' )
+    in
+        { data | displayPosition = stayInFrame <| fokusRocket displayPosition }
 
 
 updateKeyDown : KeyDown -> Msg -> KeyDown
