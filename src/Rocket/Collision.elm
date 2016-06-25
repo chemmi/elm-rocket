@@ -1,13 +1,15 @@
 module Rocket.Collision exposing (..)
 
 import Rocket.Types exposing (..)
-import List exposing (any, all)
+import List exposing (any, all, head)
+import List.Extra exposing (last)
 
 
 collision : Rocket -> World -> Bool
-collision rocket { rects, size } =
-    (collisionRocketRects rocket rects)
-        || (collisionRocketBorder rocket size)
+collision rocket { size, rects, polygons } =
+    collisionRocketRects rocket rects
+        || collisionRocketBorder rocket size
+        || collisionRocketPolygons rocket polygons
 
 
 collisionRocketRects : Rocket -> List Rect -> Bool
@@ -149,6 +151,60 @@ collisionRocketBorder { angle, position, top, base } ( w, h ) =
         any (not << inBorder) [ t, b1, b2 ]
 
 
+collisionRocketPolygons : Rocket -> List Polygon -> Bool
+collisionRocketPolygons { angle, position, top, base } polygons =
+    let
+        -- maybe add lazy here
+        cosAngle =
+            cos <| degrees angle
+
+        sinAngle =
+            sin <| degrees angle
+
+        rotate =
+            \( x, y ) ->
+                ( cosAngle * x - sinAngle * y
+                , sinAngle * x + cosAngle * y
+                )
+
+        t =
+            addPoints position
+                <| rotate top
+
+        b1 =
+            addPoints position
+                <| rotate (fst base)
+
+        b2 =
+            addPoints position
+                <| rotate (snd base)
+
+        ot =
+            orientationTest
+
+        collPolyCoarse =
+            \poly ->
+                not
+                    (all (ot t b2) poly
+                        || all (ot b1 t) poly
+                        || all (ot b2 b1) poly
+                    )
+
+        otLineRocket =
+            \l -> all (uncurry ot l) [ t, b1, b2 ]
+
+        collPolyFine =
+            \poly ->
+                let
+                    segments =
+                        polyToSegments poly
+                in
+                    collPolyCoarse poly
+                        && not (any (otLineRocket) segments)
+    in
+        any collPolyFine polygons
+
+
 addPoints : Point -> Point -> Point
 addPoints ( px, py ) ( qx, qy ) =
     ( px + qx, py + qy )
@@ -165,3 +221,32 @@ orientationTest ( px, py ) ( qx, qy ) ( rx, ry ) =
             (qx - px) * (ry - py) - (rx - px) * (qy - py)
     in
         signedArea > 0
+
+
+polyToSegments : Polygon -> List ( Point, Point )
+polyToSegments poly =
+    let
+        help : Polygon -> List ( Point, Point )
+        help =
+            \poly ->
+                case poly of
+                    [] ->
+                        []
+
+                    [ p ] ->
+                        []
+
+                    p :: p' :: ps ->
+                        ( p, p' ) :: (help (p' :: ps))
+    in
+        case last poly of
+            Just lp ->
+                case head poly of
+                    Just fp ->
+                        ( lp, fp ) :: help poly
+
+                    Nothing ->
+                        Debug.crash "Empty Polygon detected :("
+
+            Nothing ->
+                Debug.crash "Empty Polygon detected :("

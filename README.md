@@ -28,8 +28,6 @@ Check out the latest build [here](https://chemmi.github.io/elm-rocket/).
 
 ### List of ToDos
 
-* collision detection for polygons
-
 * several Levels
 
 * Level Choice

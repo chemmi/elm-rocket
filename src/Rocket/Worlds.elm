@@ -34,4 +34,7 @@ world2 =
 
 world3 : World
 world3 =
-    { world2 | size = ( 1600, 600 ) }
+    { world2
+        | size = ( 1600, 600 )
+        , polygons = [ [ ( -300, 150 ), ( -200, 200 ), ( -100, 100 ), ( -400, 0 ) ] ]
+    }
