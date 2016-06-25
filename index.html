@@ -8803,9 +8803,9 @@ var _chemmi$elm_rocket$Rocket_Types$WinData = F2(
 	function (a, b) {
 		return {message: a, background: b};
 	});
-var _chemmi$elm_rocket$Rocket_Types$PlayData = F5(
-	function (a, b, c, d, e) {
-		return {keyDown: a, timeRemaining: b, rocket: c, world: d, gameover: e};
+var _chemmi$elm_rocket$Rocket_Types$PlayData = F7(
+	function (a, b, c, d, e, f, g) {
+		return {keyDown: a, timeRemaining: b, displaySize: c, displayPosition: d, rocket: e, world: f, gameover: g};
 	});
 var _chemmi$elm_rocket$Rocket_Types$KeyDown = F3(
 	function (a, b, c) {
@@ -8927,11 +8927,16 @@ var _chemmi$elm_rocket$Rocket_Worlds$world2 = _elm_lang$core$Native_Utils.update
 		platforms: _elm_lang$core$Native_List.fromArray(
 			[
 				{
-				center: {ctor: '_Tuple2', _0: 0, _1: -140},
+				center: {ctor: '_Tuple2', _0: 0, _1: -150},
 				width: 50,
 				marked: false
 			}
 			])
+	});
+var _chemmi$elm_rocket$Rocket_Worlds$world3 = _elm_lang$core$Native_Utils.update(
+	_chemmi$elm_rocket$Rocket_Worlds$world2,
+	{
+		size: {ctor: '_Tuple2', _0: 1600, _1: 600}
 	});
 var _evancz$elm_graphics$Native_Collage = function()
 {
@@ -10094,19 +10099,18 @@ var _chemmi$elm_rocket$Rocket_Scene$worldForm = function (_p8) {
 	var color = _elm_lang$core$Color$lightCharcoal;
 	return _evancz$elm_graphics$Collage$group(
 		A2(
-			_elm_lang$core$List_ops['::'],
-			_chemmi$elm_rocket$Rocket_Scene$platformsForm(_p9.platforms),
+			_elm_lang$core$Basics_ops['++'],
+			A2(
+				_elm_lang$core$List$map,
+				function (_p10) {
+					return A2(
+						_evancz$elm_graphics$Collage$filled,
+						color,
+						_chemmi$elm_rocket$Rocket_Scene$rectShape(_p10));
+				},
+				_p9.rects),
 			A2(
 				_elm_lang$core$Basics_ops['++'],
-				A2(
-					_elm_lang$core$List$map,
-					function (_p10) {
-						return A2(
-							_evancz$elm_graphics$Collage$filled,
-							color,
-							_chemmi$elm_rocket$Rocket_Scene$rectShape(_p10));
-					},
-					_p9.rects),
 				A2(
 					_elm_lang$core$List$map,
 					function (_p11) {
@@ -10115,27 +10119,59 @@ var _chemmi$elm_rocket$Rocket_Scene$worldForm = function (_p8) {
 							color,
 							_chemmi$elm_rocket$Rocket_Scene$polyShape(_p11));
 					},
-					_p9.polygons))));
+					_p9.polygons),
+				_elm_lang$core$Native_List.fromArray(
+					[
+						_chemmi$elm_rocket$Rocket_Scene$platformsForm(_p9.platforms)
+					]))));
 };
-var _chemmi$elm_rocket$Rocket_Scene$drawScene = F2(
-	function (_p12, rocket) {
-		var _p13 = _p12;
-		var _p15 = _p13.size;
-		var _p14 = _p15;
-		var a = _p14._0;
-		var b = _p14._1;
-		return A3(
-			_evancz$elm_graphics$Collage$collage,
-			_elm_lang$core$Basics$round(a),
-			_elm_lang$core$Basics$round(b),
-			_elm_lang$core$Native_List.fromArray(
-				[
-					_chemmi$elm_rocket$Rocket_Scene$backgroundForm(_p15),
-					_chemmi$elm_rocket$Rocket_Scene$worldForm(_p13),
-					_chemmi$elm_rocket$Rocket_Scene$rocketForm(rocket),
-					_chemmi$elm_rocket$Rocket_Scene$frameForm(_p15)
-				]));
-	});
+var _chemmi$elm_rocket$Rocket_Scene$drawScene = function (_p12) {
+	var _p13 = _p12;
+	var _p17 = _p13.world;
+	var _p16 = _p13.displaySize;
+	var _p15 = _p13.displayPosition;
+	var _p14 = {
+		ctor: '_Tuple2',
+		_0: _elm_lang$core$Basics$toFloat(
+			_elm_lang$core$Basics$fst(_p15)),
+		_1: _elm_lang$core$Basics$toFloat(
+			_elm_lang$core$Basics$snd(_p15))
+	};
+	var dx = _p14._0;
+	var dy = _p14._1;
+	return _evancz$elm_graphics$Element$layers(
+		_elm_lang$core$Native_List.fromArray(
+			[
+				A3(
+				_elm_lang$core$Basics$uncurry,
+				_evancz$elm_graphics$Collage$collage,
+				_p16,
+				_elm_lang$core$Native_List.fromArray(
+					[
+						A2(
+						_evancz$elm_graphics$Collage$move,
+						{ctor: '_Tuple2', _0: 0 - dx, _1: 0 - dy},
+						_evancz$elm_graphics$Collage$group(
+							_elm_lang$core$Native_List.fromArray(
+								[
+									_chemmi$elm_rocket$Rocket_Scene$backgroundForm(_p17.size),
+									_chemmi$elm_rocket$Rocket_Scene$worldForm(_p17),
+									_chemmi$elm_rocket$Rocket_Scene$rocketForm(_p13.rocket),
+									_chemmi$elm_rocket$Rocket_Scene$frameForm(_p17.size)
+								])))
+					])),
+				A4(
+				_elm_lang$core$Basics$uncurry,
+				_evancz$elm_graphics$Element$container,
+				_p16,
+				A2(
+					_evancz$elm_graphics$Element$midRightAt,
+					_evancz$elm_graphics$Element$absolute(10),
+					_evancz$elm_graphics$Element$absolute(20)),
+				_evancz$elm_graphics$Element$show(
+					_elm_lang$core$Time$inSeconds(_p13.timeRemaining)))
+			]));
+};
 var _chemmi$elm_rocket$Rocket_Inits$initRocket = {
 	acceleration: _chemmi$elm_rocket$Rocket_Worlds$initWorld.gravity * 3,
 	position: {ctor: '_Tuple2', _0: 0, _1: 0},
@@ -10157,10 +10193,12 @@ var _chemmi$elm_rocket$Rocket_Inits$noKeyDown = {left: false, right: false, forw
 var _chemmi$elm_rocket$Rocket_Inits$initWin = {message: 'Win - Press SPACE to restart', background: _evancz$elm_graphics$Element$empty};
 var _chemmi$elm_rocket$Rocket_Inits$initGameover = {message: 'Gameover - Press SPACE to restart', background: _evancz$elm_graphics$Element$empty};
 var _chemmi$elm_rocket$Rocket_Inits$initPlay = function () {
-	var world = _chemmi$elm_rocket$Rocket_Worlds$world2;
+	var world = _chemmi$elm_rocket$Rocket_Worlds$world3;
 	return {
 		keyDown: _chemmi$elm_rocket$Rocket_Inits$noKeyDown,
 		timeRemaining: world.totalTime,
+		displaySize: {ctor: '_Tuple2', _0: 800, _1: 600},
+		displayPosition: {ctor: '_Tuple2', _0: 0, _1: 0},
 		world: world,
 		rocket: _elm_lang$core$Native_Utils.update(
 			_chemmi$elm_rocket$Rocket_Inits$initRocket,
@@ -10170,7 +10208,7 @@ var _chemmi$elm_rocket$Rocket_Inits$initPlay = function () {
 }();
 var _chemmi$elm_rocket$Rocket_Inits$initStartscreen = {
 	message: 'Startscreen - Press SPACE to start',
-	background: A2(_chemmi$elm_rocket$Rocket_Scene$drawScene, _chemmi$elm_rocket$Rocket_Inits$initPlay.world, _chemmi$elm_rocket$Rocket_Inits$initPlay.rocket)
+	background: _chemmi$elm_rocket$Rocket_Scene$drawScene(_chemmi$elm_rocket$Rocket_Inits$initPlay)
 };
 var _chemmi$elm_rocket$Rocket_Inits$init = _chemmi$elm_rocket$Rocket_Types$Startscreen(_chemmi$elm_rocket$Rocket_Inits$initStartscreen);
 var _chemmi$elm_rocket$Rocket_Movement$accelerate = F3(
@@ -11641,36 +11679,91 @@ var _chemmi$elm_rocket$Rocket_Updates$updateKeyDown = F2(
 				return _elm_lang$core$Native_Utils.crashCase(
 					'Rocket.Updates',
 					{
-						start: {line: 101, column: 5},
-						end: {line: 131, column: 84}
+						start: {line: 157, column: 5},
+						end: {line: 187, column: 84}
 					},
 					_p0)('updateKeyDown called with neither KeyDownMsg nor KeyUpMsg');
 		}
 	});
-var _chemmi$elm_rocket$Rocket_Updates$updateLanded = function (_p4) {
+var _chemmi$elm_rocket$Rocket_Updates$updateDisplayPosition = function (_p4) {
 	var _p5 = _p4;
-	var _p6 = _p5;
-	return _p5.keyDown.forward ? _elm_lang$core$Native_Utils.update(
-		_p6,
+	var _p6 = _p5.rocket.position;
+	var rx = _p6._0;
+	var ry = _p6._1;
+	var _p7 = {
+		ctor: '_Tuple2',
+		_0: _elm_lang$core$Basics$round(rx),
+		_1: _elm_lang$core$Basics$round(ry)
+	};
+	var rrx = _p7._0;
+	var rry = _p7._1;
+	var _p8 = _p5.world.size;
+	var wW = _p8._0;
+	var wH = _p8._1;
+	var _p9 = _p5.displaySize;
+	var dW = _p9._0;
+	var dH = _p9._1;
+	var tolerancex = (dW / 4) | 0;
+	var tolerancey = (dH / 4) | 0;
+	var fokusRocket = function (_p10) {
+		var _p11 = _p10;
+		var _p13 = _p11._1;
+		var _p12 = _p11._0;
+		var dy$ = (_p13 + A2(_elm_lang$core$Basics$max, 0, (rry - _p13) - tolerancey)) + A2(_elm_lang$core$Basics$min, 0, (rry - _p13) + tolerancey);
+		var dx$ = (_p12 + A2(_elm_lang$core$Basics$max, 0, (rrx - _p12) - tolerancex)) + A2(_elm_lang$core$Basics$min, 0, (rrx - _p12) + tolerancex);
+		return {ctor: '_Tuple2', _0: dx$, _1: dy$};
+	};
+	var stayInFrame = function (_p14) {
+		var _p15 = _p14;
+		var dy$ = A2(
+			_elm_lang$core$Basics$max,
+			_elm_lang$core$Basics$round((0 - wH) / 2) + ((dH / 2) | 0),
+			_p15._1);
+		var dy$$ = A2(
+			_elm_lang$core$Basics$min,
+			_elm_lang$core$Basics$round(wH / 2) - ((dH / 2) | 0),
+			dy$);
+		var dx$ = A2(
+			_elm_lang$core$Basics$max,
+			_elm_lang$core$Basics$round((0 - wW) / 2) + ((dW / 2) | 0),
+			_p15._0);
+		var dx$$ = A2(
+			_elm_lang$core$Basics$min,
+			_elm_lang$core$Basics$round(wW / 2) - ((dW / 2) | 0),
+			dx$);
+		return {ctor: '_Tuple2', _0: dx$$, _1: dy$$};
+	};
+	return _elm_lang$core$Native_Utils.update(
+		_p5,
 		{
-			rocket: _chemmi$elm_rocket$Rocket_Movement$startRocket(_p5.rocket)
-		}) : _p6;
+			displayPosition: stayInFrame(
+				fokusRocket(_p5.displayPosition))
+		});
 };
-var _chemmi$elm_rocket$Rocket_Updates$updateLanding = function (_p7) {
-	var _p8 = _p7;
-	var _p13 = _p8.world;
-	var _p12 = _p8.rocket;
-	var _p9 = _p12.movement;
-	if (_p9.ctor === 'Landing') {
-		var _p10 = _p9._0;
+var _chemmi$elm_rocket$Rocket_Updates$updateLanded = function (_p16) {
+	var _p17 = _p16;
+	var _p18 = _p17;
+	return _p17.keyDown.forward ? _elm_lang$core$Native_Utils.update(
+		_p18,
+		{
+			rocket: _chemmi$elm_rocket$Rocket_Movement$startRocket(_p17.rocket)
+		}) : _p18;
+};
+var _chemmi$elm_rocket$Rocket_Updates$updateLanding = function (_p19) {
+	var _p20 = _p19;
+	var _p25 = _p20.world;
+	var _p24 = _p20.rocket;
+	var _p21 = _p24.movement;
+	if (_p21.ctor === 'Landing') {
+		var _p22 = _p21._0;
 		return _elm_lang$core$Native_Utils.update(
-			_p8,
+			_p20,
 			{
-				rocket: A2(_chemmi$elm_rocket$Rocket_Movement$landOn, _p10, _p12),
+				rocket: A2(_chemmi$elm_rocket$Rocket_Movement$landOn, _p22, _p24),
 				world: _elm_lang$core$Native_Utils.update(
-					_p13,
+					_p25,
 					{
-						platforms: A2(_chemmi$elm_rocket$Rocket_Updates$markPlatform, _p10, _p13.platforms)
+						platforms: A2(_chemmi$elm_rocket$Rocket_Updates$markPlatform, _p22, _p25.platforms)
 					})
 			});
 	} else {
@@ -11680,7 +11773,7 @@ var _chemmi$elm_rocket$Rocket_Updates$updateLanding = function (_p7) {
 				start: {line: 77, column: 5},
 				end: {line: 88, column: 77}
 			},
-			_p9)('update Landing called with non \"Landing ...\" Msg');
+			_p21)('update Landing called with non \"Landing ...\" Msg');
 	}
 };
 var _chemmi$elm_rocket$Rocket_Updates$updateColliding = function (data) {
@@ -11689,79 +11782,80 @@ var _chemmi$elm_rocket$Rocket_Updates$updateColliding = function (data) {
 		{gameover: true});
 };
 var _chemmi$elm_rocket$Rocket_Updates$updateFlying = F2(
-	function (_p14, diffTime) {
-		var _p15 = _p14;
-		var _p18 = _p15.world;
-		var _p17 = _p15;
-		var movedRocket = A4(_chemmi$elm_rocket$Rocket_Movement$moveRocket, _p15.keyDown, _p18.gravity, diffTime, _p15.rocket);
-		var _p16 = A2(_chemmi$elm_rocket$Rocket_Movement$tryLanding, movedRocket, _p18);
-		if (_p16.ctor === 'Just') {
+	function (_p26, diffTime) {
+		var _p27 = _p26;
+		var _p30 = _p27.world;
+		var _p29 = _p27;
+		var movedRocket = A4(_chemmi$elm_rocket$Rocket_Movement$moveRocket, _p27.keyDown, _p30.gravity, diffTime, _p27.rocket);
+		var _p28 = A2(_chemmi$elm_rocket$Rocket_Movement$tryLanding, movedRocket, _p30);
+		if (_p28.ctor === 'Just') {
 			return _elm_lang$core$Native_Utils.update(
-				_p17,
+				_p29,
 				{
 					rocket: _elm_lang$core$Native_Utils.update(
 						movedRocket,
 						{
-							movement: _chemmi$elm_rocket$Rocket_Types$Landing(_p16._0)
+							movement: _chemmi$elm_rocket$Rocket_Types$Landing(_p28._0)
 						})
 				});
 		} else {
-			return A2(_chemmi$elm_rocket$Rocket_Collision$collision, movedRocket, _p18) ? _elm_lang$core$Native_Utils.update(
-				_p17,
+			return A2(_chemmi$elm_rocket$Rocket_Collision$collision, movedRocket, _p30) ? _elm_lang$core$Native_Utils.update(
+				_p29,
 				{
 					rocket: _elm_lang$core$Native_Utils.update(
 						movedRocket,
 						{movement: _chemmi$elm_rocket$Rocket_Types$Colliding})
-				}) : _elm_lang$core$Native_Utils.update(
-				_p17,
-				{rocket: movedRocket});
+				}) : _chemmi$elm_rocket$Rocket_Updates$updateDisplayPosition(
+				_elm_lang$core$Native_Utils.update(
+					_p29,
+					{rocket: movedRocket}));
 		}
 	});
 var _chemmi$elm_rocket$Rocket_Updates$updatePlay = F2(
-	function (msg, _p19) {
-		var _p20 = _p19;
-		var _p24 = _p20.keyDown;
-		var _p23 = _p20;
-		var _p21 = msg;
-		switch (_p21.ctor) {
+	function (msg, _p31) {
+		var _p32 = _p31;
+		var _p36 = _p32.keyDown;
+		var _p35 = _p32;
+		var _p33 = msg;
+		switch (_p33.ctor) {
 			case 'KeyDownMsg':
 				return _elm_lang$core$Native_Utils.update(
-					_p23,
+					_p35,
 					{
 						keyDown: A2(
 							_chemmi$elm_rocket$Rocket_Updates$updateKeyDown,
-							_p24,
-							_chemmi$elm_rocket$Rocket_Types$KeyDownMsg(_p21._0))
+							_p36,
+							_chemmi$elm_rocket$Rocket_Types$KeyDownMsg(_p33._0))
 					});
 			case 'KeyUpMsg':
 				return _elm_lang$core$Native_Utils.update(
-					_p23,
+					_p35,
 					{
 						keyDown: A2(
 							_chemmi$elm_rocket$Rocket_Updates$updateKeyDown,
-							_p24,
-							_chemmi$elm_rocket$Rocket_Types$KeyUpMsg(_p21._0))
+							_p36,
+							_chemmi$elm_rocket$Rocket_Types$KeyUpMsg(_p33._0))
 					});
 			case 'Step':
-				var _p22 = _p20.rocket.movement;
-				switch (_p22.ctor) {
+				var _p34 = _p32.rocket.movement;
+				switch (_p34.ctor) {
 					case 'Landed':
-						return _chemmi$elm_rocket$Rocket_Updates$updateLanded(_p23);
+						return _chemmi$elm_rocket$Rocket_Updates$updateLanded(_p35);
 					case 'Landing':
-						return _chemmi$elm_rocket$Rocket_Updates$updateLanding(_p23);
+						return _chemmi$elm_rocket$Rocket_Updates$updateLanding(_p35);
 					case 'Colliding':
-						return _chemmi$elm_rocket$Rocket_Updates$updateColliding(_p23);
+						return _chemmi$elm_rocket$Rocket_Updates$updateColliding(_p35);
 					default:
-						return A2(_chemmi$elm_rocket$Rocket_Updates$updateFlying, _p23, _p21._0);
+						return A2(_chemmi$elm_rocket$Rocket_Updates$updateFlying, _p35, _p33._0);
 				}
 			case 'TimerTick':
-				return (_elm_lang$core$Native_Utils.cmp(_p23.timeRemaining, 0 * _elm_lang$core$Time$second) < 1) ? _elm_lang$core$Native_Utils.update(
-					_p23,
+				return (_elm_lang$core$Native_Utils.cmp(_p35.timeRemaining, 0 * _elm_lang$core$Time$second) < 1) ? _elm_lang$core$Native_Utils.update(
+					_p35,
 					{gameover: true}) : _elm_lang$core$Native_Utils.update(
-					_p23,
-					{timeRemaining: _p23.timeRemaining - (1 * _elm_lang$core$Time$second)});
+					_p35,
+					{timeRemaining: _p35.timeRemaining - (1 * _elm_lang$core$Time$second)});
 			default:
-				return _p23;
+				return _p35;
 		}
 	});
 var _chemmi$elm_rocket$Rocket_Views$viewValue = F2(
@@ -11851,12 +11945,7 @@ var _chemmi$elm_rocket$Rocket_Views$viewRocketStatus = function (r) {
 					]))
 			]));
 };
-var _chemmi$elm_rocket$Rocket_Views$viewPlay = function (_p2) {
-	var _p3 = _p2;
-	var _p5 = _p3.world;
-	var _p4 = _p5.size;
-	var w = _p4._0;
-	var h = _p4._1;
+var _chemmi$elm_rocket$Rocket_Views$viewPlay = function (data) {
 	return A2(
 		_elm_lang$html$Html$div,
 		_elm_lang$core$Native_List.fromArray(
@@ -11864,21 +11953,7 @@ var _chemmi$elm_rocket$Rocket_Views$viewPlay = function (_p2) {
 		_elm_lang$core$Native_List.fromArray(
 			[
 				_evancz$elm_graphics$Element$toHtml(
-				_evancz$elm_graphics$Element$layers(
-					_elm_lang$core$Native_List.fromArray(
-						[
-							A2(_chemmi$elm_rocket$Rocket_Scene$drawScene, _p5, _p3.rocket),
-							A4(
-							_evancz$elm_graphics$Element$container,
-							_elm_lang$core$Basics$round(w),
-							_elm_lang$core$Basics$round(h),
-							A2(
-								_evancz$elm_graphics$Element$midRightAt,
-								_evancz$elm_graphics$Element$absolute(10),
-								_evancz$elm_graphics$Element$absolute(20)),
-							_evancz$elm_graphics$Element$show(
-								_elm_lang$core$Time$inSeconds(_p3.timeRemaining)))
-						])))
+				_chemmi$elm_rocket$Rocket_Scene$drawScene(data))
 			]));
 };
 var _chemmi$elm_rocket$Rocket_Views$viewWin = function (data) {
@@ -12380,12 +12455,12 @@ var _chemmi$elm_rocket$Rocket$update = F2(
 				_elm_lang$core$Native_Utils.update(
 					_chemmi$elm_rocket$Rocket_Inits$initGameover,
 					{
-						background: A2(_chemmi$elm_rocket$Rocket_Scene$drawScene, updatedPlay.world, updatedPlay.rocket)
+						background: _chemmi$elm_rocket$Rocket_Scene$drawScene(updatedPlay)
 					})) : (_chemmi$elm_rocket$Rocket$isWin(updatedPlay) ? _chemmi$elm_rocket$Rocket_Types$Win(
 				_elm_lang$core$Native_Utils.update(
 					_chemmi$elm_rocket$Rocket_Inits$initWin,
 					{
-						background: A2(_chemmi$elm_rocket$Rocket_Scene$drawScene, updatedPlay.world, updatedPlay.rocket)
+						background: _chemmi$elm_rocket$Rocket_Scene$drawScene(updatedPlay)
 					})) : _chemmi$elm_rocket$Rocket_Types$Play(updatedPlay));
 		} else {
 			var _p4 = msg;
