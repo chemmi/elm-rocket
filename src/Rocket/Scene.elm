@@ -6,6 +6,7 @@ import Element exposing (..)
 import Html exposing (..)
 import Color exposing (..)
 import List exposing (map)
+import Time exposing (inSeconds)
 
 
 rectShape : Rect -> Shape
@@ -143,17 +144,24 @@ rocketForm { position, angle, fire, top, base } =
 
 
 drawScene : PlayData -> Element
-drawScene { world, rocket, displaySize, displayPosition } =
+drawScene { world, rocket, displaySize, displayPosition, timeRemaining } =
     let
         ( dx, dy ) =
-            ( toFloat <| fst displayPosition, toFloat <| snd displayPosition)
+            ( toFloat <| fst displayPosition, toFloat <| snd displayPosition )
     in
-        uncurry collage displaySize
-            <| [ move ( -dx, -dy )
-                    <| group
-                        [ backgroundForm world.size
-                        , worldForm world
-                        , rocketForm rocket
-                        , frameForm world.size
-                        ]
-               ]
+        layers
+            [ uncurry collage displaySize
+                <| [ move ( -dx, -dy )
+                        <| group
+                            [ backgroundForm world.size
+                            , worldForm world
+                            , rocketForm rocket
+                            , frameForm world.size
+                            ]
+                   ]
+            , uncurry container
+                displaySize
+                (midRightAt (absolute 10) (absolute 20))
+                <| show
+                <| inSeconds timeRemaining
+            ]

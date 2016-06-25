@@ -41,17 +41,9 @@ viewWin data =
 
 
 viewPlay : PlayData -> Html a
-viewPlay ({ rocket, world, timeRemaining, displaySize } as data) =
+viewPlay data =
     div []
-        [ toHtml
-            <| layers
-                [ drawScene data
-                , uncurry container
-                    displaySize
-                    (midRightAt (absolute 10) (absolute 20))
-                    <| show
-                    <| inSeconds timeRemaining
-                ]
+        [ toHtml <| drawScene data
           --, viewRocketStatus rocket
         ]
 
