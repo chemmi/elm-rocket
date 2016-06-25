@@ -47,7 +47,7 @@ startRocket rocket =
     in
         { rocket
             | movement = Flying
-            , position = ( px, py + 1 )
+            , position = ( px, py + 2 )
             , fire = True
             , onPlatform = Nothing
         }
@@ -72,13 +72,13 @@ tryLanding { velocity, position, base, angle } { platforms } =
             round angle % 360
 
         angleTolerance =
-            10
+            15
 
         vxTolerance =
-            1
+            3
 
         vyTolerance =
-            2
+            5
 
         landOnPlatform =
             \platform ->
@@ -98,8 +98,8 @@ tryLanding { velocity, position, base, angle } { platforms } =
                             && -- coarse (base should be rotated)
                                (b2x + rx < cx + plathw)
                             && -- coarse (base should be rotated)
-                               ((b1y + ry <= cy && b1y + ry > cy - 10)
-                                    || (b2y + ry <= cy && b2y + ry > cy - 10)
+                               ((b1y + ry <= cy+1 && b1y + ry > cy - 10)
+                                    || (b2y + ry <= cy+1 && b2y + ry > cy - 10)
                                )
                             && (abs vx < vxTolerance)
                             && (abs vy < vyTolerance)

@@ -106,8 +106,8 @@ type alias Platform =
 
 type alias Rect =
     { topLeft : Point
-    , height : Float
     , width : Float
+    , height : Float
     }
 
 

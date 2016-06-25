@@ -15,7 +15,7 @@ initPlay : PlayData
 initPlay =
     let
         world =
-            world3
+            visitChambers
     in
         { keyDown = noKeyDown
         , timeRemaining = world.totalTime
@@ -61,7 +61,7 @@ noKeyDown =
 
 initRocket : Rocket
 initRocket =
-    { acceleration = initWorld.gravity * 3
+    { acceleration = initWorld.gravity * 2
     , position = ( 0, 0 )
     , movement = Flying
     , onPlatform = Nothing
