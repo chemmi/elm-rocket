@@ -1,43 +1,47 @@
 module Rocket exposing (..)
 
-import Html.App exposing (program)
 import Rocket.Types exposing (..)
 import Rocket.Inits exposing (..)
 import Rocket.Updates exposing (..)
 import Rocket.Views exposing (..)
 import Rocket.Scene exposing (drawScene)
+import Html exposing (Html)
+import Html.App exposing (program)
+import Time exposing (..)
+import AnimationFrame exposing (..)
 import Keyboard
 import Char exposing (KeyCode, fromCode)
-import AnimationFrame exposing (..)
-import Time exposing (..)
 
 
 keyBinding : Model -> KeyCode -> Key
-keyBinding model code =
+keyBinding model =
     case model of
         Play _ ->
-            case fromCode code of
-                'W' ->
-                    Forward
+            \code ->
+                case fromCode code of
+                    'W' ->
+                        Forward
 
-                'A' ->
-                    Left
+                    'A' ->
+                        Left
 
-                'D' ->
-                    Right
+                    'D' ->
+                        Right
 
-                _ ->
-                    NotBound
+                    _ ->
+                        NotBound
 
         _ ->
-            case fromCode code of
-                ' ' ->
-                    Start
+            \code ->
+                case fromCode code of
+                    ' ' ->
+                        Start
 
-                _ ->
-                    NotBound
+                    _ ->
+                        NotBound
 
 
+view : Model -> Html a
 view model =
     case model of
         Play data ->
@@ -100,20 +104,20 @@ isWin { world } =
 subscriptions : Model -> Sub Msg
 subscriptions model =
     Sub.batch
-        ([ Keyboard.downs (KeyDownMsg << (keyBinding model))
-         , Keyboard.ups (KeyUpMsg << (keyBinding model))
-         ]
-            ++ case model of
-                Play _ ->
-                    [ diffs Step
-                    , every second <| always TimerTick
-                    ]
+        <| [ Keyboard.downs (KeyDownMsg << keyBinding model)
+           , Keyboard.ups (KeyUpMsg << keyBinding model)
+           ]
+        ++ case model of
+            Play _ ->
+                [ diffs Step
+                , every second <| always TimerTick
+                ]
 
-                _ ->
-                    []
-        )
+            _ ->
+                []
 
 
+main : Program Never
 main =
     program
         { init = ( init, Cmd.none )

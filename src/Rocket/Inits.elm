@@ -6,10 +6,12 @@ import Rocket.Scene exposing (drawScene)
 import Element exposing (empty)
 
 
+init : Model
 init =
     Startscreen initStartscreen
 
 
+initPlay : PlayData
 initPlay =
     let
         world =
@@ -26,24 +28,28 @@ initPlay =
         }
 
 
+initStartscreen : StartscreenData
 initStartscreen =
     { message = "Startscreen - Press SPACE to start"
     , background = drawScene initPlay.world initPlay.rocket
     }
 
 
+initGameover : GameoverData
 initGameover =
     { message = "Gameover - Press SPACE to restart"
     , background = empty
     }
 
 
+initWin : WinData
 initWin =
     { message = "Win - Press SPACE to restart"
     , background = empty
     }
 
 
+noKeyDown : KeyDown
 noKeyDown =
     { left = False
     , right = False
@@ -51,6 +57,7 @@ noKeyDown =
     }
 
 
+initRocket : Rocket
 initRocket =
     { acceleration = initWorld.gravity * 3
     , position = ( 0, 0 )
