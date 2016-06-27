@@ -8791,10 +8791,12 @@ var _evancz$elm_graphics$Element$below = F2(
 var _evancz$elm_graphics$Element$down = _evancz$elm_graphics$Element$DDown;
 var _evancz$elm_graphics$Element$DUp = {ctor: 'DUp'};
 var _evancz$elm_graphics$Element$up = _evancz$elm_graphics$Element$DUp;
-var _chemmi$elm_rocket$Rocket_Types$StartscreenData = F2(
-	function (a, b) {
-		return {message: a, background: b};
-	});
+var _chemmi$elm_rocket$Rocket_Types$StartscreenData = function (a) {
+	return {background: a};
+};
+var _chemmi$elm_rocket$Rocket_Types$WorldChoiceData = function (a) {
+	return {worlds: a};
+};
 var _chemmi$elm_rocket$Rocket_Types$GameoverData = F2(
 	function (a, b) {
 		return {message: a, background: b};
@@ -8851,6 +8853,9 @@ var _chemmi$elm_rocket$Rocket_Types$Win = function (a) {
 };
 var _chemmi$elm_rocket$Rocket_Types$Gameover = function (a) {
 	return {ctor: 'Gameover', _0: a};
+};
+var _chemmi$elm_rocket$Rocket_Types$WorldChoice = function (a) {
+	return {ctor: 'WorldChoice', _0: a};
 };
 var _chemmi$elm_rocket$Rocket_Types$Startscreen = function (a) {
 	return {ctor: 'Startscreen', _0: a};
@@ -10371,8 +10376,10 @@ var _chemmi$elm_rocket$Rocket_Inits$initRocket = {
 	top: {ctor: '_Tuple2', _0: 0, _1: 20}
 };
 var _chemmi$elm_rocket$Rocket_Inits$noKeyDown = {left: false, right: false, forward: false};
-var _chemmi$elm_rocket$Rocket_Inits$initWin = {message: 'Win - Press SPACE to restart', background: _evancz$elm_graphics$Element$empty};
-var _chemmi$elm_rocket$Rocket_Inits$initGameover = {message: 'Gameover - Press SPACE to restart', background: _evancz$elm_graphics$Element$empty};
+var _chemmi$elm_rocket$Rocket_Inits$initWin = {message: 'YEAH! WIN! - Press [SPACE] to continue', background: _evancz$elm_graphics$Element$empty};
+var _chemmi$elm_rocket$Rocket_Inits$initGameover = {message: 'Gameover - Press [SPACE] to continue', background: _evancz$elm_graphics$Element$empty};
+var _chemmi$elm_rocket$Rocket_Inits$initWorldChoice = {worlds: _chemmi$elm_rocket$Rocket_Worlds$allWorlds};
+var _chemmi$elm_rocket$Rocket_Inits$initStartscreen = {background: _evancz$elm_graphics$Element$empty};
 var _chemmi$elm_rocket$Rocket_Inits$initPlay = function () {
 	var world = _chemmi$elm_rocket$Rocket_Worlds$visitChambers;
 	return {
@@ -10387,10 +10394,6 @@ var _chemmi$elm_rocket$Rocket_Inits$initPlay = function () {
 		gameover: false
 	};
 }();
-var _chemmi$elm_rocket$Rocket_Inits$initStartscreen = {
-	message: 'Startscreen - Press SPACE to start',
-	background: _chemmi$elm_rocket$Rocket_Scene$drawWorldThumbnail(_chemmi$elm_rocket$Rocket_Inits$initPlay.world)
-};
 var _chemmi$elm_rocket$Rocket_Inits$init = _chemmi$elm_rocket$Rocket_Types$Startscreen(_chemmi$elm_rocket$Rocket_Inits$initStartscreen);
 var _elm_lang$core$Set$foldr = F3(
 	function (f, b, _p0) {
@@ -12009,6 +12012,57 @@ var _chemmi$elm_rocket$Rocket_Movement$moveRocket = F4(
 				fire: keyDown.forward
 			});
 	});
+var _chemmi$elm_rocket$Rocket_Updates$rotateRight = function (xs) {
+	var _p0 = xs;
+	if (_p0.ctor === '[]') {
+		return _elm_lang$core$Native_List.fromArray(
+			[]);
+	} else {
+		var _p5 = _p0;
+		var xs$ = function () {
+			var _p1 = _elm_community$list_extra$List_Extra$init(_p5);
+			if (_p1.ctor === 'Just') {
+				return _p1._0;
+			} else {
+				return _elm_lang$core$Native_Utils.crashCase(
+					'Rocket.Updates',
+					{
+						start: {line: 235, column: 21},
+						end: {line: 240, column: 72}
+					},
+					_p1)('List should not be empty here');
+			}
+		}();
+		var x$ = function () {
+			var _p3 = _elm_community$list_extra$List_Extra$last(_p5);
+			if (_p3.ctor === 'Just') {
+				return _p3._0;
+			} else {
+				return _elm_lang$core$Native_Utils.crashCase(
+					'Rocket.Updates',
+					{
+						start: {line: 227, column: 21},
+						end: {line: 232, column: 72}
+					},
+					_p3)('List should not be empty here');
+			}
+		}();
+		return A2(_elm_lang$core$List_ops['::'], x$, xs$);
+	}
+};
+var _chemmi$elm_rocket$Rocket_Updates$rotateLeft = function (xs) {
+	var _p6 = xs;
+	if (_p6.ctor === '[]') {
+		return _elm_lang$core$Native_List.fromArray(
+			[]);
+	} else {
+		return A2(
+			_elm_lang$core$Basics_ops['++'],
+			_p6._1,
+			_elm_lang$core$Native_List.fromArray(
+				[_p6._0]));
+	}
+};
 var _chemmi$elm_rocket$Rocket_Updates$markPlatform = F2(
 	function (p, ps) {
 		return A3(
@@ -12026,11 +12080,11 @@ var _chemmi$elm_rocket$Rocket_Updates$markPlatform = F2(
 	});
 var _chemmi$elm_rocket$Rocket_Updates$updateKeyDown = F2(
 	function (keyDown, msg) {
-		var _p0 = msg;
-		switch (_p0.ctor) {
+		var _p7 = msg;
+		switch (_p7.ctor) {
 			case 'KeyDownMsg':
-				var _p1 = _p0._0;
-				switch (_p1.ctor) {
+				var _p8 = _p7._0;
+				switch (_p8.ctor) {
 					case 'Left':
 						return _elm_lang$core$Native_Utils.update(
 							keyDown,
@@ -12047,8 +12101,8 @@ var _chemmi$elm_rocket$Rocket_Updates$updateKeyDown = F2(
 						return keyDown;
 				}
 			case 'KeyUpMsg':
-				var _p2 = _p0._0;
-				switch (_p2.ctor) {
+				var _p9 = _p7._0;
+				switch (_p9.ctor) {
 					case 'Left':
 						return _elm_lang$core$Native_Utils.update(
 							keyDown,
@@ -12068,46 +12122,46 @@ var _chemmi$elm_rocket$Rocket_Updates$updateKeyDown = F2(
 				return _elm_lang$core$Native_Utils.crashCase(
 					'Rocket.Updates',
 					{
-						start: {line: 157, column: 5},
-						end: {line: 187, column: 84}
+						start: {line: 170, column: 5},
+						end: {line: 200, column: 84}
 					},
-					_p0)('updateKeyDown called with neither KeyDownMsg nor KeyUpMsg');
+					_p7)('updateKeyDown called with neither KeyDownMsg nor KeyUpMsg');
 		}
 	});
-var _chemmi$elm_rocket$Rocket_Updates$updateDisplayPosition = function (_p4) {
-	var _p5 = _p4;
-	var _p6 = _p5.rocket.position;
-	var rx = _p6._0;
-	var ry = _p6._1;
-	var _p7 = {
+var _chemmi$elm_rocket$Rocket_Updates$updateDisplayPosition = function (_p11) {
+	var _p12 = _p11;
+	var _p13 = _p12.rocket.position;
+	var rx = _p13._0;
+	var ry = _p13._1;
+	var _p14 = {
 		ctor: '_Tuple2',
 		_0: _elm_lang$core$Basics$round(rx),
 		_1: _elm_lang$core$Basics$round(ry)
 	};
-	var rrx = _p7._0;
-	var rry = _p7._1;
-	var _p8 = _p5.world.size;
-	var wW = _p8._0;
-	var wH = _p8._1;
-	var _p9 = _p5.displaySize;
-	var dW = _p9._0;
-	var dH = _p9._1;
+	var rrx = _p14._0;
+	var rry = _p14._1;
+	var _p15 = _p12.world.size;
+	var wW = _p15._0;
+	var wH = _p15._1;
+	var _p16 = _p12.displaySize;
+	var dW = _p16._0;
+	var dH = _p16._1;
 	var tolerancex = (dW / 4) | 0;
 	var tolerancey = (dH / 4) | 0;
-	var fokusRocket = function (_p10) {
-		var _p11 = _p10;
-		var _p13 = _p11._1;
-		var _p12 = _p11._0;
-		var dy$ = (_p13 + A2(_elm_lang$core$Basics$max, 0, (rry - _p13) - tolerancey)) + A2(_elm_lang$core$Basics$min, 0, (rry - _p13) + tolerancey);
-		var dx$ = (_p12 + A2(_elm_lang$core$Basics$max, 0, (rrx - _p12) - tolerancex)) + A2(_elm_lang$core$Basics$min, 0, (rrx - _p12) + tolerancex);
+	var fokusRocket = function (_p17) {
+		var _p18 = _p17;
+		var _p20 = _p18._1;
+		var _p19 = _p18._0;
+		var dy$ = (_p20 + A2(_elm_lang$core$Basics$max, 0, (rry - _p20) - tolerancey)) + A2(_elm_lang$core$Basics$min, 0, (rry - _p20) + tolerancey);
+		var dx$ = (_p19 + A2(_elm_lang$core$Basics$max, 0, (rrx - _p19) - tolerancex)) + A2(_elm_lang$core$Basics$min, 0, (rrx - _p19) + tolerancex);
 		return {ctor: '_Tuple2', _0: dx$, _1: dy$};
 	};
-	var stayInFrame = function (_p14) {
-		var _p15 = _p14;
+	var stayInFrame = function (_p21) {
+		var _p22 = _p21;
 		var dy$ = A2(
 			_elm_lang$core$Basics$max,
 			_elm_lang$core$Basics$round((0 - wH) / 2) + ((dH / 2) | 0),
-			_p15._1);
+			_p22._1);
 		var dy$$ = A2(
 			_elm_lang$core$Basics$min,
 			_elm_lang$core$Basics$round(wH / 2) - ((dH / 2) | 0),
@@ -12115,7 +12169,7 @@ var _chemmi$elm_rocket$Rocket_Updates$updateDisplayPosition = function (_p4) {
 		var dx$ = A2(
 			_elm_lang$core$Basics$max,
 			_elm_lang$core$Basics$round((0 - wW) / 2) + ((dW / 2) | 0),
-			_p15._0);
+			_p22._0);
 		var dx$$ = A2(
 			_elm_lang$core$Basics$min,
 			_elm_lang$core$Basics$round(wW / 2) - ((dW / 2) | 0),
@@ -12123,46 +12177,46 @@ var _chemmi$elm_rocket$Rocket_Updates$updateDisplayPosition = function (_p4) {
 		return {ctor: '_Tuple2', _0: dx$$, _1: dy$$};
 	};
 	return _elm_lang$core$Native_Utils.update(
-		_p5,
+		_p12,
 		{
 			displayPosition: stayInFrame(
-				fokusRocket(_p5.displayPosition))
+				fokusRocket(_p12.displayPosition))
 		});
 };
-var _chemmi$elm_rocket$Rocket_Updates$updateLanded = function (_p16) {
-	var _p17 = _p16;
-	var _p18 = _p17;
-	return _p17.keyDown.forward ? _elm_lang$core$Native_Utils.update(
-		_p18,
+var _chemmi$elm_rocket$Rocket_Updates$updateLanded = function (_p23) {
+	var _p24 = _p23;
+	var _p25 = _p24;
+	return _p24.keyDown.forward ? _elm_lang$core$Native_Utils.update(
+		_p25,
 		{
-			rocket: _chemmi$elm_rocket$Rocket_Movement$startRocket(_p17.rocket)
-		}) : _p18;
+			rocket: _chemmi$elm_rocket$Rocket_Movement$startRocket(_p24.rocket)
+		}) : _p25;
 };
-var _chemmi$elm_rocket$Rocket_Updates$updateLanding = function (_p19) {
-	var _p20 = _p19;
-	var _p25 = _p20.world;
-	var _p24 = _p20.rocket;
-	var _p21 = _p24.movement;
-	if (_p21.ctor === 'Landing') {
-		var _p22 = _p21._0;
+var _chemmi$elm_rocket$Rocket_Updates$updateLanding = function (_p26) {
+	var _p27 = _p26;
+	var _p32 = _p27.world;
+	var _p31 = _p27.rocket;
+	var _p28 = _p31.movement;
+	if (_p28.ctor === 'Landing') {
+		var _p29 = _p28._0;
 		return _elm_lang$core$Native_Utils.update(
-			_p20,
+			_p27,
 			{
-				rocket: A2(_chemmi$elm_rocket$Rocket_Movement$landOn, _p22, _p24),
+				rocket: A2(_chemmi$elm_rocket$Rocket_Movement$landOn, _p29, _p31),
 				world: _elm_lang$core$Native_Utils.update(
-					_p25,
+					_p32,
 					{
-						platforms: A2(_chemmi$elm_rocket$Rocket_Updates$markPlatform, _p22, _p25.platforms)
+						platforms: A2(_chemmi$elm_rocket$Rocket_Updates$markPlatform, _p29, _p32.platforms)
 					})
 			});
 	} else {
 		return _elm_lang$core$Native_Utils.crashCase(
 			'Rocket.Updates',
 			{
-				start: {line: 77, column: 5},
-				end: {line: 88, column: 77}
+				start: {line: 90, column: 5},
+				end: {line: 101, column: 77}
 			},
-			_p21)('update Landing called with non \"Landing ...\" Msg');
+			_p28)('update Landing called with non \"Landing ...\" Msg');
 	}
 };
 var _chemmi$elm_rocket$Rocket_Updates$updateColliding = function (data) {
@@ -12171,80 +12225,103 @@ var _chemmi$elm_rocket$Rocket_Updates$updateColliding = function (data) {
 		{gameover: true});
 };
 var _chemmi$elm_rocket$Rocket_Updates$updateFlying = F2(
-	function (_p26, diffTime) {
-		var _p27 = _p26;
-		var _p30 = _p27.world;
-		var _p29 = _p27;
-		var movedRocket = A4(_chemmi$elm_rocket$Rocket_Movement$moveRocket, _p27.keyDown, _p30.gravity, diffTime, _p27.rocket);
-		var _p28 = A2(_chemmi$elm_rocket$Rocket_Movement$tryLanding, movedRocket, _p30);
-		if (_p28.ctor === 'Just') {
+	function (_p33, diffTime) {
+		var _p34 = _p33;
+		var _p37 = _p34.world;
+		var _p36 = _p34;
+		var movedRocket = A4(_chemmi$elm_rocket$Rocket_Movement$moveRocket, _p34.keyDown, _p37.gravity, diffTime, _p34.rocket);
+		var _p35 = A2(_chemmi$elm_rocket$Rocket_Movement$tryLanding, movedRocket, _p37);
+		if (_p35.ctor === 'Just') {
 			return _elm_lang$core$Native_Utils.update(
-				_p29,
+				_p36,
 				{
 					rocket: _elm_lang$core$Native_Utils.update(
 						movedRocket,
 						{
-							movement: _chemmi$elm_rocket$Rocket_Types$Landing(_p28._0)
+							movement: _chemmi$elm_rocket$Rocket_Types$Landing(_p35._0)
 						})
 				});
 		} else {
-			return A2(_chemmi$elm_rocket$Rocket_Collision$collision, movedRocket, _p30) ? _elm_lang$core$Native_Utils.update(
-				_p29,
+			return A2(_chemmi$elm_rocket$Rocket_Collision$collision, movedRocket, _p37) ? _elm_lang$core$Native_Utils.update(
+				_p36,
 				{
 					rocket: _elm_lang$core$Native_Utils.update(
 						movedRocket,
 						{movement: _chemmi$elm_rocket$Rocket_Types$Colliding})
 				}) : _chemmi$elm_rocket$Rocket_Updates$updateDisplayPosition(
 				_elm_lang$core$Native_Utils.update(
-					_p29,
+					_p36,
 					{rocket: movedRocket}));
 		}
 	});
 var _chemmi$elm_rocket$Rocket_Updates$updatePlay = F2(
-	function (msg, _p31) {
-		var _p32 = _p31;
-		var _p36 = _p32.keyDown;
-		var _p35 = _p32;
-		var _p33 = msg;
-		switch (_p33.ctor) {
+	function (msg, _p38) {
+		var _p39 = _p38;
+		var _p43 = _p39.keyDown;
+		var _p42 = _p39;
+		var _p40 = msg;
+		switch (_p40.ctor) {
 			case 'KeyDownMsg':
 				return _elm_lang$core$Native_Utils.update(
-					_p35,
+					_p42,
 					{
 						keyDown: A2(
 							_chemmi$elm_rocket$Rocket_Updates$updateKeyDown,
-							_p36,
-							_chemmi$elm_rocket$Rocket_Types$KeyDownMsg(_p33._0))
+							_p43,
+							_chemmi$elm_rocket$Rocket_Types$KeyDownMsg(_p40._0))
 					});
 			case 'KeyUpMsg':
 				return _elm_lang$core$Native_Utils.update(
-					_p35,
+					_p42,
 					{
 						keyDown: A2(
 							_chemmi$elm_rocket$Rocket_Updates$updateKeyDown,
-							_p36,
-							_chemmi$elm_rocket$Rocket_Types$KeyUpMsg(_p33._0))
+							_p43,
+							_chemmi$elm_rocket$Rocket_Types$KeyUpMsg(_p40._0))
 					});
 			case 'Step':
-				var _p34 = _p32.rocket.movement;
-				switch (_p34.ctor) {
+				var _p41 = _p39.rocket.movement;
+				switch (_p41.ctor) {
 					case 'Landed':
-						return _chemmi$elm_rocket$Rocket_Updates$updateLanded(_p35);
+						return _chemmi$elm_rocket$Rocket_Updates$updateLanded(_p42);
 					case 'Landing':
-						return _chemmi$elm_rocket$Rocket_Updates$updateLanding(_p35);
+						return _chemmi$elm_rocket$Rocket_Updates$updateLanding(_p42);
 					case 'Colliding':
-						return _chemmi$elm_rocket$Rocket_Updates$updateColliding(_p35);
+						return _chemmi$elm_rocket$Rocket_Updates$updateColliding(_p42);
 					default:
-						return A2(_chemmi$elm_rocket$Rocket_Updates$updateFlying, _p35, _p33._0);
+						return A2(_chemmi$elm_rocket$Rocket_Updates$updateFlying, _p42, _p40._0);
 				}
 			case 'TimerTick':
-				return (_elm_lang$core$Native_Utils.cmp(_p35.timeRemaining, 0 * _elm_lang$core$Time$second) < 1) ? _elm_lang$core$Native_Utils.update(
-					_p35,
+				return (_elm_lang$core$Native_Utils.cmp(_p42.timeRemaining, 0 * _elm_lang$core$Time$second) < 1) ? _elm_lang$core$Native_Utils.update(
+					_p42,
 					{gameover: true}) : _elm_lang$core$Native_Utils.update(
-					_p35,
-					{timeRemaining: _p35.timeRemaining - (1 * _elm_lang$core$Time$second)});
+					_p42,
+					{timeRemaining: _p42.timeRemaining - (1 * _elm_lang$core$Time$second)});
 			default:
-				return _p35;
+				return _p42;
+		}
+	});
+var _chemmi$elm_rocket$Rocket_Updates$updateWorldChoice = F2(
+	function (key, _p44) {
+		var _p45 = _p44;
+		var _p48 = _p45.worlds;
+		var _p47 = _p45;
+		var _p46 = key;
+		switch (_p46.ctor) {
+			case 'Right':
+				return _elm_lang$core$Native_Utils.update(
+					_p47,
+					{
+						worlds: _chemmi$elm_rocket$Rocket_Updates$rotateRight(_p48)
+					});
+			case 'Left':
+				return _elm_lang$core$Native_Utils.update(
+					_p47,
+					{
+						worlds: _chemmi$elm_rocket$Rocket_Updates$rotateLeft(_p48)
+					});
+			default:
+				return _p47;
 		}
 	});
 var _chemmi$elm_rocket$Rocket_Views$viewValue = F2(
@@ -12387,6 +12464,42 @@ var _chemmi$elm_rocket$Rocket_Views$viewGameover = function (data) {
 						])))
 			]));
 };
+var _chemmi$elm_rocket$Rocket_Views$viewWorldChoice = function (_p2) {
+	var _p3 = _p2;
+	return A2(
+		_elm_lang$html$Html$div,
+		_elm_lang$core$Native_List.fromArray(
+			[]),
+		_elm_lang$core$Native_List.fromArray(
+			[
+				_evancz$elm_graphics$Element$toHtml(
+				_evancz$elm_graphics$Element$layers(
+					_elm_lang$core$Native_List.fromArray(
+						[
+							_chemmi$elm_rocket$Rocket_Scene$drawWorldThumbnail(
+							function () {
+								var _p4 = _elm_lang$core$List$head(_p3.worlds);
+								if (_p4.ctor === 'Just') {
+									return _p4._0;
+								} else {
+									return _elm_lang$core$Native_Utils.crashCase(
+										'Rocket.Views',
+										{
+											start: {line: 29, column: 24},
+											end: {line: 34, column: 58}
+										},
+										_p4)('No worlds found');
+								}
+							}()),
+							A4(
+							_evancz$elm_graphics$Element$container,
+							800,
+							600,
+							_evancz$elm_graphics$Element$middle,
+							_evancz$elm_graphics$Element$show('<-- [A]    Choose and press [SPACE] to start level    [D] -->'))
+						])))
+			]));
+};
 var _chemmi$elm_rocket$Rocket_Views$viewStartscreen = function (data) {
 	return A2(
 		_elm_lang$html$Html$div,
@@ -12398,13 +12511,12 @@ var _chemmi$elm_rocket$Rocket_Views$viewStartscreen = function (data) {
 				_evancz$elm_graphics$Element$layers(
 					_elm_lang$core$Native_List.fromArray(
 						[
-							data.background,
 							A4(
 							_evancz$elm_graphics$Element$container,
 							800,
 							600,
 							_evancz$elm_graphics$Element$middle,
-							_evancz$elm_graphics$Element$show(data.message))
+							_evancz$elm_graphics$Element$show('Startscreen - Press [SPACE] to choose level'))
 						])))
 			]));
 };
@@ -12835,10 +12947,53 @@ var _chemmi$elm_rocket$Rocket$isWin = function (_p0) {
 var _chemmi$elm_rocket$Rocket$isGameover = function (data) {
 	return data.gameover;
 };
+var _chemmi$elm_rocket$Rocket$startPlay = function (world) {
+	return _elm_lang$core$Native_Utils.update(
+		_chemmi$elm_rocket$Rocket_Inits$initPlay,
+		{
+			world: world,
+			timeRemaining: world.totalTime,
+			rocket: _elm_lang$core$Native_Utils.update(
+				_chemmi$elm_rocket$Rocket_Inits$initRocket,
+				{position: world.rocketStartPosition})
+		});
+};
 var _chemmi$elm_rocket$Rocket$update = F2(
 	function (msg, model) {
 		var _p3 = model;
 		switch (_p3.ctor) {
+			case 'Startscreen':
+				var _p4 = msg;
+				if ((_p4.ctor === 'KeyUpMsg') && (_p4._0.ctor === 'Start')) {
+					return _chemmi$elm_rocket$Rocket_Types$WorldChoice(_chemmi$elm_rocket$Rocket_Inits$initWorldChoice);
+				} else {
+					return model;
+				}
+			case 'WorldChoice':
+				var _p8 = _p3._0;
+				var _p5 = msg;
+				if (_p5.ctor === 'KeyUpMsg') {
+					if (_p5._0.ctor === 'Start') {
+						var _p6 = _elm_lang$core$List$head(_p8.worlds);
+						if (_p6.ctor === 'Just') {
+							return _chemmi$elm_rocket$Rocket_Types$Play(
+								_chemmi$elm_rocket$Rocket$startPlay(_p6._0));
+						} else {
+							return _elm_lang$core$Native_Utils.crashCase(
+								'Rocket',
+								{
+									start: {line: 103, column: 21},
+									end: {line: 108, column: 57}
+								},
+								_p6)('No world found');
+						}
+					} else {
+						return _chemmi$elm_rocket$Rocket_Types$WorldChoice(
+							A2(_chemmi$elm_rocket$Rocket_Updates$updateWorldChoice, _p5._0, _p8));
+					}
+				} else {
+					return model;
+				}
 			case 'Play':
 				var updatedPlay = A2(_chemmi$elm_rocket$Rocket_Updates$updatePlay, msg, _p3._0);
 				return _chemmi$elm_rocket$Rocket$isGameover(updatedPlay) ? _chemmi$elm_rocket$Rocket_Types$Gameover(
@@ -12853,16 +13008,16 @@ var _chemmi$elm_rocket$Rocket$update = F2(
 							background: _chemmi$elm_rocket$Rocket_Scene$drawScene(updatedPlay)
 						})) : _chemmi$elm_rocket$Rocket_Types$Play(updatedPlay));
 			case 'Gameover':
-				var _p4 = msg;
-				if ((_p4.ctor === 'KeyUpMsg') && (_p4._0.ctor === 'Start')) {
+				var _p9 = msg;
+				if ((_p9.ctor === 'KeyUpMsg') && (_p9._0.ctor === 'Start')) {
 					return _chemmi$elm_rocket$Rocket_Types$Startscreen(_chemmi$elm_rocket$Rocket_Inits$initStartscreen);
 				} else {
 					return model;
 				}
 			default:
-				var _p5 = msg;
-				if ((_p5.ctor === 'KeyUpMsg') && (_p5._0.ctor === 'Start')) {
-					return _chemmi$elm_rocket$Rocket_Types$Play(_chemmi$elm_rocket$Rocket_Inits$initPlay);
+				var _p10 = msg;
+				if ((_p10.ctor === 'KeyUpMsg') && (_p10._0.ctor === 'Start')) {
+					return _chemmi$elm_rocket$Rocket_Types$Startscreen(_chemmi$elm_rocket$Rocket_Inits$initStartscreen);
 				} else {
 					return model;
 				}
@@ -12876,16 +13031,18 @@ var _chemmi$elm_rocket$Rocket$view = function (model) {
 		_elm_lang$core$Native_List.fromArray(
 			[
 				function () {
-				var _p6 = model;
-				switch (_p6.ctor) {
+				var _p11 = model;
+				switch (_p11.ctor) {
 					case 'Play':
-						return _chemmi$elm_rocket$Rocket_Views$viewPlay(_p6._0);
+						return _chemmi$elm_rocket$Rocket_Views$viewPlay(_p11._0);
 					case 'Startscreen':
-						return _chemmi$elm_rocket$Rocket_Views$viewStartscreen(_p6._0);
+						return _chemmi$elm_rocket$Rocket_Views$viewStartscreen(_p11._0);
+					case 'WorldChoice':
+						return _chemmi$elm_rocket$Rocket_Views$viewWorldChoice(_p11._0);
 					case 'Gameover':
-						return _chemmi$elm_rocket$Rocket_Views$viewGameover(_p6._0);
+						return _chemmi$elm_rocket$Rocket_Views$viewGameover(_p11._0);
 					default:
-						return _chemmi$elm_rocket$Rocket_Views$viewWin(_p6._0);
+						return _chemmi$elm_rocket$Rocket_Views$viewWin(_p11._0);
 				}
 			}(),
 				A2(
@@ -12921,30 +13078,45 @@ var _chemmi$elm_rocket$Rocket$view = function (model) {
 			]));
 };
 var _chemmi$elm_rocket$Rocket$keyBinding = function (model) {
-	var _p7 = model;
-	if (_p7.ctor === 'Play') {
-		return function (code) {
-			var _p8 = _elm_lang$core$Char$fromCode(code);
-			switch (_p8.valueOf()) {
-				case 'W':
-					return _chemmi$elm_rocket$Rocket_Types$Forward;
-				case 'A':
-					return _chemmi$elm_rocket$Rocket_Types$Left;
-				case 'D':
-					return _chemmi$elm_rocket$Rocket_Types$Right;
-				default:
+	var _p12 = model;
+	switch (_p12.ctor) {
+		case 'WorldChoice':
+			return function (code) {
+				var _p13 = _elm_lang$core$Char$fromCode(code);
+				switch (_p13.valueOf()) {
+					case 'A':
+						return _chemmi$elm_rocket$Rocket_Types$Left;
+					case 'D':
+						return _chemmi$elm_rocket$Rocket_Types$Right;
+					case ' ':
+						return _chemmi$elm_rocket$Rocket_Types$Start;
+					default:
+						return _chemmi$elm_rocket$Rocket_Types$NotBound;
+				}
+			};
+		case 'Play':
+			return function (code) {
+				var _p14 = _elm_lang$core$Char$fromCode(code);
+				switch (_p14.valueOf()) {
+					case 'W':
+						return _chemmi$elm_rocket$Rocket_Types$Forward;
+					case 'A':
+						return _chemmi$elm_rocket$Rocket_Types$Left;
+					case 'D':
+						return _chemmi$elm_rocket$Rocket_Types$Right;
+					default:
+						return _chemmi$elm_rocket$Rocket_Types$NotBound;
+				}
+			};
+		default:
+			return function (code) {
+				var _p15 = _elm_lang$core$Char$fromCode(code);
+				if (_p15.valueOf() === ' ') {
+					return _chemmi$elm_rocket$Rocket_Types$Start;
+				} else {
 					return _chemmi$elm_rocket$Rocket_Types$NotBound;
-			}
-		};
-	} else {
-		return function (code) {
-			var _p9 = _elm_lang$core$Char$fromCode(code);
-			if (_p9.valueOf() === ' ') {
-				return _chemmi$elm_rocket$Rocket_Types$Start;
-			} else {
-				return _chemmi$elm_rocket$Rocket_Types$NotBound;
-			}
-		};
+				}
+			};
 	}
 };
 var _chemmi$elm_rocket$Rocket$subscriptions = function (model) {
@@ -12954,19 +13126,19 @@ var _chemmi$elm_rocket$Rocket$subscriptions = function (model) {
 			_elm_lang$core$Native_List.fromArray(
 				[
 					_elm_lang$keyboard$Keyboard$downs(
-					function (_p10) {
+					function (_p16) {
 						return _chemmi$elm_rocket$Rocket_Types$KeyDownMsg(
-							A2(_chemmi$elm_rocket$Rocket$keyBinding, model, _p10));
+							A2(_chemmi$elm_rocket$Rocket$keyBinding, model, _p16));
 					}),
 					_elm_lang$keyboard$Keyboard$ups(
-					function (_p11) {
+					function (_p17) {
 						return _chemmi$elm_rocket$Rocket_Types$KeyUpMsg(
-							A2(_chemmi$elm_rocket$Rocket$keyBinding, model, _p11));
+							A2(_chemmi$elm_rocket$Rocket$keyBinding, model, _p17));
 					})
 				]),
 			function () {
-				var _p12 = model;
-				if (_p12.ctor === 'Play') {
+				var _p18 = model;
+				if (_p18.ctor === 'Play') {
 					return _elm_lang$core$Native_List.fromArray(
 						[
 							_elm_lang$animation_frame$AnimationFrame$diffs(_chemmi$elm_rocket$Rocket_Types$Step),
