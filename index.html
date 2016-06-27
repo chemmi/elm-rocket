@@ -10392,114 +10392,6 @@ var _chemmi$elm_rocket$Rocket_Inits$initStartscreen = {
 	background: _chemmi$elm_rocket$Rocket_Scene$drawWorldThumbnail(_chemmi$elm_rocket$Rocket_Inits$initPlay.world)
 };
 var _chemmi$elm_rocket$Rocket_Inits$init = _chemmi$elm_rocket$Rocket_Types$Startscreen(_chemmi$elm_rocket$Rocket_Inits$initStartscreen);
-var _chemmi$elm_rocket$Rocket_Movement$accelerate = F3(
-	function (acceleration, angle, _p0) {
-		var _p1 = _p0;
-		var deg = _elm_lang$core$Basics$degrees(angle + 90);
-		return {
-			ctor: '_Tuple2',
-			_0: (acceleration * _elm_lang$core$Basics$cos(deg)) + _p1._0,
-			_1: (acceleration * _elm_lang$core$Basics$sin(deg)) + _p1._1
-		};
-	});
-var _chemmi$elm_rocket$Rocket_Movement$landOn = F2(
-	function (platform, rocket) {
-		var _p2 = platform.center;
-		var cx = _p2._0;
-		var cy = _p2._1;
-		var _p3 = _elm_lang$core$Basics$fst(rocket.base);
-		var b1x = _p3._0;
-		var b1y = _p3._1;
-		var _p4 = rocket.position;
-		var rx = _p4._0;
-		var ry = _p4._1;
-		return _elm_lang$core$Native_Utils.update(
-			rocket,
-			{
-				movement: _chemmi$elm_rocket$Rocket_Types$Landed(platform),
-				position: {ctor: '_Tuple2', _0: rx, _1: cy - b1y},
-				velocity: {ctor: '_Tuple2', _0: 0, _1: 0},
-				angle: 0,
-				fire: false
-			});
-	});
-var _chemmi$elm_rocket$Rocket_Movement$tryLanding = F2(
-	function (_p6, _p5) {
-		var _p7 = _p6;
-		var _p14 = _p7.base;
-		var _p8 = _p5;
-		var vyTolerance = 5;
-		var vxTolerance = 3;
-		var angleTolerance = 15;
-		var roundedAngle = A2(
-			_elm_lang$core$Basics_ops['%'],
-			_elm_lang$core$Basics$round(_p7.angle),
-			360);
-		var _p9 = _elm_lang$core$Basics$snd(_p14);
-		var b2x = _p9._0;
-		var b2y = _p9._1;
-		var _p10 = _elm_lang$core$Basics$fst(_p14);
-		var b1x = _p10._0;
-		var b1y = _p10._1;
-		var _p11 = _p7.position;
-		var rx = _p11._0;
-		var ry = _p11._1;
-		var _p12 = _p7.velocity;
-		var vx = _p12._0;
-		var vy = _p12._1;
-		var landOnPlatform = function (platform) {
-			var plathw = platform.width / 2;
-			var _p13 = platform.center;
-			var cx = _p13._0;
-			var cy = _p13._1;
-			return (((_elm_lang$core$Native_Utils.cmp(roundedAngle, angleTolerance) < 0) || (_elm_lang$core$Native_Utils.cmp(roundedAngle, 360 - angleTolerance) > 0)) && ((_elm_lang$core$Native_Utils.cmp(b1x + rx, cx - plathw) > 0) && ((_elm_lang$core$Native_Utils.cmp(b2x + rx, cx + plathw) < 0) && ((((_elm_lang$core$Native_Utils.cmp(b1y + ry, cy + 1) < 1) && (_elm_lang$core$Native_Utils.cmp(b1y + ry, cy - 10) > 0)) || ((_elm_lang$core$Native_Utils.cmp(b2y + ry, cy + 1) < 1) && (_elm_lang$core$Native_Utils.cmp(b2y + ry, cy - 10) > 0))) && ((_elm_lang$core$Native_Utils.cmp(
-				_elm_lang$core$Basics$abs(vx),
-				vxTolerance) < 0) && (_elm_lang$core$Native_Utils.cmp(
-				_elm_lang$core$Basics$abs(vy),
-				vyTolerance) < 0)))))) ? _elm_lang$core$Maybe$Just(platform) : _elm_lang$core$Maybe$Nothing;
-		};
-		return _elm_lang$core$Maybe$oneOf(
-			A2(_elm_lang$core$List$map, landOnPlatform, _p8.platforms));
-	});
-var _chemmi$elm_rocket$Rocket_Movement$startRocket = function (rocket) {
-	var _p15 = rocket.position;
-	var px = _p15._0;
-	var py = _p15._1;
-	return _elm_lang$core$Native_Utils.update(
-		rocket,
-		{
-			movement: _chemmi$elm_rocket$Rocket_Types$Flying,
-			position: {ctor: '_Tuple2', _0: px, _1: py + 2},
-			fire: true,
-			onPlatform: _elm_lang$core$Maybe$Nothing
-		});
-};
-var _chemmi$elm_rocket$Rocket_Movement$moveRocket = F4(
-	function (keyDown, gravity, diffTime, _p16) {
-		var _p17 = _p16;
-		var _p21 = _p17.twist;
-		var _p20 = _p17.angle;
-		var diffSeconds = _elm_lang$core$Time$inSeconds(diffTime);
-		var _p18 = _p17.velocity;
-		var vx = _p18._0;
-		var vy = _p18._1;
-		var _p19 = _p17.position;
-		var x = _p19._0;
-		var y = _p19._1;
-		return _elm_lang$core$Native_Utils.update(
-			_p17,
-			{
-				angle: keyDown.left ? (_p20 + _p21) : (keyDown.right ? (_p20 - _p21) : _p20),
-				velocity: A3(
-					_chemmi$elm_rocket$Rocket_Movement$accelerate,
-					gravity * diffSeconds,
-					180,
-					(keyDown.forward ? A2(_chemmi$elm_rocket$Rocket_Movement$accelerate, _p17.acceleration * diffSeconds, _p20) : _elm_lang$core$Basics$identity)(
-						{ctor: '_Tuple2', _0: vx, _1: vy})),
-				position: {ctor: '_Tuple2', _0: vx + x, _1: vy + y},
-				fire: keyDown.forward
-			});
-	});
 var _elm_lang$core$Set$foldr = F3(
 	function (f, b, _p0) {
 		var _p1 = _p0;
@@ -11669,8 +11561,8 @@ var _chemmi$elm_rocket$Rocket_Collision$polyToSegments = function (poly) {
 			return _elm_lang$core$Native_Utils.crashCase(
 				'Rocket.Collision',
 				{
-					start: {line: 244, column: 17},
-					end: {line: 249, column: 64}
+					start: {line: 357, column: 17},
+					end: {line: 362, column: 64}
 				},
 				_p3)('Empty Polygon detected :(');
 		}
@@ -11678,8 +11570,8 @@ var _chemmi$elm_rocket$Rocket_Collision$polyToSegments = function (poly) {
 		return _elm_lang$core$Native_Utils.crashCase(
 			'Rocket.Collision',
 			{
-				start: {line: 242, column: 9},
-				end: {line: 252, column: 56}
+				start: {line: 355, column: 9},
+				end: {line: 365, column: 56}
 			},
 			_p2)('Empty Polygon detected :(');
 	}
@@ -11700,37 +11592,138 @@ var _chemmi$elm_rocket$Rocket_Collision$addPoints = F2(
 		var _p17 = _p14;
 		return {ctor: '_Tuple2', _0: _p16._0 + _p17._0, _1: _p16._1 + _p17._1};
 	});
-var _chemmi$elm_rocket$Rocket_Collision$collisionRocketPolygons = F2(
-	function (_p18, polygons) {
+var _chemmi$elm_rocket$Rocket_Collision$collisionRocketPlatforms = F2(
+	function (_p18, platforms) {
 		var _p19 = _p18;
-		var _p26 = _p19.position;
-		var _p25 = _p19.base;
-		var _p24 = _p19.angle;
-		var ot = _chemmi$elm_rocket$Rocket_Collision$orientationTest;
+		var _p32 = _p19.position;
+		var _p31 = _p19.base;
+		var _p30 = _p19.angle;
 		var sinAngle = _elm_lang$core$Basics$sin(
-			_elm_lang$core$Basics$degrees(_p24));
+			_elm_lang$core$Basics$degrees(_p30));
 		var cosAngle = _elm_lang$core$Basics$cos(
-			_elm_lang$core$Basics$degrees(_p24));
+			_elm_lang$core$Basics$degrees(_p30));
 		var rotate = function (_p20) {
 			var _p21 = _p20;
 			var _p23 = _p21._1;
 			var _p22 = _p21._0;
 			return {ctor: '_Tuple2', _0: (cosAngle * _p22) - (sinAngle * _p23), _1: (sinAngle * _p22) + (cosAngle * _p23)};
 		};
+		var _p24 = A2(
+			_chemmi$elm_rocket$Rocket_Collision$addPoints,
+			_p32,
+			rotate(_p19.top));
+		var t = _p24;
+		var tx = _p24._0;
+		var ty = _p24._1;
+		var _p25 = A2(
+			_chemmi$elm_rocket$Rocket_Collision$addPoints,
+			_p32,
+			rotate(
+				_elm_lang$core$Basics$fst(_p31)));
+		var b1 = _p25;
+		var b1x = _p25._0;
+		var b1y = _p25._1;
+		var _p26 = A2(
+			_chemmi$elm_rocket$Rocket_Collision$addPoints,
+			_p32,
+			rotate(
+				_elm_lang$core$Basics$snd(_p31)));
+		var b2 = _p26;
+		var b2x = _p26._0;
+		var b2y = _p26._1;
+		var ymax = A2(
+			_elm_lang$core$Basics$max,
+			ty,
+			A2(_elm_lang$core$Basics$max, b1y, b2y));
+		var ymin = A2(
+			_elm_lang$core$Basics$min,
+			ty,
+			A2(_elm_lang$core$Basics$min, b1y, b2y));
+		var xmax = A2(
+			_elm_lang$core$Basics$max,
+			tx,
+			A2(_elm_lang$core$Basics$max, b1x, b2x));
+		var xmin = A2(
+			_elm_lang$core$Basics$min,
+			tx,
+			A2(_elm_lang$core$Basics$min, b1x, b2x));
+		var collPlatformCoarse = function (platform) {
+			var hw = platform.width / 2;
+			var h = 10;
+			var _p27 = platform.center;
+			var cx = _p27._0;
+			var cy = _p27._1;
+			return _elm_lang$core$Basics$not(
+				(_elm_lang$core$Native_Utils.cmp(cx - hw, xmax) > 0) || ((_elm_lang$core$Native_Utils.cmp(cy, ymin) < 0) || ((_elm_lang$core$Native_Utils.cmp(cx + hw, xmin) < 0) || (_elm_lang$core$Native_Utils.cmp(cy - h, ymax) > 0)))) ? _elm_lang$core$Maybe$Just(platform) : _elm_lang$core$Maybe$Nothing;
+		};
+		var collPlatformFine = function (platform) {
+			var ot = _chemmi$elm_rocket$Rocket_Collision$orientationTest;
+			var hw = platform.width / 2;
+			var h = 10;
+			var _p28 = platform.center;
+			var cx = _p28._0;
+			var cy = _p28._1;
+			var edges = _elm_lang$core$Native_List.fromArray(
+				[
+					{ctor: '_Tuple2', _0: cx - hw, _1: cy},
+					{ctor: '_Tuple2', _0: cx + hw, _1: cy},
+					{ctor: '_Tuple2', _0: cx + hw, _1: cy - h},
+					{ctor: '_Tuple2', _0: cx - hw, _1: cy - h}
+				]);
+			var _p29 = collPlatformCoarse(platform);
+			if (_p29.ctor === 'Just') {
+				return _elm_lang$core$Basics$not(
+					A2(
+						_elm_lang$core$List$all,
+						A2(ot, t, b2),
+						edges) || (A2(
+						_elm_lang$core$List$all,
+						A2(ot, b1, t),
+						edges) || A2(
+						_elm_lang$core$List$all,
+						A2(ot, b2, b1),
+						edges))) ? _elm_lang$core$Maybe$Just(platform) : _elm_lang$core$Maybe$Nothing;
+			} else {
+				return _elm_lang$core$Maybe$Nothing;
+			}
+		};
+		var collPlatform = function (platform) {
+			return collPlatformFine(platform);
+		};
+		return _elm_lang$core$Maybe$oneOf(
+			A2(_elm_lang$core$List$map, collPlatform, platforms));
+	});
+var _chemmi$elm_rocket$Rocket_Collision$collisionRocketPolygons = F2(
+	function (_p33, polygons) {
+		var _p34 = _p33;
+		var _p41 = _p34.position;
+		var _p40 = _p34.base;
+		var _p39 = _p34.angle;
+		var ot = _chemmi$elm_rocket$Rocket_Collision$orientationTest;
+		var sinAngle = _elm_lang$core$Basics$sin(
+			_elm_lang$core$Basics$degrees(_p39));
+		var cosAngle = _elm_lang$core$Basics$cos(
+			_elm_lang$core$Basics$degrees(_p39));
+		var rotate = function (_p35) {
+			var _p36 = _p35;
+			var _p38 = _p36._1;
+			var _p37 = _p36._0;
+			return {ctor: '_Tuple2', _0: (cosAngle * _p37) - (sinAngle * _p38), _1: (sinAngle * _p37) + (cosAngle * _p38)};
+		};
 		var t = A2(
 			_chemmi$elm_rocket$Rocket_Collision$addPoints,
-			_p26,
-			rotate(_p19.top));
+			_p41,
+			rotate(_p34.top));
 		var b1 = A2(
 			_chemmi$elm_rocket$Rocket_Collision$addPoints,
-			_p26,
+			_p41,
 			rotate(
-				_elm_lang$core$Basics$fst(_p25)));
+				_elm_lang$core$Basics$fst(_p40)));
 		var b2 = A2(
 			_chemmi$elm_rocket$Rocket_Collision$addPoints,
-			_p26,
+			_p41,
 			rotate(
-				_elm_lang$core$Basics$snd(_p25)));
+				_elm_lang$core$Basics$snd(_p40)));
 		var collPolyCoarse = function (poly) {
 			return _elm_lang$core$Basics$not(
 				A2(
@@ -11759,92 +11752,92 @@ var _chemmi$elm_rocket$Rocket_Collision$collisionRocketPolygons = F2(
 		return A2(_elm_lang$core$List$any, collPolyFine, polygons);
 	});
 var _chemmi$elm_rocket$Rocket_Collision$collisionRocketBorder = F2(
-	function (_p28, _p27) {
-		var _p29 = _p28;
-		var _p44 = _p29.position;
-		var _p43 = _p29.base;
-		var _p42 = _p29.angle;
-		var _p30 = _p27;
-		var _p41 = _p30._0;
-		var _p40 = _p30._1;
-		var inBorder = function (_p31) {
-			var _p32 = _p31;
-			var _p34 = _p32._1;
-			var _p33 = _p32._0;
-			return (_elm_lang$core$Native_Utils.cmp((0 - _p41) / 2, _p33) < 0) && ((_elm_lang$core$Native_Utils.cmp(_p33, _p41 / 2) < 0) && ((_elm_lang$core$Native_Utils.cmp((0 - _p40) / 2, _p34) < 0) && (_elm_lang$core$Native_Utils.cmp(_p34, _p40 / 2) < 0)));
+	function (_p43, _p42) {
+		var _p44 = _p43;
+		var _p59 = _p44.position;
+		var _p58 = _p44.base;
+		var _p57 = _p44.angle;
+		var _p45 = _p42;
+		var _p56 = _p45._0;
+		var _p55 = _p45._1;
+		var inBorder = function (_p46) {
+			var _p47 = _p46;
+			var _p49 = _p47._1;
+			var _p48 = _p47._0;
+			return (_elm_lang$core$Native_Utils.cmp((0 - _p56) / 2, _p48) < 0) && ((_elm_lang$core$Native_Utils.cmp(_p48, _p56 / 2) < 0) && ((_elm_lang$core$Native_Utils.cmp((0 - _p55) / 2, _p49) < 0) && (_elm_lang$core$Native_Utils.cmp(_p49, _p55 / 2) < 0)));
 		};
 		var sinAngle = _elm_lang$core$Basics$sin(
-			_elm_lang$core$Basics$degrees(_p42));
+			_elm_lang$core$Basics$degrees(_p57));
 		var cosAngle = _elm_lang$core$Basics$cos(
-			_elm_lang$core$Basics$degrees(_p42));
-		var rotate = function (_p35) {
-			var _p36 = _p35;
-			var _p38 = _p36._1;
-			var _p37 = _p36._0;
-			return {ctor: '_Tuple2', _0: (cosAngle * _p37) - (sinAngle * _p38), _1: (sinAngle * _p37) + (cosAngle * _p38)};
+			_elm_lang$core$Basics$degrees(_p57));
+		var rotate = function (_p50) {
+			var _p51 = _p50;
+			var _p53 = _p51._1;
+			var _p52 = _p51._0;
+			return {ctor: '_Tuple2', _0: (cosAngle * _p52) - (sinAngle * _p53), _1: (sinAngle * _p52) + (cosAngle * _p53)};
 		};
 		var t = A2(
 			_chemmi$elm_rocket$Rocket_Collision$addPoints,
-			_p44,
-			rotate(_p29.top));
+			_p59,
+			rotate(_p44.top));
 		var b1 = A2(
 			_chemmi$elm_rocket$Rocket_Collision$addPoints,
-			_p44,
+			_p59,
 			rotate(
-				_elm_lang$core$Basics$fst(_p43)));
+				_elm_lang$core$Basics$fst(_p58)));
 		var b2 = A2(
 			_chemmi$elm_rocket$Rocket_Collision$addPoints,
-			_p44,
+			_p59,
 			rotate(
-				_elm_lang$core$Basics$snd(_p43)));
+				_elm_lang$core$Basics$snd(_p58)));
 		return A2(
 			_elm_lang$core$List$any,
-			function (_p39) {
+			function (_p54) {
 				return _elm_lang$core$Basics$not(
-					inBorder(_p39));
+					inBorder(_p54));
 			},
 			_elm_lang$core$Native_List.fromArray(
 				[t, b1, b2]));
 	});
 var _chemmi$elm_rocket$Rocket_Collision$collisionRocketRects = F2(
-	function (_p45, rects) {
-		var _p46 = _p45;
-		var _p58 = _p46.position;
-		var _p57 = _p46.base;
-		var _p56 = _p46.angle;
+	function (_p60, rects) {
+		var _p61 = _p60;
+		var _p73 = _p61.position;
+		var _p72 = _p61.base;
+		var _p71 = _p61.angle;
 		var sinAngle = _elm_lang$core$Basics$sin(
-			_elm_lang$core$Basics$degrees(_p56));
+			_elm_lang$core$Basics$degrees(_p71));
 		var cosAngle = _elm_lang$core$Basics$cos(
-			_elm_lang$core$Basics$degrees(_p56));
-		var rotate = function (_p47) {
-			var _p48 = _p47;
-			var _p50 = _p48._1;
-			var _p49 = _p48._0;
-			return {ctor: '_Tuple2', _0: (cosAngle * _p49) - (sinAngle * _p50), _1: (sinAngle * _p49) + (cosAngle * _p50)};
+			_elm_lang$core$Basics$degrees(_p71));
+		var rotate = function (_p62) {
+			var _p63 = _p62;
+			var _p65 = _p63._1;
+			var _p64 = _p63._0;
+			return {ctor: '_Tuple2', _0: (cosAngle * _p64) - (sinAngle * _p65), _1: (sinAngle * _p64) + (cosAngle * _p65)};
 		};
-		var _p51 = A2(
+		var _p66 = A2(
 			_chemmi$elm_rocket$Rocket_Collision$addPoints,
-			_p58,
-			rotate(_p46.top));
-		var t = _p51;
-		var tx = _p51._0;
-		var ty = _p51._1;
-		var _p52 = A2(
+			_p73,
+			rotate(_p61.top));
+		var t = _p66;
+		var tx = _p66._0;
+		var ty = _p66._1;
+		var _p67 = A2(
 			_chemmi$elm_rocket$Rocket_Collision$addPoints,
-			_p58,
+			_p73,
 			rotate(
-				_elm_lang$core$Basics$fst(_p57)));
-		var b1 = _p52;
-		var b1x = _p52._0;
-		var b1y = _p52._1;
-		var _p53 = A2(
+				_elm_lang$core$Basics$fst(_p72)));
+		var b1 = _p67;
+		var b1x = _p67._0;
+		var b1y = _p67._1;
+		var _p68 = A2(
 			_chemmi$elm_rocket$Rocket_Collision$addPoints,
-			_p58,
+			_p73,
 			rotate(
-				_elm_lang$core$Basics$snd(_p57)));
-		var b2 = _p53;
-		var b2x = _p53._0;
-		var b2y = _p53._1;
+				_elm_lang$core$Basics$snd(_p72)));
+		var b2 = _p68;
+		var b2x = _p68._0;
+		var b2y = _p68._1;
 		var ymax = A2(
 			_elm_lang$core$Basics$max,
 			ty,
@@ -11864,9 +11857,9 @@ var _chemmi$elm_rocket$Rocket_Collision$collisionRocketRects = F2(
 		var collRectCoarse = function (r) {
 			var w = r.width;
 			var h = r.height;
-			var _p54 = r.topLeft;
-			var rx = _p54._0;
-			var ry = _p54._1;
+			var _p69 = r.topLeft;
+			var rx = _p69._0;
+			var ry = _p69._1;
 			return _elm_lang$core$Basics$not(
 				(_elm_lang$core$Native_Utils.cmp(rx, xmax) > 0) || ((_elm_lang$core$Native_Utils.cmp(ry, ymin) < 0) || ((_elm_lang$core$Native_Utils.cmp(rx + w, xmin) < 0) || (_elm_lang$core$Native_Utils.cmp(ry - h, ymax) > 0))));
 		};
@@ -11874,9 +11867,9 @@ var _chemmi$elm_rocket$Rocket_Collision$collisionRocketRects = F2(
 			var ot = _chemmi$elm_rocket$Rocket_Collision$orientationTest;
 			var w = r.width;
 			var h = r.height;
-			var _p55 = r.topLeft;
-			var rx = _p55._0;
-			var ry = _p55._1;
+			var _p70 = r.topLeft;
+			var rx = _p70._0;
+			var ry = _p70._1;
 			var edges = _elm_lang$core$Native_List.fromArray(
 				[
 					{ctor: '_Tuple2', _0: rx, _1: ry},
@@ -11902,9 +11895,119 @@ var _chemmi$elm_rocket$Rocket_Collision$collisionRocketRects = F2(
 		return A2(_elm_lang$core$List$any, collRect, rects);
 	});
 var _chemmi$elm_rocket$Rocket_Collision$collision = F2(
-	function (rocket, _p59) {
-		var _p60 = _p59;
-		return A2(_chemmi$elm_rocket$Rocket_Collision$collisionRocketRects, rocket, _p60.rects) || (A2(_chemmi$elm_rocket$Rocket_Collision$collisionRocketBorder, rocket, _p60.size) || A2(_chemmi$elm_rocket$Rocket_Collision$collisionRocketPolygons, rocket, _p60.polygons));
+	function (rocket, _p74) {
+		var _p75 = _p74;
+		return A2(_chemmi$elm_rocket$Rocket_Collision$collisionRocketRects, rocket, _p75.rects) || (A2(_chemmi$elm_rocket$Rocket_Collision$collisionRocketBorder, rocket, _p75.size) || A2(_chemmi$elm_rocket$Rocket_Collision$collisionRocketPolygons, rocket, _p75.polygons));
+	});
+var _chemmi$elm_rocket$Rocket_Movement$accelerate = F3(
+	function (acceleration, angle, _p0) {
+		var _p1 = _p0;
+		var deg = _elm_lang$core$Basics$degrees(angle + 90);
+		return {
+			ctor: '_Tuple2',
+			_0: (acceleration * _elm_lang$core$Basics$cos(deg)) + _p1._0,
+			_1: (acceleration * _elm_lang$core$Basics$sin(deg)) + _p1._1
+		};
+	});
+var _chemmi$elm_rocket$Rocket_Movement$landOn = F2(
+	function (platform, rocket) {
+		var _p2 = platform.center;
+		var cx = _p2._0;
+		var cy = _p2._1;
+		var _p3 = _elm_lang$core$Basics$fst(rocket.base);
+		var b1x = _p3._0;
+		var b1y = _p3._1;
+		var _p4 = rocket.position;
+		var rx = _p4._0;
+		var ry = _p4._1;
+		return _elm_lang$core$Native_Utils.update(
+			rocket,
+			{
+				movement: _chemmi$elm_rocket$Rocket_Types$Landed(platform),
+				position: {ctor: '_Tuple2', _0: rx, _1: cy - b1y},
+				velocity: {ctor: '_Tuple2', _0: 0, _1: 0},
+				angle: 0,
+				fire: false
+			});
+	});
+var _chemmi$elm_rocket$Rocket_Movement$tryLanding = F2(
+	function (_p6, _p5) {
+		var _p7 = _p6;
+		var _p14 = _p7.base;
+		var _p8 = _p5;
+		var vyTolerance = 5;
+		var vxTolerance = 3;
+		var angleTolerance = 15;
+		var roundedAngle = A2(
+			_elm_lang$core$Basics_ops['%'],
+			_elm_lang$core$Basics$round(_p7.angle),
+			360);
+		var _p9 = _elm_lang$core$Basics$snd(_p14);
+		var b2x = _p9._0;
+		var b2y = _p9._1;
+		var _p10 = _elm_lang$core$Basics$fst(_p14);
+		var b1x = _p10._0;
+		var b1y = _p10._1;
+		var _p11 = _p7.position;
+		var rx = _p11._0;
+		var ry = _p11._1;
+		var _p12 = _p7.velocity;
+		var vx = _p12._0;
+		var vy = _p12._1;
+		var landOnPlatform = function (platform) {
+			var plathw = platform.width / 2;
+			var _p13 = platform.center;
+			var cx = _p13._0;
+			var cy = _p13._1;
+			return (((_elm_lang$core$Native_Utils.cmp(roundedAngle, angleTolerance) < 0) || (_elm_lang$core$Native_Utils.cmp(roundedAngle, 360 - angleTolerance) > 0)) && ((_elm_lang$core$Native_Utils.cmp(b1x + rx, cx - plathw) > 0) && ((_elm_lang$core$Native_Utils.cmp(b2x + rx, cx + plathw) < 0) && ((_elm_lang$core$Native_Utils.cmp(
+				_elm_lang$core$Basics$abs(vx),
+				vxTolerance) < 0) && (_elm_lang$core$Native_Utils.cmp(
+				_elm_lang$core$Basics$abs(vy),
+				vyTolerance) < 0))))) ? _elm_lang$core$Maybe$Just(platform) : _elm_lang$core$Maybe$Nothing;
+		};
+		return A2(
+			_elm_lang$core$Maybe$andThen,
+			A2(_chemmi$elm_rocket$Rocket_Collision$collisionRocketPlatforms, _p7, _p8.platforms),
+			landOnPlatform);
+	});
+var _chemmi$elm_rocket$Rocket_Movement$startRocket = function (rocket) {
+	var _p15 = rocket.position;
+	var px = _p15._0;
+	var py = _p15._1;
+	return _elm_lang$core$Native_Utils.update(
+		rocket,
+		{
+			movement: _chemmi$elm_rocket$Rocket_Types$Flying,
+			position: {ctor: '_Tuple2', _0: px, _1: py + 1},
+			fire: true,
+			onPlatform: _elm_lang$core$Maybe$Nothing
+		});
+};
+var _chemmi$elm_rocket$Rocket_Movement$moveRocket = F4(
+	function (keyDown, gravity, diffTime, _p16) {
+		var _p17 = _p16;
+		var _p21 = _p17.twist;
+		var _p20 = _p17.angle;
+		var diffSeconds = _elm_lang$core$Time$inSeconds(diffTime);
+		var _p18 = _p17.velocity;
+		var vx = _p18._0;
+		var vy = _p18._1;
+		var _p19 = _p17.position;
+		var x = _p19._0;
+		var y = _p19._1;
+		return _elm_lang$core$Native_Utils.update(
+			_p17,
+			{
+				angle: keyDown.left ? (_p20 + _p21) : (keyDown.right ? (_p20 - _p21) : _p20),
+				velocity: A3(
+					_chemmi$elm_rocket$Rocket_Movement$accelerate,
+					gravity * diffSeconds,
+					180,
+					(keyDown.forward ? A2(_chemmi$elm_rocket$Rocket_Movement$accelerate, _p17.acceleration * diffSeconds, _p20) : _elm_lang$core$Basics$identity)(
+						{ctor: '_Tuple2', _0: vx, _1: vy})),
+				position: {ctor: '_Tuple2', _0: vx + x, _1: vy + y},
+				fire: keyDown.forward
+			});
 	});
 var _chemmi$elm_rocket$Rocket_Updates$markPlatform = F2(
 	function (p, ps) {
@@ -12735,47 +12838,94 @@ var _chemmi$elm_rocket$Rocket$isGameover = function (data) {
 var _chemmi$elm_rocket$Rocket$update = F2(
 	function (msg, model) {
 		var _p3 = model;
-		if (_p3.ctor === 'Play') {
-			var updatedPlay = A2(_chemmi$elm_rocket$Rocket_Updates$updatePlay, msg, _p3._0);
-			return _chemmi$elm_rocket$Rocket$isGameover(updatedPlay) ? _chemmi$elm_rocket$Rocket_Types$Gameover(
-				_elm_lang$core$Native_Utils.update(
-					_chemmi$elm_rocket$Rocket_Inits$initGameover,
-					{
-						background: _chemmi$elm_rocket$Rocket_Scene$drawScene(updatedPlay)
-					})) : (_chemmi$elm_rocket$Rocket$isWin(updatedPlay) ? _chemmi$elm_rocket$Rocket_Types$Win(
-				_elm_lang$core$Native_Utils.update(
-					_chemmi$elm_rocket$Rocket_Inits$initWin,
-					{
-						background: _chemmi$elm_rocket$Rocket_Scene$drawScene(updatedPlay)
-					})) : _chemmi$elm_rocket$Rocket_Types$Play(updatedPlay));
-		} else {
-			var _p4 = msg;
-			if ((_p4.ctor === 'KeyUpMsg') && (_p4._0.ctor === 'Start')) {
-				return _chemmi$elm_rocket$Rocket_Types$Play(_chemmi$elm_rocket$Rocket_Inits$initPlay);
-			} else {
-				return model;
-			}
+		switch (_p3.ctor) {
+			case 'Play':
+				var updatedPlay = A2(_chemmi$elm_rocket$Rocket_Updates$updatePlay, msg, _p3._0);
+				return _chemmi$elm_rocket$Rocket$isGameover(updatedPlay) ? _chemmi$elm_rocket$Rocket_Types$Gameover(
+					_elm_lang$core$Native_Utils.update(
+						_chemmi$elm_rocket$Rocket_Inits$initGameover,
+						{
+							background: _chemmi$elm_rocket$Rocket_Scene$drawScene(updatedPlay)
+						})) : (_chemmi$elm_rocket$Rocket$isWin(updatedPlay) ? _chemmi$elm_rocket$Rocket_Types$Win(
+					_elm_lang$core$Native_Utils.update(
+						_chemmi$elm_rocket$Rocket_Inits$initWin,
+						{
+							background: _chemmi$elm_rocket$Rocket_Scene$drawScene(updatedPlay)
+						})) : _chemmi$elm_rocket$Rocket_Types$Play(updatedPlay));
+			case 'Gameover':
+				var _p4 = msg;
+				if ((_p4.ctor === 'KeyUpMsg') && (_p4._0.ctor === 'Start')) {
+					return _chemmi$elm_rocket$Rocket_Types$Startscreen(_chemmi$elm_rocket$Rocket_Inits$initStartscreen);
+				} else {
+					return model;
+				}
+			default:
+				var _p5 = msg;
+				if ((_p5.ctor === 'KeyUpMsg') && (_p5._0.ctor === 'Start')) {
+					return _chemmi$elm_rocket$Rocket_Types$Play(_chemmi$elm_rocket$Rocket_Inits$initPlay);
+				} else {
+					return model;
+				}
 		}
 	});
 var _chemmi$elm_rocket$Rocket$view = function (model) {
-	var _p5 = model;
-	switch (_p5.ctor) {
-		case 'Play':
-			return _chemmi$elm_rocket$Rocket_Views$viewPlay(_p5._0);
-		case 'Startscreen':
-			return _chemmi$elm_rocket$Rocket_Views$viewStartscreen(_p5._0);
-		case 'Gameover':
-			return _chemmi$elm_rocket$Rocket_Views$viewGameover(_p5._0);
-		default:
-			return _chemmi$elm_rocket$Rocket_Views$viewWin(_p5._0);
-	}
+	return A2(
+		_elm_lang$html$Html$div,
+		_elm_lang$core$Native_List.fromArray(
+			[]),
+		_elm_lang$core$Native_List.fromArray(
+			[
+				function () {
+				var _p6 = model;
+				switch (_p6.ctor) {
+					case 'Play':
+						return _chemmi$elm_rocket$Rocket_Views$viewPlay(_p6._0);
+					case 'Startscreen':
+						return _chemmi$elm_rocket$Rocket_Views$viewStartscreen(_p6._0);
+					case 'Gameover':
+						return _chemmi$elm_rocket$Rocket_Views$viewGameover(_p6._0);
+					default:
+						return _chemmi$elm_rocket$Rocket_Views$viewWin(_p6._0);
+				}
+			}(),
+				A2(
+				_elm_lang$html$Html$h3,
+				_elm_lang$core$Native_List.fromArray(
+					[]),
+				_elm_lang$core$Native_List.fromArray(
+					[
+						_elm_lang$html$Html$text('Short Introduction:')
+					])),
+				_elm_lang$html$Html$text('Control the rocket with W (accelerate), A (turn left) and D (turn right).'),
+				A2(
+				_elm_lang$html$Html$br,
+				_elm_lang$core$Native_List.fromArray(
+					[]),
+				_elm_lang$core$Native_List.fromArray(
+					[])),
+				_elm_lang$html$Html$text('Try to land on all platforms in the given time.'),
+				A2(
+				_elm_lang$html$Html$br,
+				_elm_lang$core$Native_List.fromArray(
+					[]),
+				_elm_lang$core$Native_List.fromArray(
+					[])),
+				_elm_lang$html$Html$text('(Visited platforms turn from red to green).'),
+				A2(
+				_elm_lang$html$Html$br,
+				_elm_lang$core$Native_List.fromArray(
+					[]),
+				_elm_lang$core$Native_List.fromArray(
+					[])),
+				_elm_lang$html$Html$text('The rocket must have an apropriate angle and speed when landing.')
+			]));
 };
 var _chemmi$elm_rocket$Rocket$keyBinding = function (model) {
-	var _p6 = model;
-	if (_p6.ctor === 'Play') {
+	var _p7 = model;
+	if (_p7.ctor === 'Play') {
 		return function (code) {
-			var _p7 = _elm_lang$core$Char$fromCode(code);
-			switch (_p7.valueOf()) {
+			var _p8 = _elm_lang$core$Char$fromCode(code);
+			switch (_p8.valueOf()) {
 				case 'W':
 					return _chemmi$elm_rocket$Rocket_Types$Forward;
 				case 'A':
@@ -12788,8 +12938,8 @@ var _chemmi$elm_rocket$Rocket$keyBinding = function (model) {
 		};
 	} else {
 		return function (code) {
-			var _p8 = _elm_lang$core$Char$fromCode(code);
-			if (_p8.valueOf() === ' ') {
+			var _p9 = _elm_lang$core$Char$fromCode(code);
+			if (_p9.valueOf() === ' ') {
 				return _chemmi$elm_rocket$Rocket_Types$Start;
 			} else {
 				return _chemmi$elm_rocket$Rocket_Types$NotBound;
@@ -12804,19 +12954,19 @@ var _chemmi$elm_rocket$Rocket$subscriptions = function (model) {
 			_elm_lang$core$Native_List.fromArray(
 				[
 					_elm_lang$keyboard$Keyboard$downs(
-					function (_p9) {
+					function (_p10) {
 						return _chemmi$elm_rocket$Rocket_Types$KeyDownMsg(
-							A2(_chemmi$elm_rocket$Rocket$keyBinding, model, _p9));
+							A2(_chemmi$elm_rocket$Rocket$keyBinding, model, _p10));
 					}),
 					_elm_lang$keyboard$Keyboard$ups(
-					function (_p10) {
+					function (_p11) {
 						return _chemmi$elm_rocket$Rocket_Types$KeyUpMsg(
-							A2(_chemmi$elm_rocket$Rocket$keyBinding, model, _p10));
+							A2(_chemmi$elm_rocket$Rocket$keyBinding, model, _p11));
 					})
 				]),
 			function () {
-				var _p11 = model;
-				if (_p11.ctor === 'Play') {
+				var _p12 = model;
+				if (_p12.ctor === 'Play') {
 					return _elm_lang$core$Native_List.fromArray(
 						[
 							_elm_lang$animation_frame$AnimationFrame$diffs(_chemmi$elm_rocket$Rocket_Types$Step),
