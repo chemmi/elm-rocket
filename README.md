@@ -28,8 +28,6 @@ Check out the latest build [here](https://chemmi.github.io/elm-rocket/).
 
 ### List of ToDos
 
-* Level Choice on Startupscreen
-
 * Better Look
 
 * Work to restructure collision detection code. Atm it's really ugly (but perfoms well)...
