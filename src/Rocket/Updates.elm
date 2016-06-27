@@ -4,8 +4,21 @@ import Rocket.Types exposing (..)
 import Rocket.Movement exposing (..)
 import Rocket.Collision exposing (..)
 import Time exposing (Time, second)
-import List.Extra exposing (updateIf)
+import List.Extra exposing (updateIf, last, init)
 import Debug
+
+
+updateWorldChoice : Key -> WorldChoiceData -> WorldChoiceData
+updateWorldChoice key ({ worlds } as data) =
+    case key of
+        Right ->
+            { data | worlds = rotateRight worlds }
+
+        Left ->
+            { data | worlds = rotateLeft worlds }
+
+        _ ->
+            data
 
 
 updatePlay : Msg -> PlayData -> PlayData
@@ -190,3 +203,40 @@ updateKeyDown keyDown msg =
 markPlatform : Platform -> List Platform -> List Platform
 markPlatform p ps =
     updateIf ((==) p) (\p' -> { p' | marked = True }) ps
+
+
+rotateLeft : List a -> List a
+rotateLeft xs =
+    case xs of
+        [] ->
+            []
+
+        x :: xs' ->
+            xs' ++ [ x ]
+
+
+rotateRight : List a -> List a
+rotateRight xs =
+    case xs of
+        [] ->
+            []
+
+        xs ->
+            let
+                x' =
+                    case last xs of
+                        Just x ->
+                            x
+
+                        Nothing ->
+                            Debug.crash "List should not be empty here"
+
+                xs' =
+                    case init xs of
+                        Just xs ->
+                            xs
+
+                        Nothing ->
+                            Debug.crash "List should not be empty here"
+            in
+                x' :: xs'

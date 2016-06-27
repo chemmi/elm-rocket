@@ -32,21 +32,24 @@ initPlay =
 
 initStartscreen : StartscreenData
 initStartscreen =
-    { message = "Startscreen - Press SPACE to start"
-    , background = drawWorldThumbnail initPlay.world
-    }
+    { background = empty }
+
+
+initWorldChoice : WorldChoiceData
+initWorldChoice =
+    { worlds = allWorlds }
 
 
 initGameover : GameoverData
 initGameover =
-    { message = "Gameover - Press SPACE to restart"
+    { message = "Gameover - Press [SPACE] to continue"
     , background = empty
     }
 
 
 initWin : WinData
 initWin =
-    { message = "Win - Press SPACE to restart"
+    { message = "YEAH! WIN! - Press [SPACE] to continue"
     , background = empty
     }
 

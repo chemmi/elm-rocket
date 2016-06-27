@@ -5,6 +5,8 @@ import Rocket.Scene exposing (..)
 import Html exposing (..)
 import Element exposing (..)
 import Time exposing (inSeconds)
+import List
+import Debug
 
 
 viewStartscreen : StartscreenData -> Html a
@@ -12,8 +14,26 @@ viewStartscreen data =
     div []
         [ toHtml
             <| layers
-                [ data.background
-                , container 800 600 middle (show data.message)
+                [ container 800 600 middle
+                    <| show "Startscreen - Press [SPACE] to choose level"
+                ]
+        ]
+
+
+viewWorldChoice : WorldChoiceData -> Html a
+viewWorldChoice { worlds } =
+    div []
+        [ toHtml
+            <| layers
+                [ drawWorldThumbnail
+                    <| case List.head worlds of
+                        Just world ->
+                            world
+
+                        Nothing ->
+                            Debug.crash "No worlds found"
+                , container 800 600 middle
+                    <| show "<-- [A]    Choose and press [SPACE] to start level    [D] -->"
                 ]
         ]
 

@@ -11,11 +11,27 @@ import Time exposing (..)
 import AnimationFrame exposing (..)
 import Keyboard
 import Char exposing (KeyCode, fromCode)
+import Debug
 
 
 keyBinding : Model -> KeyCode -> Key
 keyBinding model =
     case model of
+        WorldChoice _ ->
+            \code ->
+                case fromCode code of
+                    'A' ->
+                        Left
+
+                    'D' ->
+                        Right
+
+                    ' ' ->
+                        Start
+
+                    _ ->
+                        NotBound
+
         Play _ ->
             \code ->
                 case fromCode code of
@@ -51,6 +67,9 @@ view model =
             Startscreen data ->
                 viewStartscreen data
 
+            WorldChoice data ->
+                viewWorldChoice data
+
             Gameover data ->
                 viewGameover data
 
@@ -70,6 +89,30 @@ view model =
 update : Msg -> Model -> Model
 update msg model =
     case model of
+        Startscreen _ ->
+            case msg of
+                KeyUpMsg Start ->
+                    WorldChoice initWorldChoice
+
+                _ ->
+                    model
+
+        WorldChoice data ->
+            case msg of
+                KeyUpMsg Start ->
+                    case List.head data.worlds of
+                        Just world ->
+                            Play (startPlay world)
+
+                        Nothing ->
+                            Debug.crash "No world found"
+
+                KeyUpMsg direction ->
+                    WorldChoice (updateWorldChoice direction data)
+
+                _ ->
+                    model
+
         Play data ->
             let
                 updatedPlay =
@@ -90,7 +133,7 @@ update msg model =
                 else
                     Play updatedPlay
 
-        Gameover data ->
+        Gameover _ ->
             case msg of
                 KeyUpMsg Start ->
                     Startscreen initStartscreen
@@ -98,13 +141,25 @@ update msg model =
                 _ ->
                     model
 
-        _ ->
+        Win _ ->
             case msg of
                 KeyUpMsg Start ->
-                    Play initPlay
+                    Startscreen initStartscreen
 
                 _ ->
                     model
+
+
+startPlay : World -> PlayData
+startPlay world =
+    { initPlay
+        | world = world
+        , timeRemaining = world.totalTime
+        , rocket =
+            { initRocket
+                | position = world.rocketStartPosition
+            }
+    }
 
 
 isGameover : PlayData -> Bool

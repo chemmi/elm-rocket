@@ -7,6 +7,7 @@ import Element exposing (Element)
 type Model
     = Play PlayData
     | Startscreen StartscreenData
+    | WorldChoice WorldChoiceData
     | Gameover GameoverData
     | Win WinData
 
@@ -28,9 +29,11 @@ type Key
 
 
 type alias StartscreenData =
-    { message : String
-    , background : Element
-    }
+    { background : Element }
+
+
+type alias WorldChoiceData =
+    { worlds : List World }
 
 
 type alias GameoverData =
