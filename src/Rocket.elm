@@ -5,7 +5,7 @@ import Rocket.Inits exposing (..)
 import Rocket.Updates exposing (..)
 import Rocket.Views exposing (..)
 import Rocket.Scene exposing (drawScene)
-import Html exposing (Html)
+import Html exposing (Html, text, div, br, h3)
 import Html.App exposing (program)
 import Time exposing (..)
 import AnimationFrame exposing (..)
@@ -43,18 +43,28 @@ keyBinding model =
 
 view : Model -> Html a
 view model =
-    case model of
-        Play data ->
-            viewPlay data
+    div []
+        [ case model of
+            Play data ->
+                viewPlay data
 
-        Startscreen data ->
-            viewStartscreen data
+            Startscreen data ->
+                viewStartscreen data
 
-        Gameover data ->
-            viewGameover data
+            Gameover data ->
+                viewGameover data
 
-        Win data ->
-            viewWin data
+            Win data ->
+                viewWin data
+        , h3 [] [ text "Short Introduction:" ]
+        , text "Control the rocket with W (accelerate), A (turn left) and D (turn right)."
+        , br [] []
+        , text "Try to land on all platforms in the given time."
+        , br [] []
+        , text "(Visited platforms turn from red to green)."
+        , br [] []
+        , text "The rocket must have an apropriate angle and speed when landing."
+        ]
 
 
 update : Msg -> Model -> Model
@@ -79,6 +89,14 @@ update msg model =
                         }
                 else
                     Play updatedPlay
+
+        Gameover data ->
+            case msg of
+                KeyUpMsg Start ->
+                    Startscreen initStartscreen
+
+                _ ->
+                    model
 
         _ ->
             case msg of
