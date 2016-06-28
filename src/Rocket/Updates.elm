@@ -50,9 +50,6 @@ updatePlay msg ({ world, rocket, keyDown } as data) =
             else
                 { data | timeRemaining = data.timeRemaining - 1 * second }
 
-        _ ->
-            data
-
 
 updateFlying : PlayData -> Time -> PlayData
 updateFlying ({ world, rocket, keyDown } as data) diffTime =

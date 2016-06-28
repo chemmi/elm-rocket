@@ -24,7 +24,7 @@ initWorld =
         , gravity = 3
         , totalTime = 60 * second
         , isWin =
-            (\ps -> all (\p -> p.marked) ps)
+            all .marked
             -- all platforms should be marked
         , rects =
             [ Rect ( -((fst size) / 2), -((snd size) / 3) ) (fst size) (snd size / 6)

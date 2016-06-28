@@ -17,7 +17,6 @@ type Msg
     | KeyUpMsg Key
     | Step Time
     | TimerTick
-    | NoMsg
 
 
 type Key
