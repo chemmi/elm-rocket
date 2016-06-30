@@ -12,6 +12,10 @@ import AnimationFrame exposing (..)
 import Keyboard
 import Char exposing (KeyCode, fromCode)
 import Debug
+import Rocket.Audio exposing (audio)
+
+
+-- port module
 
 
 keyBinding : Model -> KeyCode -> Key
@@ -86,9 +90,9 @@ view model =
         ]
 
 
-update : Msg -> Model -> Model
+update : Msg -> Model -> ( Model, Cmd msg )
 update msg model =
-    case model of
+    ( case model of
         Startscreen _ ->
             case msg of
                 KeyUpMsg Start ->
@@ -148,6 +152,16 @@ update msg model =
 
                 _ ->
                     model
+    , case model of
+        Play data ->
+            if data.rocket.fire then
+                audio ( "rocket", "play" )
+            else
+                Cmd.batch [ audio ( "rocket", "pause" ), audio ( "rocket", "reset" ) ]
+
+        _ ->
+            Cmd.batch [ audio ( "rocket", "pause" ), audio ( "rocket", "reset" ) ]
+    )
 
 
 startPlay : World -> PlayData
@@ -191,8 +205,8 @@ subscriptions model =
 main : Program Never
 main =
     program
-        { init = ( init, Cmd.none )
+        { init = ( init, audio ( "ambient", "play" ) )
         , view = view
-        , update = \msg playModel -> ( update msg playModel, Cmd.none )
+        , update = update
         , subscriptions = subscriptions
         }
