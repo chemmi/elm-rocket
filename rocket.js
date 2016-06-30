@@ -13094,7 +13094,14 @@ var _chemmi$elm_rocket$Rocket$update = F2(
 								{ctor: '_Tuple2', _0: 'rocket', _1: 'reset'})
 							]));
 				} else {
-					return _elm_lang$core$Platform_Cmd$none;
+					return _elm_lang$core$Platform_Cmd$batch(
+						_elm_lang$core$Native_List.fromArray(
+							[
+								_chemmi$elm_rocket$Rocket_Audio$audio(
+								{ctor: '_Tuple2', _0: 'rocket', _1: 'pause'}),
+								_chemmi$elm_rocket$Rocket_Audio$audio(
+								{ctor: '_Tuple2', _0: 'rocket', _1: 'reset'})
+							]));
 				}
 			}()
 		};
