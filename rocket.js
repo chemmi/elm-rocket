@@ -12054,7 +12054,7 @@ var _chemmi$elm_rocket$Rocket_Movement$moveRocket = F4(
 			});
 	});
 
-var _chemmi$elm_rocket$Rocket_Updates$rotateRight = function (xs) {
+var _chemmi$elm_rocket$Rocket_Updates$rotateLeft = function (xs) {
 	var _p0 = xs;
 	if (_p0.ctor === '[]') {
 		return _elm_lang$core$Native_List.fromArray(
@@ -12092,7 +12092,7 @@ var _chemmi$elm_rocket$Rocket_Updates$rotateRight = function (xs) {
 		return A2(_elm_lang$core$List_ops['::'], x$, xs$);
 	}
 };
-var _chemmi$elm_rocket$Rocket_Updates$rotateLeft = function (xs) {
+var _chemmi$elm_rocket$Rocket_Updates$rotateRight = function (xs) {
 	var _p6 = xs;
 	if (_p6.ctor === '[]') {
 		return _elm_lang$core$Native_List.fromArray(

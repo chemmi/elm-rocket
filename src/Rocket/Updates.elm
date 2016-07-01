@@ -202,8 +202,8 @@ markPlatform p ps =
     updateIf ((==) p) (\p' -> { p' | marked = True }) ps
 
 
-rotateLeft : List a -> List a
-rotateLeft xs =
+rotateRight : List a -> List a
+rotateRight xs =
     case xs of
         [] ->
             []
@@ -212,8 +212,8 @@ rotateLeft xs =
             xs' ++ [ x ]
 
 
-rotateRight : List a -> List a
-rotateRight xs =
+rotateLeft : List a -> List a
+rotateLeft xs =
     case xs of
         [] ->
             []
