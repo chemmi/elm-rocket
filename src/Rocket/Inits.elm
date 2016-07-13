@@ -27,6 +27,7 @@ initPlayScreen =
                 | position = world.rocketStartPosition
             }
         , gameover = False
+        , playEvent = Nothing
         }
 
 

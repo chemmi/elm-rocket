@@ -60,7 +60,13 @@ type alias PlayData =
     , rocket : Rocket
     , world : World
     , gameover : Bool
+    , playEvent : Maybe PlayEvent
     }
+
+
+type PlayEvent
+    = Gameover PlayData
+    | Win PlayData
 
 
 type alias KeyDown =
