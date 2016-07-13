@@ -16,8 +16,8 @@ import Rocket.Audio exposing (audio)
 
 
 keyBinding : Model -> KeyCode -> Key
-keyBinding model =
-    case model of
+keyBinding (Model screen options) =
+    case screen of
         WorldChoiceScreen _ ->
             \code ->
                 case fromCode code of
@@ -59,23 +59,9 @@ keyBinding model =
 
 
 view : Model -> Html a
-view model =
+view (Model screen options) =
     div []
-        [ case model of
-            PlayScreen data ->
-                viewPlayScreen data
-
-            StartScreen ->
-                viewStartScreen
-
-            WorldChoiceScreen data ->
-                viewWorldChoiceScreen data
-
-            GameoverScreen data ->
-                viewGameoverScreen data
-
-            WinScreen data ->
-                viewWinScreen data
+        [ viewScreen screen
         , h3 [] [ text "Short Introduction:" ]
         , text "Control the rocket with W (accelerate), A (turn left) and D (turn right)."
         , br [] []
@@ -88,68 +74,9 @@ view model =
 
 
 update : Msg -> Model -> ( Model, Cmd msg )
-update msg model =
-    ( case model of
-        StartScreen ->
-            case msg of
-                KeyUpMsg Start ->
-                    WorldChoiceScreen initWorldChoiceScreen
-
-                _ ->
-                    model
-
-        WorldChoiceScreen data ->
-            case msg of
-                KeyUpMsg Start ->
-                    case List.head data.worlds of
-                        Just world ->
-                            PlayScreen (startPlayScreen world)
-
-                        Nothing ->
-                            Debug.crash "No world found"
-
-                KeyUpMsg direction ->
-                    WorldChoiceScreen (updateWorldChoiceScreen direction data)
-
-                _ ->
-                    model
-
-        PlayScreen data ->
-            let
-                updatedPlayScreen =
-                    updatePlayScreen msg data
-            in
-                if isGameover updatedPlayScreen then
-                    GameoverScreen
-                        { initGameoverScreen
-                            | background =
-                                drawScene updatedPlayScreen
-                        }
-                else if isWin updatedPlayScreen then
-                    WinScreen
-                        { initWinScreen
-                            | background =
-                                drawScene updatedPlayScreen
-                        }
-                else
-                    PlayScreen updatedPlayScreen
-
-        GameoverScreen _ ->
-            case msg of
-                KeyUpMsg Start ->
-                    StartScreen
-
-                _ ->
-                    model
-
-        WinScreen _ ->
-            case msg of
-                KeyUpMsg Start ->
-                    StartScreen
-
-                _ ->
-                    model
-    , case model of
+update msg (Model screen options) =
+    ( Model (updateScreen msg screen) options
+    , case screen of
         PlayScreen data ->
             if data.rocket.fire then
                 audio ( "rocket", "play" )
@@ -161,35 +88,13 @@ update msg model =
     )
 
 
-startPlayScreen : World -> PlayData
-startPlayScreen world =
-    { initPlayScreen
-        | world = world
-        , timeRemaining = world.totalTime
-        , rocket =
-            { initRocket
-                | position = world.rocketStartPosition
-            }
-    }
-
-
-isGameover : PlayData -> Bool
-isGameover data =
-    data.gameover
-
-
-isWin : PlayData -> Bool
-isWin { world } =
-    world.isWin world.platforms
-
-
 subscriptions : Model -> Sub Msg
-subscriptions model =
+subscriptions ((Model screen options) as model) =
     Sub.batch
         <| [ Keyboard.downs (KeyDownMsg << keyBinding model)
            , Keyboard.ups (KeyUpMsg << keyBinding model)
            ]
-        ++ case model of
+        ++ case screen of
             PlayScreen _ ->
                 [ diffs Step
                 , every second <| always TimerTick
@@ -202,7 +107,7 @@ subscriptions model =
 main : Program Never
 main =
     program
-        { init = ( init, audio ( "ambient", "play" ) )
+        { init = ( initModel, audio ( "ambient", "play" ) )
         , view = view
         , update = update
         , subscriptions = subscriptions

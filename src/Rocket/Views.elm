@@ -9,6 +9,25 @@ import List
 import Debug
 
 
+viewScreen : Screen -> Html a
+viewScreen screen =
+    case screen of
+        PlayScreen data ->
+            viewPlayScreen data
+
+        StartScreen ->
+            viewStartScreen
+
+        WorldChoiceScreen data ->
+            viewWorldChoiceScreen data
+
+        GameoverScreen data ->
+            viewGameoverScreen data
+
+        WinScreen data ->
+            viewWinScreen data
+
+
 viewStartScreen : Html a
 viewStartScreen =
     div []

@@ -6,9 +6,9 @@ import Rocket.Scene exposing (drawScene, drawWorldThumbnail)
 import Element exposing (empty)
 
 
-init : Model
-init =
-    StartScreen
+initModel : Model
+initModel =
+    Model StartScreen {}
 
 
 initPlayScreen : PlayData

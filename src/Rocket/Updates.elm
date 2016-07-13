@@ -3,9 +3,97 @@ module Rocket.Updates exposing (..)
 import Rocket.Types exposing (..)
 import Rocket.Movement exposing (..)
 import Rocket.Collision exposing (..)
+import Rocket.Inits exposing (..)
+import Rocket.Scene exposing (drawScene)
 import Time exposing (Time, second)
 import List.Extra exposing (updateIf, last, init)
 import Debug
+
+
+updateScreen : Msg -> Screen -> Screen
+updateScreen msg screen =
+    case screen of
+        StartScreen ->
+            case msg of
+                KeyUpMsg Start ->
+                    WorldChoiceScreen initWorldChoiceScreen
+
+                _ ->
+                    screen
+
+        WorldChoiceScreen data ->
+            case msg of
+                KeyUpMsg Start ->
+                    case List.head data.worlds of
+                        Just world ->
+                            PlayScreen (startPlayScreen world)
+
+                        Nothing ->
+                            Debug.crash "No world found"
+
+                KeyUpMsg direction ->
+                    WorldChoiceScreen (updateWorldChoiceScreen direction data)
+
+                _ ->
+                    screen
+
+        PlayScreen data ->
+            let
+                updatedPlayScreen =
+                    updatePlayScreen msg data
+            in
+                if isGameover updatedPlayScreen then
+                    GameoverScreen
+                        { initGameoverScreen
+                            | background =
+                                drawScene updatedPlayScreen
+                        }
+                else if isWin updatedPlayScreen then
+                    WinScreen
+                        { initWinScreen
+                            | background =
+                                drawScene updatedPlayScreen
+                        }
+                else
+                    PlayScreen updatedPlayScreen
+
+        GameoverScreen _ ->
+            case msg of
+                KeyUpMsg Start ->
+                    StartScreen
+
+                _ ->
+                    screen
+
+        WinScreen _ ->
+            case msg of
+                KeyUpMsg Start ->
+                    StartScreen
+
+                _ ->
+                    screen
+
+
+startPlayScreen : World -> PlayData
+startPlayScreen world =
+    { initPlayScreen
+        | world = world
+        , timeRemaining = world.totalTime
+        , rocket =
+            { initRocket
+                | position = world.rocketStartPosition
+            }
+    }
+
+
+isGameover : PlayData -> Bool
+isGameover data =
+    data.gameover
+
+
+isWin : PlayData -> Bool
+isWin { world } =
+    world.isWin world.platforms
 
 
 updateWorldChoiceScreen : Key -> WorldChoiceData -> WorldChoiceData

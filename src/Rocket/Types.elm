@@ -4,8 +4,8 @@ import Time exposing (Time)
 import Element exposing (Element)
 
 
-type alias Model =
-    Screen
+type Model
+    = Model Screen Options
 
 
 type Screen
@@ -14,6 +14,10 @@ type Screen
     | WorldChoiceScreen WorldChoiceData
     | GameoverScreen GameoverData
     | WinScreen WinData
+
+
+type alias Options =
+    {}
 
 
 type Msg
