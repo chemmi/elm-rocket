@@ -58,6 +58,19 @@ keyBinding (Model screen options) =
                         NotBound
 
 
+isScreenControlKey : Key -> Bool
+isScreenControlKey key =
+    case key of
+        Start ->
+            True
+
+        Back ->
+            True
+
+        _ ->
+            False
+
+
 view : Model -> Html a
 view (Model screen options) =
     div []
