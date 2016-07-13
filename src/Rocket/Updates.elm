@@ -10,72 +10,13 @@ import List.Extra exposing (updateIf, last, init)
 import Debug
 
 
-updateScreen : Msg -> Screen -> Screen
-updateScreen msg screen =
-    case screen of
-        StartScreen ->
-            case msg of
-                KeyUpMsg Start ->
-                    WorldChoiceScreen initWorldChoiceScreen
-
-                _ ->
-                    screen
-
-        WorldChoiceScreen data ->
-            case msg of
-                KeyUpMsg Start ->
-                    case List.head data.worlds of
-                        Just world ->
-                            PlayScreen (startPlayScreen world)
-
-                        Nothing ->
-                            Debug.crash "No world found"
-
-                KeyUpMsg direction ->
-                    WorldChoiceScreen (updateWorldChoiceScreen direction data)
-
-                _ ->
-                    screen
-
-        PlayScreen data ->
-            PlayScreen (updatePlayScreen msg data)
-
-        GameoverScreen _ ->
-            case msg of
-                KeyUpMsg Start ->
-                    StartScreen
-
-                _ ->
-                    screen
-
-        WinScreen _ ->
-            case msg of
-                KeyUpMsg Start ->
-                    StartScreen
-
-                _ ->
-                    screen
-
-
-startPlayScreen : World -> PlayData
-startPlayScreen world =
-    { initPlayScreen
-        | world = world
-        , timeRemaining = world.totalTime
-        , rocket =
-            { initRocket
-                | position = world.rocketStartPosition
-            }
-    }
-
-
-updateWorldChoiceScreen : Key -> WorldChoiceData -> WorldChoiceData
-updateWorldChoiceScreen key ({ worlds } as data) =
-    case key of
-        Right ->
+updateWorldChoiceScreen : Msg -> WorldChoiceData -> WorldChoiceData
+updateWorldChoiceScreen msg ({ worlds } as data) =
+    case msg of
+        KeyUpMsg Right ->
             { data | worlds = rotateRight worlds }
 
-        Left ->
+        KeyUpMsg Left ->
             { data | worlds = rotateLeft worlds }
 
         _ ->

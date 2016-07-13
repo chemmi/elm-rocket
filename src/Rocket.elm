@@ -13,49 +13,32 @@ import Keyboard
 import Char exposing (KeyCode, fromCode)
 import Debug
 import Rocket.Audio exposing (audio)
+import List
 
 
-keyBinding : Model -> KeyCode -> Key
-keyBinding (Model screen options) =
-    case screen of
-        WorldChoiceScreen _ ->
-            \code ->
-                case fromCode code of
-                    'A' ->
-                        Left
+keyBinding : KeyCode -> Key
+keyBinding code =
+    case fromCode code of
+        'A' ->
+            Left
 
-                    'D' ->
-                        Right
+        'D' ->
+            Right
 
-                    ' ' ->
-                        Start
+        'W' ->
+            Up
 
-                    _ ->
-                        NotBound
+        'S' ->
+            Down
 
-        PlayScreen _ ->
-            \code ->
-                case fromCode code of
-                    'W' ->
-                        Up
+        ' ' ->
+            Start
 
-                    'A' ->
-                        Left
-
-                    'D' ->
-                        Right
-
-                    _ ->
-                        NotBound
+        'B' ->
+            Back
 
         _ ->
-            \code ->
-                case fromCode code of
-                    ' ' ->
-                        Start
-
-                    _ ->
-                        NotBound
+            NotBound
 
 
 isScreenControlKey : Key -> Bool
@@ -88,39 +71,111 @@ view (Model screen options) =
 
 update : Msg -> Model -> ( Model, Cmd msg )
 update msg model =
-    ( updateModel msg model
-    , sendCmd msg model
-    )
+    ( updateModel msg model, sendCmd msg model )
 
 
 updateModel : Msg -> Model -> Model
-updateModel msg (Model screen options) =
-    case screen of
-        PlayScreen data ->
-            case data.playEvent of
-                Nothing ->
-                    Model (updateScreen msg screen) options
+updateModel msg ((Model screen options) as model) =
+    if isScreenControlMsg msg then
+        changeScreen msg model
+    else
+        case screen of
+            PlayScreen data ->
+                case data.playEvent of
+                    Nothing ->
+                        Model (PlayScreen (updatePlayScreen msg data)) options
 
-                Just (Gameover data) ->
-                    let
-                        background =
-                            drawScene data
-                    in
-                        Model (GameoverScreen { initGameoverScreen | background = background }) options
+                    Just (Gameover data) ->
+                        let
+                            background =
+                                drawScene data
+                        in
+                            Model (GameoverScreen { initGameoverScreen | background = background }) options
 
-                Just (Win data) ->
-                    let
-                        background =
-                            drawScene data
-                    in
-                        Model (WinScreen { initWinScreen | background = background }) options
+                    Just (Win data) ->
+                        let
+                            background =
+                                drawScene data
+                        in
+                            Model (WinScreen { initWinScreen | background = background }) options
+
+            WorldChoiceScreen data ->
+                Model (WorldChoiceScreen (updateWorldChoiceScreen msg data)) options
+
+            _ ->
+                model
+
+
+isScreenControlMsg : Msg -> Bool
+isScreenControlMsg msg =
+    case msg of
+        KeyUpMsg key ->
+            isScreenControlKey key
 
         _ ->
-            Model (updateScreen msg screen) options
+            False
+
+
+changeScreen : Msg -> Model -> Model
+changeScreen msg ((Model screen options) as model) =
+    case msg of
+        KeyUpMsg Start ->
+            case screen of
+                StartScreen ->
+                    Model (WorldChoiceScreen initWorldChoiceScreen) options
+
+                WorldChoiceScreen data ->
+                    case List.head data.worlds of
+                        Just world ->
+                            Model (PlayScreen (startPlayScreen world)) options
+
+                        Nothing ->
+                            Debug.crash "No world found"
+
+                GameoverScreen _ ->
+                    Model (WorldChoiceScreen initWorldChoiceScreen) options
+
+                WinScreen _ ->
+                    Model (WorldChoiceScreen initWorldChoiceScreen) options
+
+                PlayScreen _ ->
+                    model
+
+        KeyUpMsg Back ->
+            case screen of
+                StartScreen ->
+                    model
+
+                WorldChoiceScreen _ ->
+                    Model StartScreen options
+
+                GameoverScreen _ ->
+                    Model (WorldChoiceScreen initWorldChoiceScreen) options
+
+                WinScreen _ ->
+                    Model (WorldChoiceScreen initWorldChoiceScreen) options
+
+                PlayScreen _ ->
+                    Model (WorldChoiceScreen initWorldChoiceScreen) options
+
+        _ ->
+            model
+
+
+startPlayScreen : World -> PlayData
+startPlayScreen world =
+    { initPlayScreen
+        | world = world
+        , timeRemaining = world.totalTime
+        , rocket =
+            { initRocket
+                | position = world.rocketStartPosition
+            }
+    }
 
 
 sendCmd : Msg -> Model -> Cmd msg
-sendCmd msg (Model screen options as model) =
+sendCmd msg ((Model screen options) as model) =
     case screen of
         PlayScreen data ->
             if data.rocket.fire then
@@ -135,8 +190,8 @@ sendCmd msg (Model screen options as model) =
 subscriptions : Model -> Sub Msg
 subscriptions ((Model screen options) as model) =
     Sub.batch
-        <| [ Keyboard.downs (KeyDownMsg << keyBinding model)
-           , Keyboard.ups (KeyUpMsg << keyBinding model)
+        <| [ Keyboard.downs (KeyDownMsg << keyBinding)
+           , Keyboard.ups (KeyUpMsg << keyBinding)
            ]
         ++ case screen of
             PlayScreen _ ->
