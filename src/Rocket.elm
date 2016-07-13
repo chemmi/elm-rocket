@@ -87,8 +87,15 @@ view (Model screen options) =
 
 
 update : Msg -> Model -> ( Model, Cmd msg )
-update msg (Model screen options) =
-    ( case screen of
+update msg model =
+    ( updateModel msg model
+    , sendCmd msg model
+    )
+
+
+updateModel : Msg -> Model -> Model
+updateModel msg (Model screen options) =
+    case screen of
         PlayScreen data ->
             case data.playEvent of
                 Nothing ->
@@ -110,7 +117,11 @@ update msg (Model screen options) =
 
         _ ->
             Model (updateScreen msg screen) options
-    , case screen of
+
+
+sendCmd : Msg -> Model -> Cmd msg
+sendCmd msg (Model screen options as model) =
+    case screen of
         PlayScreen data ->
             if data.rocket.fire then
                 audio ( "rocket", "play" )
@@ -119,7 +130,6 @@ update msg (Model screen options) =
 
         _ ->
             Cmd.batch [ audio ( "rocket", "pause" ), audio ( "rocket", "reset" ) ]
-    )
 
 
 subscriptions : Model -> Sub Msg
