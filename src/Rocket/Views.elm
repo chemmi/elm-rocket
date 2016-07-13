@@ -9,8 +9,8 @@ import List
 import Debug
 
 
-viewStartScreen : StartScreenData -> Html a
-viewStartScreen data =
+viewStartScreen : Html a
+viewStartScreen =
     div []
         [ toHtml
             <| layers

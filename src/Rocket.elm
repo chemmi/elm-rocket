@@ -14,6 +14,7 @@ import Char exposing (KeyCode, fromCode)
 import Debug
 import Rocket.Audio exposing (audio)
 
+
 keyBinding : Model -> KeyCode -> Key
 keyBinding model =
     case model of
@@ -64,8 +65,8 @@ view model =
             Play data ->
                 viewPlay data
 
-            StartScreen data ->
-                viewStartScreen data
+            StartScreen ->
+                viewStartScreen
 
             WorldChoice data ->
                 viewWorldChoice data
@@ -89,7 +90,7 @@ view model =
 update : Msg -> Model -> ( Model, Cmd msg )
 update msg model =
     ( case model of
-        StartScreen _ ->
+        StartScreen ->
             case msg of
                 KeyUpMsg Start ->
                     WorldChoice initWorldChoice
@@ -136,7 +137,7 @@ update msg model =
         Gameover _ ->
             case msg of
                 KeyUpMsg Start ->
-                    StartScreen initStartScreen
+                    StartScreen
 
                 _ ->
                     model
@@ -144,7 +145,7 @@ update msg model =
         Win _ ->
             case msg of
                 KeyUpMsg Start ->
-                    StartScreen initStartScreen
+                    StartScreen
 
                 _ ->
                     model

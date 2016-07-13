@@ -8,7 +8,7 @@ import Element exposing (empty)
 
 init : Model
 init =
-    StartScreen initStartScreen
+    StartScreen
 
 
 initPlay : PlayData
@@ -28,11 +28,6 @@ initPlay =
             }
         , gameover = False
         }
-
-
-initStartScreen : StartScreenData
-initStartScreen =
-    { background = empty }
 
 
 initWorldChoice : WorldChoiceData
