@@ -14,10 +14,6 @@ import Char exposing (KeyCode, fromCode)
 import Debug
 import Rocket.Audio exposing (audio)
 
-
--- port module
-
-
 keyBinding : Model -> KeyCode -> Key
 keyBinding model =
     case model of
