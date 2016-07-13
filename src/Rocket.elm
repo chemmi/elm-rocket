@@ -36,7 +36,7 @@ keyBinding model =
             \code ->
                 case fromCode code of
                     'W' ->
-                        Forward
+                        Up
 
                     'A' ->
                         Left
@@ -64,8 +64,8 @@ view model =
             Play data ->
                 viewPlay data
 
-            Startscreen data ->
-                viewStartscreen data
+            StartScreen data ->
+                viewStartScreen data
 
             WorldChoice data ->
                 viewWorldChoice data
@@ -89,7 +89,7 @@ view model =
 update : Msg -> Model -> ( Model, Cmd msg )
 update msg model =
     ( case model of
-        Startscreen _ ->
+        StartScreen _ ->
             case msg of
                 KeyUpMsg Start ->
                     WorldChoice initWorldChoice
@@ -136,7 +136,7 @@ update msg model =
         Gameover _ ->
             case msg of
                 KeyUpMsg Start ->
-                    Startscreen initStartscreen
+                    StartScreen initStartScreen
 
                 _ ->
                     model
@@ -144,7 +144,7 @@ update msg model =
         Win _ ->
             case msg of
                 KeyUpMsg Start ->
-                    Startscreen initStartscreen
+                    StartScreen initStartScreen
 
                 _ ->
                     model

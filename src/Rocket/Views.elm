@@ -9,13 +9,13 @@ import List
 import Debug
 
 
-viewStartscreen : StartscreenData -> Html a
-viewStartscreen data =
+viewStartScreen : StartScreenData -> Html a
+viewStartScreen data =
     div []
         [ toHtml
             <| layers
                 [ container 800 600 middle
-                    <| show "Startscreen - Press [SPACE] to choose level"
+                    <| show "StartScreen - Press [SPACE] to choose level"
                 ]
         ]
 

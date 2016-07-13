@@ -8,7 +8,7 @@ import Element exposing (empty)
 
 init : Model
 init =
-    Startscreen initStartscreen
+    StartScreen initStartScreen
 
 
 initPlay : PlayData
@@ -30,8 +30,8 @@ initPlay =
         }
 
 
-initStartscreen : StartscreenData
-initStartscreen =
+initStartScreen : StartScreenData
+initStartScreen =
     { background = empty }
 
 

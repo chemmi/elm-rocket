@@ -6,7 +6,7 @@ import Element exposing (Element)
 
 type Model
     = Play PlayData
-    | Startscreen StartscreenData
+    | StartScreen StartScreenData
     | WorldChoice WorldChoiceData
     | Gameover GameoverData
     | Win WinData
@@ -22,12 +22,13 @@ type Msg
 type Key
     = Left
     | Right
-    | Forward
+    | Up
+    | Down
     | Start
     | NotBound
 
 
-type alias StartscreenData =
+type alias StartScreenData =
     { background : Element }
 
 

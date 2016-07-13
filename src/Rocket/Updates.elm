@@ -173,7 +173,7 @@ updateKeyDown keyDown msg =
                 Right ->
                     { keyDown | right = True }
 
-                Forward ->
+                Up ->
                     { keyDown | forward = True }
 
                 _ ->
@@ -187,7 +187,7 @@ updateKeyDown keyDown msg =
                 Right ->
                     { keyDown | right = False }
 
-                Forward ->
+                Up ->
                     { keyDown | forward = False }
 
                 _ ->
