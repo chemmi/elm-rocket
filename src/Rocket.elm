@@ -18,7 +18,7 @@ import Rocket.Audio exposing (audio)
 keyBinding : Model -> KeyCode -> Key
 keyBinding model =
     case model of
-        WorldChoice _ ->
+        WorldChoiceScreen _ ->
             \code ->
                 case fromCode code of
                     'A' ->
@@ -33,7 +33,7 @@ keyBinding model =
                     _ ->
                         NotBound
 
-        Play _ ->
+        PlayScreen _ ->
             \code ->
                 case fromCode code of
                     'W' ->
@@ -62,20 +62,20 @@ view : Model -> Html a
 view model =
     div []
         [ case model of
-            Play data ->
-                viewPlay data
+            PlayScreen data ->
+                viewPlayScreen data
 
             StartScreen ->
                 viewStartScreen
 
-            WorldChoice data ->
-                viewWorldChoice data
+            WorldChoiceScreen data ->
+                viewWorldChoiceScreen data
 
-            Gameover data ->
-                viewGameover data
+            GameoverScreen data ->
+                viewGameoverScreen data
 
-            Win data ->
-                viewWin data
+            WinScreen data ->
+                viewWinScreen data
         , h3 [] [ text "Short Introduction:" ]
         , text "Control the rocket with W (accelerate), A (turn left) and D (turn right)."
         , br [] []
@@ -93,48 +93,48 @@ update msg model =
         StartScreen ->
             case msg of
                 KeyUpMsg Start ->
-                    WorldChoice initWorldChoice
+                    WorldChoiceScreen initWorldChoiceScreen
 
                 _ ->
                     model
 
-        WorldChoice data ->
+        WorldChoiceScreen data ->
             case msg of
                 KeyUpMsg Start ->
                     case List.head data.worlds of
                         Just world ->
-                            Play (startPlay world)
+                            PlayScreen (startPlayScreen world)
 
                         Nothing ->
                             Debug.crash "No world found"
 
                 KeyUpMsg direction ->
-                    WorldChoice (updateWorldChoice direction data)
+                    WorldChoiceScreen (updateWorldChoiceScreen direction data)
 
                 _ ->
                     model
 
-        Play data ->
+        PlayScreen data ->
             let
-                updatedPlay =
-                    updatePlay msg data
+                updatedPlayScreen =
+                    updatePlayScreen msg data
             in
-                if isGameover updatedPlay then
-                    Gameover
-                        { initGameover
+                if isGameover updatedPlayScreen then
+                    GameoverScreen
+                        { initGameoverScreen
                             | background =
-                                drawScene updatedPlay
+                                drawScene updatedPlayScreen
                         }
-                else if isWin updatedPlay then
-                    Win
-                        { initWin
+                else if isWin updatedPlayScreen then
+                    WinScreen
+                        { initWinScreen
                             | background =
-                                drawScene updatedPlay
+                                drawScene updatedPlayScreen
                         }
                 else
-                    Play updatedPlay
+                    PlayScreen updatedPlayScreen
 
-        Gameover _ ->
+        GameoverScreen _ ->
             case msg of
                 KeyUpMsg Start ->
                     StartScreen
@@ -142,7 +142,7 @@ update msg model =
                 _ ->
                     model
 
-        Win _ ->
+        WinScreen _ ->
             case msg of
                 KeyUpMsg Start ->
                     StartScreen
@@ -150,7 +150,7 @@ update msg model =
                 _ ->
                     model
     , case model of
-        Play data ->
+        PlayScreen data ->
             if data.rocket.fire then
                 audio ( "rocket", "play" )
             else
@@ -161,9 +161,9 @@ update msg model =
     )
 
 
-startPlay : World -> PlayData
-startPlay world =
-    { initPlay
+startPlayScreen : World -> PlayData
+startPlayScreen world =
+    { initPlayScreen
         | world = world
         , timeRemaining = world.totalTime
         , rocket =
@@ -190,7 +190,7 @@ subscriptions model =
            , Keyboard.ups (KeyUpMsg << keyBinding model)
            ]
         ++ case model of
-            Play _ ->
+            PlayScreen _ ->
                 [ diffs Step
                 , every second <| always TimerTick
                 ]

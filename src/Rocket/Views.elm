@@ -20,8 +20,8 @@ viewStartScreen =
         ]
 
 
-viewWorldChoice : WorldChoiceData -> Html a
-viewWorldChoice { worlds } =
+viewWorldChoiceScreen : WorldChoiceData -> Html a
+viewWorldChoiceScreen { worlds } =
     div []
         [ toHtml
             <| layers
@@ -38,8 +38,8 @@ viewWorldChoice { worlds } =
         ]
 
 
-viewGameover : GameoverData -> Html a
-viewGameover data =
+viewGameoverScreen : GameoverData -> Html a
+viewGameoverScreen data =
     div []
         [ toHtml
             <| layers
@@ -49,8 +49,8 @@ viewGameover data =
         ]
 
 
-viewWin : WinData -> Html a
-viewWin data =
+viewWinScreen : WinData -> Html a
+viewWinScreen data =
     div []
         [ toHtml
             <| layers
@@ -60,8 +60,8 @@ viewWin data =
         ]
 
 
-viewPlay : PlayData -> Html a
-viewPlay data =
+viewPlayScreen : PlayData -> Html a
+viewPlayScreen data =
     div []
         [ toHtml <| drawScene data
           --, viewRocketStatus rocket

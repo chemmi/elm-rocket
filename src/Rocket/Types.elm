@@ -4,12 +4,16 @@ import Time exposing (Time)
 import Element exposing (Element)
 
 
-type Model
-    = Play PlayData
-    | StartScreen
-    | WorldChoice WorldChoiceData
-    | Gameover GameoverData
-    | Win WinData
+type alias Model =
+    Screen
+
+
+type Screen
+    = StartScreen
+    | PlayScreen PlayData
+    | WorldChoiceScreen WorldChoiceData
+    | GameoverScreen GameoverData
+    | WinScreen WinData
 
 
 type Msg

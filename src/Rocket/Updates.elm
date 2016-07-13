@@ -8,8 +8,8 @@ import List.Extra exposing (updateIf, last, init)
 import Debug
 
 
-updateWorldChoice : Key -> WorldChoiceData -> WorldChoiceData
-updateWorldChoice key ({ worlds } as data) =
+updateWorldChoiceScreen : Key -> WorldChoiceData -> WorldChoiceData
+updateWorldChoiceScreen key ({ worlds } as data) =
     case key of
         Right ->
             { data | worlds = rotateRight worlds }
@@ -21,8 +21,8 @@ updateWorldChoice key ({ worlds } as data) =
             data
 
 
-updatePlay : Msg -> PlayData -> PlayData
-updatePlay msg ({ world, rocket, keyDown } as data) =
+updatePlayScreen : Msg -> PlayData -> PlayData
+updatePlayScreen msg ({ world, rocket, keyDown } as data) =
     case msg of
         KeyDownMsg key ->
             { data | keyDown = updateKeyDown keyDown (KeyDownMsg key) }
