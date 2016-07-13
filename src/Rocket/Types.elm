@@ -59,7 +59,6 @@ type alias PlayData =
     , displayPosition : ( Int, Int )
     , rocket : Rocket
     , world : World
-    , gameover : Bool
     , playEvent : Maybe PlayEvent
     }
 

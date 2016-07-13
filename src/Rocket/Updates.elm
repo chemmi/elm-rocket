@@ -38,24 +38,7 @@ updateScreen msg screen =
                     screen
 
         PlayScreen data ->
-            let
-                updatedPlayScreen =
-                    updatePlayScreen msg data
-            in
-                if isGameover updatedPlayScreen then
-                    GameoverScreen
-                        { initGameoverScreen
-                            | background =
-                                drawScene updatedPlayScreen
-                        }
-                else if isWin updatedPlayScreen then
-                    WinScreen
-                        { initWinScreen
-                            | background =
-                                drawScene updatedPlayScreen
-                        }
-                else
-                    PlayScreen updatedPlayScreen
+            PlayScreen (updatePlayScreen msg data)
 
         GameoverScreen _ ->
             case msg of
@@ -86,16 +69,6 @@ startPlayScreen world =
     }
 
 
-isGameover : PlayData -> Bool
-isGameover data =
-    data.gameover
-
-
-isWin : PlayData -> Bool
-isWin { world } =
-    world.isWin world.platforms
-
-
 updateWorldChoiceScreen : Key -> WorldChoiceData -> WorldChoiceData
 updateWorldChoiceScreen key ({ worlds } as data) =
     case key of
@@ -119,24 +92,32 @@ updatePlayScreen msg ({ world, rocket, keyDown } as data) =
             { data | keyDown = updateKeyDown keyDown (KeyUpMsg key) }
 
         Step diffTime ->
-            case rocket.movement of
-                Landed _ ->
-                    updateLanded data
+            if not (isWin data) then
+                case rocket.movement of
+                    Landed _ ->
+                        updateLanded data
 
-                Landing _ ->
-                    updateLanding data
+                    Landing _ ->
+                        updateLanding data
 
-                Colliding ->
-                    updateColliding data
+                    Colliding ->
+                        updateColliding data
 
-                Flying ->
-                    updateFlying data diffTime
+                    Flying ->
+                        updateFlying data diffTime
+            else
+                { data | playEvent = Just (Win data) }
 
         TimerTick ->
             if data.timeRemaining <= 0 * second then
-                { data | gameover = True }
+                { data | playEvent = Just (Gameover data) }
             else
                 { data | timeRemaining = data.timeRemaining - 1 * second }
+
+
+isWin : PlayData -> Bool
+isWin { world } =
+    world.isWin world.platforms
 
 
 updateFlying : PlayData -> Time -> PlayData
@@ -167,7 +148,7 @@ updateFlying ({ world, rocket, keyDown } as data) diffTime =
 
 updateColliding : PlayData -> PlayData
 updateColliding data =
-    { data | gameover = True }
+    { data | playEvent = Just (Gameover data) }
 
 
 updateLanding : PlayData -> PlayData

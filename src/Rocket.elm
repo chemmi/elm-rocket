@@ -75,7 +75,28 @@ view (Model screen options) =
 
 update : Msg -> Model -> ( Model, Cmd msg )
 update msg (Model screen options) =
-    ( Model (updateScreen msg screen) options
+    ( case screen of
+        PlayScreen data ->
+            case data.playEvent of
+                Nothing ->
+                    Model (updateScreen msg screen) options
+
+                Just (Gameover data) ->
+                    let
+                        background =
+                            drawScene data
+                    in
+                        Model (GameoverScreen { initGameoverScreen | background = background }) options
+
+                Just (Win data) ->
+                    let
+                        background =
+                            drawScene data
+                    in
+                        Model (WinScreen { initWinScreen | background = background }) options
+
+        _ ->
+            Model (updateScreen msg screen) options
     , case screen of
         PlayScreen data ->
             if data.rocket.fire then
