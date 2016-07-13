@@ -53,7 +53,7 @@ noKeyDown : KeyDown
 noKeyDown =
     { left = False
     , right = False
-    , forward = False
+    , up = False
     }
 
 

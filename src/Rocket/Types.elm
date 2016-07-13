@@ -72,7 +72,7 @@ type PlayEvent
 type alias KeyDown =
     { left : Bool
     , right : Bool
-    , forward : Bool
+    , up : Bool
     }
 
 

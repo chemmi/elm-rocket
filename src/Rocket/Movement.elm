@@ -29,14 +29,14 @@ moveRocket keyDown gravity diffTime ({ angle, position, fire, velocity, accelera
                     angle
             , velocity =
                 accelerate (gravity * diffSeconds) 180
-                    <| (if keyDown.forward then
+                    <| (if keyDown.up then
                             accelerate (acceleration * diffSeconds) angle
                         else
                             identity
                        )
                     <| ( vx, vy )
             , position = ( vx + x, vy + y )
-            , fire = keyDown.forward
+            , fire = keyDown.up
         }
 
 

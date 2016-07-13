@@ -169,7 +169,7 @@ updateLanding ({ world, rocket } as data) =
 
 updateLanded : PlayData -> PlayData
 updateLanded ({ rocket, keyDown } as data) =
-    if keyDown.forward then
+    if keyDown.up then
         { data | rocket = startRocket rocket }
     else
         data
@@ -243,7 +243,7 @@ updateKeyDown keyDown msg =
                     { keyDown | right = True }
 
                 Up ->
-                    { keyDown | forward = True }
+                    { keyDown | up = True }
 
                 _ ->
                     keyDown
@@ -257,7 +257,7 @@ updateKeyDown keyDown msg =
                     { keyDown | right = False }
 
                 Up ->
-                    { keyDown | forward = False }
+                    { keyDown | up = False }
 
                 _ ->
                     keyDown
