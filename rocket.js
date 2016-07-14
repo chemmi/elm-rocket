@@ -13503,7 +13503,7 @@ var _chemmi$elm_rocket$Rocket_Views$viewWorldChoiceScreen = function (_p6) {
 								}
 							}()),
 							_chemmi$elm_rocket$Rocket_Views$showMessageBox(
-							{ctor: '_Tuple2', _0: 'Choose world', _1: '<-- [A]       [SPACE] : start       [D] -->'})
+							{ctor: '_Tuple2', _0: 'Choose world', _1: '<-- [A]       [SPACE] : start, [B] : back       [D] -->'})
 						])))
 			]));
 };

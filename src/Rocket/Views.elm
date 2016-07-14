@@ -95,7 +95,7 @@ viewWorldChoiceScreen { worldChoice } =
                             Debug.crash "No worlds found"
                 , showMessageBox
                     ( "Choose world"
-                    , "<-- [A]       [SPACE] : start       [D] -->"
+                    , "<-- [A]       [SPACE] : start, [B] : back       [D] -->"
                     )
                 ]
         ]
