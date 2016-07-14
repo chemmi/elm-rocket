@@ -5,7 +5,8 @@ import Rocket.Inits exposing (..)
 import Rocket.Updates exposing (..)
 import Rocket.Views exposing (..)
 import Rocket.Scene exposing (drawScene)
-import Html exposing (Html, text, div, br, h3)
+import Html exposing (Html, text, div, br, h3, body)
+import Html.Attributes exposing (id)
 import Html.App exposing (program)
 import Time exposing (..)
 import AnimationFrame exposing (..)
@@ -63,15 +64,18 @@ isScreenControlKey key =
 view : Model -> Html a
 view (Model screen options) =
     div []
-        [ viewScreen screen
-        , h3 [] [ text "Short Introduction:" ]
-        , text "Control the rocket with W (accelerate), A (turn left) and D (turn right)."
-        , br [] []
-        , text "Try to land on all platforms in the given time."
-        , br [] []
-        , text "(Visited platforms turn from red to green)."
-        , br [] []
-        , text "The rocket must have an apropriate angle and speed when landing."
+        [ div [ id "gameScreen" ]
+            [ viewScreen screen ]
+        , div [ id "gameControl" ]
+            [ h3 [] [ text "Short Introduction:" ]
+            , text "Control the rocket with W (accelerate), A (turn left) and D (turn right)."
+            , br [] []
+            , text "Try to land on all platforms in the given time."
+            , br [] []
+            , text "(Visited platforms turn from red to green)."
+            , br [] []
+            , text "The rocket must have an apropriate angle and speed when landing."
+            ]
         ]
 
 

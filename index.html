@@ -4,11 +4,30 @@
         <meta charset="UTF-8">
         <title>Rocket</title>
         <style>
-         html,head,body { padding:0; margin:0; }
-         body { font-family: calibri, helvetica, arial, sans-serif; }
+         html,head,body {
+             padding:0;
+             margin:0;
+             overflow:hidden;
+         }
+         body {
+             background-image: url(img/background.jpg);
+             background-repeat: no-repeat;
+             background-size: cover;
+         }
+         #gameScreen {
+             width: 800px;
+             margin-right: auto;
+             margin-left: auto;
+             margin-top: 20px;
+         }
+         #gameControl {
+             width: 800px;
+             margin: auto;
+             text-align: center;
+         }
         </style>
     </head>
-    <body>
+    <body background="img/background.jpg" background-repeat="no-repeat">
         <audio id="ambient" loop>
             <source src="snd/ambient.mp3">
         </audio>
@@ -20,17 +39,17 @@
     <script type="text/javascript">
      var app = Elm.Rocket.fullscreen()
      app.ports.audio.subscribe(function(data) {
-	 //data[0] = id, data[1] = action
-	 var element = document.getElementById(data[0])
-	 switch(data[1]) {
-	     case "play":
-		 element.play();
-		 break;
-	     case "pause":
-		 element.pause();
-		 break;
-	     case "reset":
-		 element.currentTime = 0;
+         //data[0] = id, data[1] = action
+         var element = document.getElementById(data[0])
+         switch(data[1]) {
+             case "play":
+                 element.play();
+                 break;
+             case "pause":
+                 element.pause();
+                 break;
+             case "reset":
+                 element.currentTime = 0;
                  break;
          }
      });
