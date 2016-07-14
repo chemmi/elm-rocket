@@ -45,14 +45,12 @@ type alias WorldChoiceData =
 
 
 type alias GameoverData =
-    { message : String
-    , background : Element
+    { background : Element
     }
 
 
 type alias WinData =
-    { message : String
-    , background : Element
+    { background : Element
     }
 
 

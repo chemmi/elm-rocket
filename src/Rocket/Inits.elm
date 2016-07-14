@@ -43,15 +43,13 @@ initWorldChoice =
 
 initGameover : GameoverData
 initGameover =
-    { message = "Gameover - Press [SPACE] to continue"
-    , background = empty
+    { background = empty
     }
 
 
 initWin : WinData
 initWin =
-    { message = "YEAH! WIN! - Press [SPACE] to continue"
-    , background = empty
+    { background = empty
     }
 
 

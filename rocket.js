@@ -9350,14 +9350,12 @@ var _chemmi$elm_rocket$Rocket_Types$Options = F2(
 var _chemmi$elm_rocket$Rocket_Types$WorldChoiceData = function (a) {
 	return {worldChoice: a};
 };
-var _chemmi$elm_rocket$Rocket_Types$GameoverData = F2(
-	function (a, b) {
-		return {message: a, background: b};
-	});
-var _chemmi$elm_rocket$Rocket_Types$WinData = F2(
-	function (a, b) {
-		return {message: a, background: b};
-	});
+var _chemmi$elm_rocket$Rocket_Types$GameoverData = function (a) {
+	return {background: a};
+};
+var _chemmi$elm_rocket$Rocket_Types$WinData = function (a) {
+	return {background: a};
+};
 var _chemmi$elm_rocket$Rocket_Types$PlayData = F7(
 	function (a, b, c, d, e, f, g) {
 		return {keyDown: a, timeRemaining: b, displaySize: c, displayPosition: d, rocket: e, world: f, playEvent: g};
@@ -10951,8 +10949,8 @@ var _chemmi$elm_rocket$Rocket_Inits$initRocket = {
 	top: {ctor: '_Tuple2', _0: 0, _1: 20}
 };
 var _chemmi$elm_rocket$Rocket_Inits$noKeyDown = {left: false, right: false, up: false};
-var _chemmi$elm_rocket$Rocket_Inits$initWin = {message: 'YEAH! WIN! - Press [SPACE] to continue', background: _evancz$elm_graphics$Element$empty};
-var _chemmi$elm_rocket$Rocket_Inits$initGameover = {message: 'Gameover - Press [SPACE] to continue', background: _evancz$elm_graphics$Element$empty};
+var _chemmi$elm_rocket$Rocket_Inits$initWin = {background: _evancz$elm_graphics$Element$empty};
+var _chemmi$elm_rocket$Rocket_Inits$initGameover = {background: _evancz$elm_graphics$Element$empty};
 var _chemmi$elm_rocket$Rocket_Inits$initWorldChoice = {
 	worldChoice: _elm_lang$core$Native_List.fromArray(
 		[])
@@ -12969,7 +12967,7 @@ var _chemmi$elm_rocket$Rocket_Views$showMessageBox = function (_p0) {
 						0.8,
 						A2(
 							_evancz$elm_graphics$Collage$filled,
-							_elm_lang$core$Color$white,
+							_elm_lang$core$Color$grey,
 							A2(_evancz$elm_graphics$Collage$rect, 700, (2 * height) + 30)))),
 					A2(
 					_evancz$elm_graphics$Collage$alpha,
@@ -13107,7 +13105,7 @@ var _chemmi$elm_rocket$Rocket_Views$viewWinScreen = function (data) {
 						[
 							data.background,
 							_chemmi$elm_rocket$Rocket_Views$showMessageBox(
-							{ctor: '_Tuple2', _0: 'Congratulations! YOU WIN!', _1: data.message})
+							{ctor: '_Tuple2', _0: 'Congratulations! YOU WIN!', _1: '[SPACE], [B]: continue'})
 						])))
 			]));
 };
@@ -13124,7 +13122,7 @@ var _chemmi$elm_rocket$Rocket_Views$viewGameoverScreen = function (data) {
 						[
 							data.background,
 							_chemmi$elm_rocket$Rocket_Views$showMessageBox(
-							{ctor: '_Tuple2', _0: 'Gameover!', _1: data.message})
+							{ctor: '_Tuple2', _0: 'Gameover!', _1: '[Space] : restart, [B] : choose other world'})
 						])))
 			]));
 };
@@ -13156,7 +13154,7 @@ var _chemmi$elm_rocket$Rocket_Views$viewWorldChoiceScreen = function (_p4) {
 								}
 							}()),
 							_chemmi$elm_rocket$Rocket_Views$showMessageBox(
-							{ctor: '_Tuple2', _0: 'Choose world', _1: '<-- [A]    [SPACE] to start level    [D] -->'})
+							{ctor: '_Tuple2', _0: 'Choose world', _1: '<-- [A]       [SPACE] : start       [D] -->'})
 						])))
 			]));
 };
@@ -13171,7 +13169,7 @@ var _chemmi$elm_rocket$Rocket_Views$viewStartScreen = A2(
 				_elm_lang$core$Native_List.fromArray(
 					[
 						_chemmi$elm_rocket$Rocket_Views$showMessageBox(
-						{ctor: '_Tuple2', _0: 'StartScreen', _1: 'Press [SPACE] to choose level'})
+						{ctor: '_Tuple2', _0: 'Welcome to RocketGame !', _1: 'Press [SPACE] to begin your journey'})
 					])))
 		]));
 var _chemmi$elm_rocket$Rocket_Views$viewScreen = function (screen) {

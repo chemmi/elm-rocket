@@ -36,7 +36,7 @@ viewStartScreen =
     div []
         [ toHtml
             <| layers
-                [ showMessageBox ( "StartScreen", "Press [SPACE] to choose level" )
+                [ showMessageBox ( "Welcome to RocketGame !", "Press [SPACE] to begin your journey" )
                 ]
         ]
 
@@ -53,7 +53,7 @@ viewWorldChoiceScreen { worldChoice } =
 
                         Nothing ->
                             Debug.crash "No worlds found"
-                , showMessageBox ( "Choose world", "<-- [A]    [SPACE] to start level    [D] -->" )
+                , showMessageBox ( "Choose world", "<-- [A]       [SPACE] : start       [D] -->" )
                 ]
         ]
 
@@ -64,7 +64,7 @@ viewGameoverScreen data =
         [ toHtml
             <| layers
                 [ data.background
-                , showMessageBox ( "Gameover!", data.message )
+                , showMessageBox ( "Gameover!", "[Space] : restart, [B] : choose other world" )
                 ]
         ]
 
@@ -75,7 +75,7 @@ viewWinScreen data =
         [ toHtml
             <| layers
                 [ data.background
-                , showMessageBox ( "Congratulations! YOU WIN!", data.message )
+                , showMessageBox ( "Congratulations! YOU WIN!", "[SPACE], [B]: continue" )
                 ]
         ]
 
@@ -154,7 +154,7 @@ showMessageBox ( caption, message ) =
             <| Collage.collage 700 300
             <| [ Collage.moveY (-(toFloat height) * 0.7)
                     <| Collage.alpha 0.8
-                    <| Collage.filled white (Collage.rect 700 (2 * height + 30))
+                    <| Collage.filled grey (Collage.rect 700 (2 * height + 30))
                , Collage.alpha 0.5
                     <| Collage.filled blue (Collage.rect 650 (height + 10))
                , Collage.moveY ((toFloat height) / 8)
