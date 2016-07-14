@@ -122,7 +122,7 @@ viewWinScreen data =
             <| layers
                 [ data.background
                 , showMessageBox
-                    ( "Congratulations! YOU WIN!"
+                    ( "Congratulations, you made it !"
                     , "[SPACE], [B]: continue"
                     )
                 ]
@@ -137,8 +137,6 @@ viewPlayScreen data =
         ]
 
 
-{-| Can be used for debugging or analizing
--}
 viewRocketStatus : Rocket -> Html a
 viewRocketStatus r =
     div []

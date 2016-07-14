@@ -13454,7 +13454,7 @@ var _chemmi$elm_rocket$Rocket_Views$viewWinScreen = function (data) {
 						[
 							data.background,
 							_chemmi$elm_rocket$Rocket_Views$showMessageBox(
-							{ctor: '_Tuple2', _0: 'Congratulations! YOU WIN!', _1: '[SPACE], [B]: continue'})
+							{ctor: '_Tuple2', _0: 'Congratulations, you made it !', _1: '[SPACE], [B]: continue'})
 						])))
 			]));
 };
