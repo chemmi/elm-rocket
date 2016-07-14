@@ -9343,9 +9343,10 @@ var _evancz$elm_graphics$Element$down = _evancz$elm_graphics$Element$DDown;
 var _evancz$elm_graphics$Element$DUp = {ctor: 'DUp'};
 var _evancz$elm_graphics$Element$up = _evancz$elm_graphics$Element$DUp;
 
-var _chemmi$elm_rocket$Rocket_Types$Options = function (a) {
-	return {worldChoice: a};
-};
+var _chemmi$elm_rocket$Rocket_Types$Options = F2(
+	function (a, b) {
+		return {worldChoice: a, ambientMusic: b};
+	});
 var _chemmi$elm_rocket$Rocket_Types$WorldChoiceData = function (a) {
 	return {worldChoice: a};
 };
@@ -10960,7 +10961,7 @@ var _chemmi$elm_rocket$Rocket_Inits$initPlay = function () {
 		playEvent: _elm_lang$core$Maybe$Nothing
 	};
 }();
-var _chemmi$elm_rocket$Rocket_Inits$initOptions = {worldChoice: _chemmi$elm_rocket$Rocket_Worlds$allWorlds};
+var _chemmi$elm_rocket$Rocket_Inits$initOptions = {worldChoice: _chemmi$elm_rocket$Rocket_Worlds$allWorlds, ambientMusic: true};
 var _chemmi$elm_rocket$Rocket_Inits$initModel = A2(_chemmi$elm_rocket$Rocket_Types$Model, _chemmi$elm_rocket$Rocket_Types$StartScreen, _chemmi$elm_rocket$Rocket_Inits$initOptions);
 
 var _elm_lang$core$Set$foldr = F3(
@@ -13566,31 +13567,39 @@ var _chemmi$elm_rocket$Rocket_Audio$audio = _elm_lang$core$Native_Platform.outgo
 		return [v._0, v._1];
 	});
 
-var _chemmi$elm_rocket$Rocket$sendCmd = F2(
-	function (msg, _p0) {
-		var _p1 = _p0;
-		var _p2 = _p1._0;
-		if (_p2.ctor === 'PlayScreen') {
-			return _p2._0.rocket.fire ? _chemmi$elm_rocket$Rocket_Audio$audio(
-				{ctor: '_Tuple2', _0: 'rocket', _1: 'play'}) : _elm_lang$core$Platform_Cmd$batch(
-				_elm_lang$core$Native_List.fromArray(
-					[
-						_chemmi$elm_rocket$Rocket_Audio$audio(
-						{ctor: '_Tuple2', _0: 'rocket', _1: 'pause'}),
-						_chemmi$elm_rocket$Rocket_Audio$audio(
-						{ctor: '_Tuple2', _0: 'rocket', _1: 'reset'})
-					]));
-		} else {
-			return _elm_lang$core$Platform_Cmd$batch(
-				_elm_lang$core$Native_List.fromArray(
-					[
-						_chemmi$elm_rocket$Rocket_Audio$audio(
-						{ctor: '_Tuple2', _0: 'rocket', _1: 'pause'}),
-						_chemmi$elm_rocket$Rocket_Audio$audio(
-						{ctor: '_Tuple2', _0: 'rocket', _1: 'reset'})
-					]));
-		}
-	});
+var _chemmi$elm_rocket$Rocket$sendCmd = function (_p0) {
+	var _p1 = _p0;
+	return _elm_lang$core$Platform_Cmd$batch(
+		_elm_lang$core$Native_List.fromArray(
+			[
+				_p1._1.ambientMusic ? _chemmi$elm_rocket$Rocket_Audio$audio(
+				{ctor: '_Tuple2', _0: 'ambient', _1: 'play'}) : _chemmi$elm_rocket$Rocket_Audio$audio(
+				{ctor: '_Tuple2', _0: 'ambient', _1: 'pause'}),
+				function () {
+				var _p2 = _p1._0;
+				if (_p2.ctor === 'PlayScreen') {
+					return _p2._0.rocket.fire ? _chemmi$elm_rocket$Rocket_Audio$audio(
+						{ctor: '_Tuple2', _0: 'rocket', _1: 'play'}) : _elm_lang$core$Platform_Cmd$batch(
+						_elm_lang$core$Native_List.fromArray(
+							[
+								_chemmi$elm_rocket$Rocket_Audio$audio(
+								{ctor: '_Tuple2', _0: 'rocket', _1: 'pause'}),
+								_chemmi$elm_rocket$Rocket_Audio$audio(
+								{ctor: '_Tuple2', _0: 'rocket', _1: 'reset'})
+							]));
+				} else {
+					return _elm_lang$core$Platform_Cmd$batch(
+						_elm_lang$core$Native_List.fromArray(
+							[
+								_chemmi$elm_rocket$Rocket_Audio$audio(
+								{ctor: '_Tuple2', _0: 'rocket', _1: 'pause'}),
+								_chemmi$elm_rocket$Rocket_Audio$audio(
+								{ctor: '_Tuple2', _0: 'rocket', _1: 'reset'})
+							]));
+				}
+			}()
+			]));
+};
 var _chemmi$elm_rocket$Rocket$changeToPlay = function (_p3) {
 	var _p4 = _p3;
 	var world = function () {
@@ -13797,7 +13806,7 @@ var _chemmi$elm_rocket$Rocket$update = F2(
 		return {
 			ctor: '_Tuple2',
 			_0: A2(_chemmi$elm_rocket$Rocket$updateModel, msg, model),
-			_1: A2(_chemmi$elm_rocket$Rocket$sendCmd, msg, model)
+			_1: _chemmi$elm_rocket$Rocket$sendCmd(model)
 		};
 	});
 var _chemmi$elm_rocket$Rocket$keyBinding = function (code) {
@@ -13860,8 +13869,7 @@ var _chemmi$elm_rocket$Rocket$main = {
 			init: {
 				ctor: '_Tuple2',
 				_0: _chemmi$elm_rocket$Rocket_Inits$initModel,
-				_1: _chemmi$elm_rocket$Rocket_Audio$audio(
-					{ctor: '_Tuple2', _0: 'ambient', _1: 'play'})
+				_1: _chemmi$elm_rocket$Rocket$sendCmd(_chemmi$elm_rocket$Rocket_Inits$initModel)
 			},
 			view: _chemmi$elm_rocket$Rocket$view,
 			update: _chemmi$elm_rocket$Rocket$update,

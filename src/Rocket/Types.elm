@@ -17,7 +17,9 @@ type Screen
 
 
 type alias Options =
-    { worldChoice : List World}
+    { worldChoice : List World
+    , ambientMusic : Bool
+    }
 
 
 type Msg

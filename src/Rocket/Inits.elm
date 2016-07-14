@@ -12,7 +12,9 @@ initModel =
 
 
 initOptions =
-    { worldChoice = allWorlds }
+    { worldChoice = allWorlds
+    , ambientMusic = True
+    }
 
 
 initPlay : PlayData

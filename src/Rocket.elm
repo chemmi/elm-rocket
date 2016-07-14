@@ -71,7 +71,7 @@ view (Model screen options) =
 
 update : Msg -> Model -> ( Model, Cmd msg )
 update msg model =
-    ( updateModel msg model, sendCmd msg model )
+    ( updateModel msg model, sendCmd model )
 
 
 updateModel : Msg -> Model -> Model
@@ -186,17 +186,23 @@ changeToPlay ({ worldChoice } as options) =
         Model (PlayScreen playData) options
 
 
-sendCmd : Msg -> Model -> Cmd msg
-sendCmd msg ((Model screen options) as model) =
-    case screen of
-        PlayScreen data ->
-            if data.rocket.fire then
-                audio ( "rocket", "play" )
-            else
-                Cmd.batch [ audio ( "rocket", "pause" ), audio ( "rocket", "reset" ) ]
+sendCmd : Model -> Cmd msg
+sendCmd (Model screen options as model) =
+    Cmd.batch
+        [ if options.ambientMusic then
+            audio ( "ambient", "play" )
+          else
+            audio ( "ambient", "pause" )
+        , case screen of
+            PlayScreen data ->
+                if data.rocket.fire then
+                    audio ( "rocket", "play" )
+                else
+                    Cmd.batch [ audio ( "rocket", "pause" ), audio ( "rocket", "reset" ) ]
 
-        _ ->
-            Cmd.batch [ audio ( "rocket", "pause" ), audio ( "rocket", "reset" ) ]
+            _ ->
+                Cmd.batch [ audio ( "rocket", "pause" ), audio ( "rocket", "reset" ) ]
+        ]
 
 
 subscriptions : Model -> Sub Msg
@@ -218,7 +224,7 @@ subscriptions ((Model screen options) as model) =
 main : Program Never
 main =
     program
-        { init = ( initModel, audio ( "ambient", "play" ) )
+        { init = ( initModel, sendCmd initModel )
         , view = view
         , update = update
         , subscriptions = subscriptions
