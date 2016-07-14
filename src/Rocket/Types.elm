@@ -36,6 +36,7 @@ type Key
     | Down
     | Start
     | Back
+    | AmbientMusic
     | NotBound
 
 

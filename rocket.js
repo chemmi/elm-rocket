@@ -9429,6 +9429,7 @@ var _chemmi$elm_rocket$Rocket_Types$KeyDownMsg = function (a) {
 	return {ctor: 'KeyDownMsg', _0: a};
 };
 var _chemmi$elm_rocket$Rocket_Types$NotBound = {ctor: 'NotBound'};
+var _chemmi$elm_rocket$Rocket_Types$AmbientMusic = {ctor: 'AmbientMusic'};
 var _chemmi$elm_rocket$Rocket_Types$Back = {ctor: 'Back'};
 var _chemmi$elm_rocket$Rocket_Types$Start = {ctor: 'Start'};
 var _chemmi$elm_rocket$Rocket_Types$Down = {ctor: 'Down'};
@@ -13610,8 +13611,8 @@ var _chemmi$elm_rocket$Rocket$changeToPlay = function (_p3) {
 			return _elm_lang$core$Native_Utils.crashCase(
 				'Rocket',
 				{
-					start: {line: 169, column: 13},
-					end: {line: 174, column: 49}
+					start: {line: 182, column: 13},
+					end: {line: 187, column: 49}
 				},
 				_p5)('No world found');
 		}
@@ -13646,7 +13647,7 @@ var _chemmi$elm_rocket$Rocket$changeScreen = F2(
 		var _p13 = _p8._1;
 		var _p12 = _p8;
 		var _p9 = msg;
-		_v5_2:
+		_v5_3:
 		do {
 			if (_p9.ctor === 'KeyUpMsg') {
 				switch (_p9._0.ctor) {
@@ -13681,11 +13682,20 @@ var _chemmi$elm_rocket$Rocket$changeScreen = F2(
 							default:
 								return _chemmi$elm_rocket$Rocket$changeToWorldChoice(_p13);
 						}
+					case 'AmbientMusic':
+						return A2(
+							_chemmi$elm_rocket$Rocket_Types$Model,
+							_p14,
+							_elm_lang$core$Native_Utils.update(
+								_p13,
+								{
+									ambientMusic: _elm_lang$core$Basics$not(_p13.ambientMusic)
+								}));
 					default:
-						break _v5_2;
+						break _v5_3;
 				}
 			} else {
-				break _v5_2;
+				break _v5_3;
 			}
 		} while(false);
 		return _p12;
@@ -13737,6 +13747,8 @@ var _chemmi$elm_rocket$Rocket$isScreenControlKey = function (key) {
 		case 'Start':
 			return true;
 		case 'Back':
+			return true;
+		case 'AmbientMusic':
 			return true;
 		default:
 			return false;
@@ -13803,10 +13815,11 @@ var _chemmi$elm_rocket$Rocket$updateModel = F2(
 	});
 var _chemmi$elm_rocket$Rocket$update = F2(
 	function (msg, model) {
+		var updatedModel = A2(_chemmi$elm_rocket$Rocket$updateModel, msg, model);
 		return {
 			ctor: '_Tuple2',
-			_0: A2(_chemmi$elm_rocket$Rocket$updateModel, msg, model),
-			_1: _chemmi$elm_rocket$Rocket$sendCmd(model)
+			_0: updatedModel,
+			_1: _chemmi$elm_rocket$Rocket$sendCmd(updatedModel)
 		};
 	});
 var _chemmi$elm_rocket$Rocket$keyBinding = function (code) {
@@ -13824,6 +13837,8 @@ var _chemmi$elm_rocket$Rocket$keyBinding = function (code) {
 			return _chemmi$elm_rocket$Rocket_Types$Start;
 		case 'B':
 			return _chemmi$elm_rocket$Rocket_Types$Back;
+		case 'M':
+			return _chemmi$elm_rocket$Rocket_Types$AmbientMusic;
 		default:
 			return _chemmi$elm_rocket$Rocket_Types$NotBound;
 	}

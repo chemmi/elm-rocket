@@ -37,6 +37,9 @@ keyBinding code =
         'B' ->
             Back
 
+        'M' ->
+            AmbientMusic
+
         _ ->
             NotBound
 
@@ -48,6 +51,9 @@ isScreenControlKey key =
             True
 
         Back ->
+            True
+
+        AmbientMusic ->
             True
 
         _ ->
@@ -71,7 +77,11 @@ view (Model screen options) =
 
 update : Msg -> Model -> ( Model, Cmd msg )
 update msg model =
-    ( updateModel msg model, sendCmd model )
+    let
+        updatedModel =
+            updateModel msg model
+    in
+        ( updatedModel, sendCmd updatedModel )
 
 
 updateModel : Msg -> Model -> Model
@@ -153,6 +163,9 @@ changeScreen msg ((Model screen options) as model) =
                 PlayScreen _ ->
                     changeToWorldChoice options
 
+        KeyUpMsg AmbientMusic ->
+            Model screen { options | ambientMusic = not options.ambientMusic }
+
         _ ->
             model
 
@@ -187,7 +200,7 @@ changeToPlay ({ worldChoice } as options) =
 
 
 sendCmd : Model -> Cmd msg
-sendCmd (Model screen options as model) =
+sendCmd ((Model screen options) as model) =
     Cmd.batch
         [ if options.ambientMusic then
             audio ( "ambient", "play" )
