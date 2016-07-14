@@ -10734,17 +10734,18 @@ var _chemmi$elm_rocket$Rocket_Scene$frameForm = function () {
 	};
 }();
 var _chemmi$elm_rocket$Rocket_Scene$backgroundForm = function (_p5) {
-	return A2(
-		_evancz$elm_graphics$Collage$filled,
-		_elm_lang$core$Color$lightGreen,
-		A2(_elm_lang$core$Basics$uncurry, _evancz$elm_graphics$Collage$rect, _p5));
+	var _p6 = _p5;
+	var b$ = _elm_lang$core$Basics$round(_p6._1);
+	var a$ = _elm_lang$core$Basics$round(_p6._0);
+	return _evancz$elm_graphics$Collage$toForm(
+		A3(_evancz$elm_graphics$Element$fittedImage, a$, b$, 'img/space.jpg'));
 };
 var _chemmi$elm_rocket$Rocket_Scene$platformShape = function (platform) {
 	var height = 10;
 	var hWidth = platform.width / 2;
-	var _p6 = platform.center;
-	var x = _p6._0;
-	var y = _p6._1;
+	var _p7 = platform.center;
+	var x = _p7._0;
+	var y = _p7._1;
 	return _evancz$elm_graphics$Collage$polygon(
 		_elm_lang$core$Native_List.fromArray(
 			[
@@ -10782,9 +10783,9 @@ var _chemmi$elm_rocket$Rocket_Scene$polyShape = function (poly) {
 var _chemmi$elm_rocket$Rocket_Scene$rectShape = function (rect) {
 	var w = rect.width;
 	var h = rect.height;
-	var _p7 = rect.topLeft;
-	var x = _p7._0;
-	var y = _p7._1;
+	var _p8 = rect.topLeft;
+	var x = _p8._0;
+	var y = _p8._1;
 	return _evancz$elm_graphics$Collage$polygon(
 		_elm_lang$core$Native_List.fromArray(
 			[
@@ -10794,60 +10795,60 @@ var _chemmi$elm_rocket$Rocket_Scene$rectShape = function (rect) {
 				{ctor: '_Tuple2', _0: x, _1: y - h}
 			]));
 };
-var _chemmi$elm_rocket$Rocket_Scene$worldForm = function (_p8) {
-	var _p9 = _p8;
+var _chemmi$elm_rocket$Rocket_Scene$worldForm = function (_p9) {
+	var _p10 = _p9;
 	var color = _elm_lang$core$Color$lightCharcoal;
 	return _evancz$elm_graphics$Collage$group(
 		A2(
 			_elm_lang$core$Basics_ops['++'],
 			A2(
 				_elm_lang$core$List$map,
-				function (_p10) {
+				function (_p11) {
 					return A2(
 						_evancz$elm_graphics$Collage$filled,
 						color,
-						_chemmi$elm_rocket$Rocket_Scene$rectShape(_p10));
+						_chemmi$elm_rocket$Rocket_Scene$rectShape(_p11));
 				},
-				_p9.rects),
+				_p10.rects),
 			A2(
 				_elm_lang$core$Basics_ops['++'],
 				A2(
 					_elm_lang$core$List$map,
-					function (_p11) {
+					function (_p12) {
 						return A2(
 							_evancz$elm_graphics$Collage$filled,
 							color,
-							_chemmi$elm_rocket$Rocket_Scene$polyShape(_p11));
+							_chemmi$elm_rocket$Rocket_Scene$polyShape(_p12));
 					},
-					_p9.polygons),
+					_p10.polygons),
 				_elm_lang$core$Native_List.fromArray(
 					[
-						_chemmi$elm_rocket$Rocket_Scene$platformsForm(_p9.platforms)
+						_chemmi$elm_rocket$Rocket_Scene$platformsForm(_p10.platforms)
 					]))));
 };
-var _chemmi$elm_rocket$Rocket_Scene$drawScene = function (_p12) {
-	var _p13 = _p12;
-	var _p16 = _p13.world;
-	var _p15 = _p13.displaySize;
-	var _p14 = _p13.displayPosition;
+var _chemmi$elm_rocket$Rocket_Scene$drawScene = function (_p13) {
+	var _p14 = _p13;
+	var _p17 = _p14.world;
+	var _p16 = _p14.displaySize;
+	var _p15 = _p14.displayPosition;
 	var timerPos = {
 		ctor: '_Tuple2',
 		_0: _elm_lang$core$Basics$toFloat(
-			((_elm_lang$core$Basics$fst(_p15) / 2) | 0) - 15),
+			((_elm_lang$core$Basics$fst(_p16) / 2) | 0) - 15),
 		_1: _elm_lang$core$Basics$toFloat(
-			((_elm_lang$core$Basics$snd(_p15) / 2) | 0) - 12)
+			((_elm_lang$core$Basics$snd(_p16) / 2) | 0) - 12)
 	};
 	var offset = {
 		ctor: '_Tuple2',
 		_0: 0 - _elm_lang$core$Basics$toFloat(
-			_elm_lang$core$Basics$fst(_p14)),
+			_elm_lang$core$Basics$fst(_p15)),
 		_1: 0 - _elm_lang$core$Basics$toFloat(
-			_elm_lang$core$Basics$snd(_p14))
+			_elm_lang$core$Basics$snd(_p15))
 	};
 	return A3(
 		_elm_lang$core$Basics$uncurry,
 		_evancz$elm_graphics$Collage$collage,
-		_p15,
+		_p16,
 		_elm_lang$core$Native_List.fromArray(
 			[
 				A2(
@@ -10856,10 +10857,10 @@ var _chemmi$elm_rocket$Rocket_Scene$drawScene = function (_p12) {
 				_evancz$elm_graphics$Collage$group(
 					_elm_lang$core$Native_List.fromArray(
 						[
-							_chemmi$elm_rocket$Rocket_Scene$backgroundForm(_p16.size),
-							_chemmi$elm_rocket$Rocket_Scene$worldForm(_p16),
-							_chemmi$elm_rocket$Rocket_Scene$rocketForm(_p13.rocket),
-							_chemmi$elm_rocket$Rocket_Scene$frameForm(_p16.size)
+							_chemmi$elm_rocket$Rocket_Scene$backgroundForm(_p17.size),
+							_chemmi$elm_rocket$Rocket_Scene$worldForm(_p17),
+							_chemmi$elm_rocket$Rocket_Scene$rocketForm(_p14.rocket),
+							_chemmi$elm_rocket$Rocket_Scene$frameForm(_p17.size)
 						]))),
 				A2(
 				_evancz$elm_graphics$Collage$move,
@@ -10874,7 +10875,7 @@ var _chemmi$elm_rocket$Rocket_Scene$drawScene = function (_p12) {
 							_evancz$elm_graphics$Text$bold(
 								_evancz$elm_graphics$Text$fromString(
 									_elm_lang$core$Basics$toString(
-										_elm_lang$core$Time$inSeconds(_p13.timeRemaining))))))))
+										_elm_lang$core$Time$inSeconds(_p14.timeRemaining))))))))
 			]));
 };
 var _chemmi$elm_rocket$Rocket_Scene$drawWorldThumbnail = function (world) {

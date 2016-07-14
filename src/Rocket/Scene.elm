@@ -101,8 +101,15 @@ platformsForm platforms =
 
 
 backgroundForm : ( Float, Float ) -> Form
-backgroundForm =
-    filled lightGreen << uncurry rect
+backgroundForm ( a, b ) =
+    let
+        a' =
+            round a
+
+        b' =
+            round b
+    in
+        toForm <| fittedImage a' b' "img/space.jpg"
 
 
 frameForm : ( Float, Float ) -> Form
