@@ -55,14 +55,25 @@ platformShape platform =
 
 
 worldForm : World -> Form
-worldForm { rects, polygons, platforms } =
+worldForm { rects, polygons, platforms, size } =
     let
         color =
             lightCharcoal
+
+        linearGradient =
+            linear ( -(fst size) / 2, (snd size) / 2 ) ( (fst size) / 2, -(snd size) / 2 )
+                <| [ ( 0, darkCharcoal )
+                   , ( 0.2, lightCharcoal )
+                   , ( 0.3, darkGrey )
+                   , ( 0.6, darkCharcoal )
+                   , ( 0.8, charcoal )
+                   , ( 0.9, darkGrey )
+                   , ( 1, lightCharcoal )
+                   ]
     in
         group
-            (map (filled color << rectShape) rects
-                ++ map (filled color << polyShape) polygons
+            (map (gradient linearGradient << rectShape) rects
+                ++ map (gradient linearGradient << polyShape) polygons
                 ++ [ platformsForm platforms ]
             )
 
@@ -73,18 +84,25 @@ platformsForm platforms =
         line =
             solid black
 
-        markedColor =
-            green
-
-        unmarkedColor =
-            red
-
-        pColor =
+        pGradient =
             \p ->
-                if p.marked then
-                    markedColor
-                else
-                    unmarkedColor
+                let
+                    ( cx, cy ) =
+                        p.center
+
+                    hWidth =
+                        p.width / 2
+
+                    lg1 =
+                        ( cx - hWidth, cy - 20 )
+
+                    lg2 =
+                        ( cx + hWidth, cy )
+                in
+                    if p.marked then
+                        linear lg1 lg2 [ ( 0, darkGreen ), ( 0.8, lightGreen ), ( 1, darkGreen ) ]
+                    else
+                        linear lg1 lg2 [ ( 0, darkRed ), ( 0.8, lightRed ), ( 1, darkRed ) ]
 
         pForm =
             \p ->
@@ -93,7 +111,7 @@ platformsForm platforms =
                         platformShape p
                 in
                     group
-                        [ filled (pColor p) pS
+                        [ gradient (pGradient p) pS
                         , outlined line pS
                         ]
     in
@@ -127,27 +145,24 @@ rocketForm { position, angle, fire, top, base } =
         ( base1, base2 ) =
             base
 
-        bodyShape : Shape
         bodyShape =
             polygon [ base1, top, base2, ( 0, 0 ) ]
 
-        fireShape : Shape
         fireShape =
-            polygon [ ( -6, 1 ), ( 0, -6 ), ( 6, 1 ) ]
+            polygon [ ( -6, 1 ), ( 0, -10 ), ( 6, 1 ) ]
     in
         move position
             << rotate (degrees angle)
             <| group
             <| (if fire then
-                    [ filled red fireShape
-                    , filled blue bodyShape
-                    , outlined defaultLine bodyShape
+                    [ gradient (radial ( 0, 0 ) 3 ( 0, 0 ) 8 [ ( 0, red ), ( 0.7, yellow ) ]) fireShape
                     ]
                 else
-                    [ filled blue bodyShape
-                    , outlined defaultLine bodyShape
-                    ]
+                    []
                )
+            ++ [ gradient (linear top base1 [ ( 0, white ), ( 1, blue ) ]) bodyShape
+               , outlined defaultLine bodyShape
+               ]
 
 
 countdownForm : Time -> Form
@@ -183,8 +198,8 @@ drawScene { world, rocket, displaySize, displayPosition, timeRemaining } =
             <| [ move offset
                     <| group
                         [ backgroundForm world.size
-                        , worldForm world
                         , rocketForm rocket
+                        , worldForm world
                         , frameForm world.size
                         ]
                , move timerPos

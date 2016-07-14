@@ -10710,11 +10710,12 @@ var _chemmi$elm_rocket$Rocket_Scene$countdownForm = function (t) {
 };
 var _chemmi$elm_rocket$Rocket_Scene$rocketForm = function (_p0) {
 	var _p1 = _p0;
+	var _p4 = _p1.top;
 	var fireShape = _evancz$elm_graphics$Collage$polygon(
 		_elm_lang$core$Native_List.fromArray(
 			[
 				{ctor: '_Tuple2', _0: -6, _1: 1},
-				{ctor: '_Tuple2', _0: 0, _1: -6},
+				{ctor: '_Tuple2', _0: 0, _1: -10},
 				{ctor: '_Tuple2', _0: 6, _1: 1}
 			]));
 	var _p2 = _p1.base;
@@ -10724,7 +10725,7 @@ var _chemmi$elm_rocket$Rocket_Scene$rocketForm = function (_p0) {
 		_elm_lang$core$Native_List.fromArray(
 			[
 				base1,
-				_p1.top,
+				_p4,
 				base2,
 				{ctor: '_Tuple2', _0: 0, _1: 0}
 			]));
@@ -10738,41 +10739,67 @@ var _chemmi$elm_rocket$Rocket_Scene$rocketForm = function (_p0) {
 				_p3));
 	}(
 		_evancz$elm_graphics$Collage$group(
-			_p1.fire ? _elm_lang$core$Native_List.fromArray(
-				[
-					A2(_evancz$elm_graphics$Collage$filled, _elm_lang$core$Color$red, fireShape),
-					A2(_evancz$elm_graphics$Collage$filled, _elm_lang$core$Color$blue, bodyShape),
-					A2(_evancz$elm_graphics$Collage$outlined, _evancz$elm_graphics$Collage$defaultLine, bodyShape)
-				]) : _elm_lang$core$Native_List.fromArray(
-				[
-					A2(_evancz$elm_graphics$Collage$filled, _elm_lang$core$Color$blue, bodyShape),
-					A2(_evancz$elm_graphics$Collage$outlined, _evancz$elm_graphics$Collage$defaultLine, bodyShape)
-				])));
+			A2(
+				_elm_lang$core$Basics_ops['++'],
+				_p1.fire ? _elm_lang$core$Native_List.fromArray(
+					[
+						A2(
+						_evancz$elm_graphics$Collage$gradient,
+						A5(
+							_elm_lang$core$Color$radial,
+							{ctor: '_Tuple2', _0: 0, _1: 0},
+							3,
+							{ctor: '_Tuple2', _0: 0, _1: 0},
+							8,
+							_elm_lang$core$Native_List.fromArray(
+								[
+									{ctor: '_Tuple2', _0: 0, _1: _elm_lang$core$Color$red},
+									{ctor: '_Tuple2', _0: 0.7, _1: _elm_lang$core$Color$yellow}
+								])),
+						fireShape)
+					]) : _elm_lang$core$Native_List.fromArray(
+					[]),
+				_elm_lang$core$Native_List.fromArray(
+					[
+						A2(
+						_evancz$elm_graphics$Collage$gradient,
+						A3(
+							_elm_lang$core$Color$linear,
+							_p4,
+							base1,
+							_elm_lang$core$Native_List.fromArray(
+								[
+									{ctor: '_Tuple2', _0: 0, _1: _elm_lang$core$Color$white},
+									{ctor: '_Tuple2', _0: 1, _1: _elm_lang$core$Color$blue}
+								])),
+						bodyShape),
+						A2(_evancz$elm_graphics$Collage$outlined, _evancz$elm_graphics$Collage$defaultLine, bodyShape)
+					]))));
 };
 var _chemmi$elm_rocket$Rocket_Scene$frameForm = function () {
 	var line = _evancz$elm_graphics$Collage$solid(_elm_lang$core$Color$white);
-	return function (_p4) {
+	return function (_p5) {
 		return A2(
 			_evancz$elm_graphics$Collage$outlined,
 			_elm_lang$core$Native_Utils.update(
 				line,
 				{width: 6}),
-			A2(_elm_lang$core$Basics$uncurry, _evancz$elm_graphics$Collage$rect, _p4));
+			A2(_elm_lang$core$Basics$uncurry, _evancz$elm_graphics$Collage$rect, _p5));
 	};
 }();
-var _chemmi$elm_rocket$Rocket_Scene$backgroundForm = function (_p5) {
-	var _p6 = _p5;
-	var b$ = _elm_lang$core$Basics$round(_p6._1);
-	var a$ = _elm_lang$core$Basics$round(_p6._0);
+var _chemmi$elm_rocket$Rocket_Scene$backgroundForm = function (_p6) {
+	var _p7 = _p6;
+	var b$ = _elm_lang$core$Basics$round(_p7._1);
+	var a$ = _elm_lang$core$Basics$round(_p7._0);
 	return _evancz$elm_graphics$Collage$toForm(
 		A3(_evancz$elm_graphics$Element$fittedImage, a$, b$, 'img/space.jpg'));
 };
 var _chemmi$elm_rocket$Rocket_Scene$platformShape = function (platform) {
 	var height = 10;
 	var hWidth = platform.width / 2;
-	var _p7 = platform.center;
-	var x = _p7._0;
-	var y = _p7._1;
+	var _p8 = platform.center;
+	var x = _p8._0;
+	var y = _p8._1;
 	return _evancz$elm_graphics$Collage$polygon(
 		_elm_lang$core$Native_List.fromArray(
 			[
@@ -10783,10 +10810,32 @@ var _chemmi$elm_rocket$Rocket_Scene$platformShape = function (platform) {
 			]));
 };
 var _chemmi$elm_rocket$Rocket_Scene$platformsForm = function (platforms) {
-	var unmarkedColor = _elm_lang$core$Color$red;
-	var markedColor = _elm_lang$core$Color$green;
-	var pColor = function (p) {
-		return p.marked ? markedColor : unmarkedColor;
+	var pGradient = function (p) {
+		var hWidth = p.width / 2;
+		var _p9 = p.center;
+		var cx = _p9._0;
+		var cy = _p9._1;
+		var lg1 = {ctor: '_Tuple2', _0: cx - hWidth, _1: cy - 20};
+		var lg2 = {ctor: '_Tuple2', _0: cx + hWidth, _1: cy};
+		return p.marked ? A3(
+			_elm_lang$core$Color$linear,
+			lg1,
+			lg2,
+			_elm_lang$core$Native_List.fromArray(
+				[
+					{ctor: '_Tuple2', _0: 0, _1: _elm_lang$core$Color$darkGreen},
+					{ctor: '_Tuple2', _0: 0.8, _1: _elm_lang$core$Color$lightGreen},
+					{ctor: '_Tuple2', _0: 1, _1: _elm_lang$core$Color$darkGreen}
+				])) : A3(
+			_elm_lang$core$Color$linear,
+			lg1,
+			lg2,
+			_elm_lang$core$Native_List.fromArray(
+				[
+					{ctor: '_Tuple2', _0: 0, _1: _elm_lang$core$Color$darkRed},
+					{ctor: '_Tuple2', _0: 0.8, _1: _elm_lang$core$Color$lightRed},
+					{ctor: '_Tuple2', _0: 1, _1: _elm_lang$core$Color$darkRed}
+				]));
 	};
 	var line = _evancz$elm_graphics$Collage$solid(_elm_lang$core$Color$black);
 	var pForm = function (p) {
@@ -10795,8 +10844,8 @@ var _chemmi$elm_rocket$Rocket_Scene$platformsForm = function (platforms) {
 			_elm_lang$core$Native_List.fromArray(
 				[
 					A2(
-					_evancz$elm_graphics$Collage$filled,
-					pColor(p),
+					_evancz$elm_graphics$Collage$gradient,
+					pGradient(p),
 					pS),
 					A2(_evancz$elm_graphics$Collage$outlined, line, pS)
 				]));
@@ -10804,8 +10853,8 @@ var _chemmi$elm_rocket$Rocket_Scene$platformsForm = function (platforms) {
 	return _evancz$elm_graphics$Collage$group(
 		A2(_elm_lang$core$List$map, pForm, platforms));
 };
-var _chemmi$elm_rocket$Rocket_Scene$drawPortrait = function (_p8) {
-	var _p9 = _p8;
+var _chemmi$elm_rocket$Rocket_Scene$drawPortrait = function (_p10) {
+	var _p11 = _p10;
 	return A3(
 		_evancz$elm_graphics$Collage$collage,
 		130,
@@ -10816,29 +10865,29 @@ var _chemmi$elm_rocket$Rocket_Scene$drawPortrait = function (_p8) {
 				[
 					_chemmi$elm_rocket$Rocket_Scene$backgroundForm(
 					{ctor: '_Tuple2', _0: 110, _1: 110}),
-					_chemmi$elm_rocket$Rocket_Scene$rocketForm(_p9.rocket)
+					_chemmi$elm_rocket$Rocket_Scene$rocketForm(_p11.rocket)
 				]),
 			A2(
 				_elm_lang$core$Basics_ops['++'],
 				function () {
-					var _p10 = _p9.platform;
-					if (_p10.ctor === 'Just') {
-						var _p11 = _p10._0;
+					var _p12 = _p11.platform;
+					if (_p12.ctor === 'Just') {
+						var _p13 = _p12._0;
 						return _elm_lang$core$Native_List.fromArray(
 							[
 								A2(
 								_evancz$elm_graphics$Collage$moveY,
-								_elm_lang$core$Basics$snd(_p11.center) - ((55 + _elm_lang$core$Basics$snd(_p11.center)) / 2),
+								_elm_lang$core$Basics$snd(_p13.center) - ((55 + _elm_lang$core$Basics$snd(_p13.center)) / 2),
 								A2(
 									_evancz$elm_graphics$Collage$filled,
 									_elm_lang$core$Color$lightCharcoal,
 									A2(
 										_evancz$elm_graphics$Collage$rect,
 										110,
-										55 + _elm_lang$core$Basics$snd(_p11.center)))),
+										55 + _elm_lang$core$Basics$snd(_p13.center)))),
 								_chemmi$elm_rocket$Rocket_Scene$platformsForm(
 								_elm_lang$core$Native_List.fromArray(
-									[_p11]))
+									[_p13]))
 							]);
 					} else {
 						return _elm_lang$core$Native_List.fromArray(
@@ -10859,9 +10908,9 @@ var _chemmi$elm_rocket$Rocket_Scene$polyShape = function (poly) {
 var _chemmi$elm_rocket$Rocket_Scene$rectShape = function (rect) {
 	var w = rect.width;
 	var h = rect.height;
-	var _p12 = rect.topLeft;
-	var x = _p12._0;
-	var y = _p12._1;
+	var _p14 = rect.topLeft;
+	var x = _p14._0;
+	var y = _p14._1;
 	return _evancz$elm_graphics$Collage$polygon(
 		_elm_lang$core$Native_List.fromArray(
 			[
@@ -10871,60 +10920,83 @@ var _chemmi$elm_rocket$Rocket_Scene$rectShape = function (rect) {
 				{ctor: '_Tuple2', _0: x, _1: y - h}
 			]));
 };
-var _chemmi$elm_rocket$Rocket_Scene$worldForm = function (_p13) {
-	var _p14 = _p13;
+var _chemmi$elm_rocket$Rocket_Scene$worldForm = function (_p15) {
+	var _p16 = _p15;
+	var _p19 = _p16.size;
+	var linearGradient = A3(
+		_elm_lang$core$Color$linear,
+		{
+			ctor: '_Tuple2',
+			_0: (0 - _elm_lang$core$Basics$fst(_p19)) / 2,
+			_1: _elm_lang$core$Basics$snd(_p19) / 2
+		},
+		{
+			ctor: '_Tuple2',
+			_0: _elm_lang$core$Basics$fst(_p19) / 2,
+			_1: (0 - _elm_lang$core$Basics$snd(_p19)) / 2
+		},
+		_elm_lang$core$Native_List.fromArray(
+			[
+				{ctor: '_Tuple2', _0: 0, _1: _elm_lang$core$Color$darkCharcoal},
+				{ctor: '_Tuple2', _0: 0.2, _1: _elm_lang$core$Color$lightCharcoal},
+				{ctor: '_Tuple2', _0: 0.3, _1: _elm_lang$core$Color$darkGrey},
+				{ctor: '_Tuple2', _0: 0.6, _1: _elm_lang$core$Color$darkCharcoal},
+				{ctor: '_Tuple2', _0: 0.8, _1: _elm_lang$core$Color$charcoal},
+				{ctor: '_Tuple2', _0: 0.9, _1: _elm_lang$core$Color$darkGrey},
+				{ctor: '_Tuple2', _0: 1, _1: _elm_lang$core$Color$lightCharcoal}
+			]));
 	var color = _elm_lang$core$Color$lightCharcoal;
 	return _evancz$elm_graphics$Collage$group(
 		A2(
 			_elm_lang$core$Basics_ops['++'],
 			A2(
 				_elm_lang$core$List$map,
-				function (_p15) {
+				function (_p17) {
 					return A2(
-						_evancz$elm_graphics$Collage$filled,
-						color,
-						_chemmi$elm_rocket$Rocket_Scene$rectShape(_p15));
+						_evancz$elm_graphics$Collage$gradient,
+						linearGradient,
+						_chemmi$elm_rocket$Rocket_Scene$rectShape(_p17));
 				},
-				_p14.rects),
+				_p16.rects),
 			A2(
 				_elm_lang$core$Basics_ops['++'],
 				A2(
 					_elm_lang$core$List$map,
-					function (_p16) {
+					function (_p18) {
 						return A2(
-							_evancz$elm_graphics$Collage$filled,
-							color,
-							_chemmi$elm_rocket$Rocket_Scene$polyShape(_p16));
+							_evancz$elm_graphics$Collage$gradient,
+							linearGradient,
+							_chemmi$elm_rocket$Rocket_Scene$polyShape(_p18));
 					},
-					_p14.polygons),
+					_p16.polygons),
 				_elm_lang$core$Native_List.fromArray(
 					[
-						_chemmi$elm_rocket$Rocket_Scene$platformsForm(_p14.platforms)
+						_chemmi$elm_rocket$Rocket_Scene$platformsForm(_p16.platforms)
 					]))));
 };
-var _chemmi$elm_rocket$Rocket_Scene$drawScene = function (_p17) {
-	var _p18 = _p17;
-	var _p21 = _p18.world;
-	var _p20 = _p18.displaySize;
-	var _p19 = _p18.displayPosition;
+var _chemmi$elm_rocket$Rocket_Scene$drawScene = function (_p20) {
+	var _p21 = _p20;
+	var _p24 = _p21.world;
+	var _p23 = _p21.displaySize;
+	var _p22 = _p21.displayPosition;
 	var timerPos = {
 		ctor: '_Tuple2',
 		_0: _elm_lang$core$Basics$toFloat(
-			((_elm_lang$core$Basics$fst(_p20) / 2) | 0) - 20),
+			((_elm_lang$core$Basics$fst(_p23) / 2) | 0) - 20),
 		_1: _elm_lang$core$Basics$toFloat(
-			((_elm_lang$core$Basics$snd(_p20) / 2) | 0) - 15)
+			((_elm_lang$core$Basics$snd(_p23) / 2) | 0) - 15)
 	};
 	var offset = {
 		ctor: '_Tuple2',
 		_0: 0 - _elm_lang$core$Basics$toFloat(
-			_elm_lang$core$Basics$fst(_p19)),
+			_elm_lang$core$Basics$fst(_p22)),
 		_1: 0 - _elm_lang$core$Basics$toFloat(
-			_elm_lang$core$Basics$snd(_p19))
+			_elm_lang$core$Basics$snd(_p22))
 	};
 	return A3(
 		_elm_lang$core$Basics$uncurry,
 		_evancz$elm_graphics$Collage$collage,
-		_p20,
+		_p23,
 		_elm_lang$core$Native_List.fromArray(
 			[
 				A2(
@@ -10933,15 +11005,15 @@ var _chemmi$elm_rocket$Rocket_Scene$drawScene = function (_p17) {
 				_evancz$elm_graphics$Collage$group(
 					_elm_lang$core$Native_List.fromArray(
 						[
-							_chemmi$elm_rocket$Rocket_Scene$backgroundForm(_p21.size),
-							_chemmi$elm_rocket$Rocket_Scene$worldForm(_p21),
-							_chemmi$elm_rocket$Rocket_Scene$rocketForm(_p18.rocket),
-							_chemmi$elm_rocket$Rocket_Scene$frameForm(_p21.size)
+							_chemmi$elm_rocket$Rocket_Scene$backgroundForm(_p24.size),
+							_chemmi$elm_rocket$Rocket_Scene$rocketForm(_p21.rocket),
+							_chemmi$elm_rocket$Rocket_Scene$worldForm(_p24),
+							_chemmi$elm_rocket$Rocket_Scene$frameForm(_p24.size)
 						]))),
 				A2(
 				_evancz$elm_graphics$Collage$move,
 				timerPos,
-				_chemmi$elm_rocket$Rocket_Scene$countdownForm(_p18.timeRemaining))
+				_chemmi$elm_rocket$Rocket_Scene$countdownForm(_p21.timeRemaining))
 			]));
 };
 var _chemmi$elm_rocket$Rocket_Scene$drawWorldThumbnail = function (world) {
