@@ -10750,7 +10750,7 @@ var _chemmi$elm_rocket$Rocket_Scene$rocketForm = function (_p0) {
 				])));
 };
 var _chemmi$elm_rocket$Rocket_Scene$frameForm = function () {
-	var line = _evancz$elm_graphics$Collage$solid(_elm_lang$core$Color$black);
+	var line = _evancz$elm_graphics$Collage$solid(_elm_lang$core$Color$white);
 	return function (_p4) {
 		return A2(
 			_evancz$elm_graphics$Collage$outlined,
@@ -10804,29 +10804,54 @@ var _chemmi$elm_rocket$Rocket_Scene$platformsForm = function (platforms) {
 	return _evancz$elm_graphics$Collage$group(
 		A2(_elm_lang$core$List$map, pForm, platforms));
 };
-var _chemmi$elm_rocket$Rocket_Scene$rocketPortraitForm = function (_p8) {
+var _chemmi$elm_rocket$Rocket_Scene$drawPortrait = function (_p8) {
 	var _p9 = _p8;
-	return _evancz$elm_graphics$Collage$group(
+	return A3(
+		_evancz$elm_graphics$Collage$collage,
+		130,
+		130,
 		A2(
 			_elm_lang$core$Basics_ops['++'],
 			_elm_lang$core$Native_List.fromArray(
 				[
+					_chemmi$elm_rocket$Rocket_Scene$backgroundForm(
+					{ctor: '_Tuple2', _0: 110, _1: 110}),
 					_chemmi$elm_rocket$Rocket_Scene$rocketForm(_p9.rocket)
 				]),
-			function () {
-				var _p10 = _p9.platform;
-				if (_p10.ctor === 'Just') {
-					return _elm_lang$core$Native_List.fromArray(
-						[
-							_chemmi$elm_rocket$Rocket_Scene$platformsForm(
-							_elm_lang$core$Native_List.fromArray(
-								[_p10._0]))
-						]);
-				} else {
-					return _elm_lang$core$Native_List.fromArray(
-						[]);
-				}
-			}()));
+			A2(
+				_elm_lang$core$Basics_ops['++'],
+				function () {
+					var _p10 = _p9.platform;
+					if (_p10.ctor === 'Just') {
+						var _p11 = _p10._0;
+						return _elm_lang$core$Native_List.fromArray(
+							[
+								A2(
+								_evancz$elm_graphics$Collage$moveY,
+								_elm_lang$core$Basics$snd(_p11.center) - ((55 + _elm_lang$core$Basics$snd(_p11.center)) / 2),
+								A2(
+									_evancz$elm_graphics$Collage$filled,
+									_elm_lang$core$Color$lightCharcoal,
+									A2(
+										_evancz$elm_graphics$Collage$rect,
+										110,
+										55 + _elm_lang$core$Basics$snd(_p11.center)))),
+								_chemmi$elm_rocket$Rocket_Scene$platformsForm(
+								_elm_lang$core$Native_List.fromArray(
+									[_p11]))
+							]);
+					} else {
+						return _elm_lang$core$Native_List.fromArray(
+							[]);
+					}
+				}(),
+				_elm_lang$core$Native_List.fromArray(
+					[
+						A2(
+						_evancz$elm_graphics$Collage$outlined,
+						_evancz$elm_graphics$Collage$solid(_elm_lang$core$Color$white),
+						A2(_evancz$elm_graphics$Collage$rect, 110, 110))
+					]))));
 };
 var _chemmi$elm_rocket$Rocket_Scene$polyShape = function (poly) {
 	return _evancz$elm_graphics$Collage$polygon(poly);
@@ -10834,9 +10859,9 @@ var _chemmi$elm_rocket$Rocket_Scene$polyShape = function (poly) {
 var _chemmi$elm_rocket$Rocket_Scene$rectShape = function (rect) {
 	var w = rect.width;
 	var h = rect.height;
-	var _p11 = rect.topLeft;
-	var x = _p11._0;
-	var y = _p11._1;
+	var _p12 = rect.topLeft;
+	var x = _p12._0;
+	var y = _p12._1;
 	return _evancz$elm_graphics$Collage$polygon(
 		_elm_lang$core$Native_List.fromArray(
 			[
@@ -10846,60 +10871,60 @@ var _chemmi$elm_rocket$Rocket_Scene$rectShape = function (rect) {
 				{ctor: '_Tuple2', _0: x, _1: y - h}
 			]));
 };
-var _chemmi$elm_rocket$Rocket_Scene$worldForm = function (_p12) {
-	var _p13 = _p12;
+var _chemmi$elm_rocket$Rocket_Scene$worldForm = function (_p13) {
+	var _p14 = _p13;
 	var color = _elm_lang$core$Color$lightCharcoal;
 	return _evancz$elm_graphics$Collage$group(
 		A2(
 			_elm_lang$core$Basics_ops['++'],
 			A2(
 				_elm_lang$core$List$map,
-				function (_p14) {
+				function (_p15) {
 					return A2(
 						_evancz$elm_graphics$Collage$filled,
 						color,
-						_chemmi$elm_rocket$Rocket_Scene$rectShape(_p14));
+						_chemmi$elm_rocket$Rocket_Scene$rectShape(_p15));
 				},
-				_p13.rects),
+				_p14.rects),
 			A2(
 				_elm_lang$core$Basics_ops['++'],
 				A2(
 					_elm_lang$core$List$map,
-					function (_p15) {
+					function (_p16) {
 						return A2(
 							_evancz$elm_graphics$Collage$filled,
 							color,
-							_chemmi$elm_rocket$Rocket_Scene$polyShape(_p15));
+							_chemmi$elm_rocket$Rocket_Scene$polyShape(_p16));
 					},
-					_p13.polygons),
+					_p14.polygons),
 				_elm_lang$core$Native_List.fromArray(
 					[
-						_chemmi$elm_rocket$Rocket_Scene$platformsForm(_p13.platforms)
+						_chemmi$elm_rocket$Rocket_Scene$platformsForm(_p14.platforms)
 					]))));
 };
-var _chemmi$elm_rocket$Rocket_Scene$drawScene = function (_p16) {
-	var _p17 = _p16;
-	var _p20 = _p17.world;
-	var _p19 = _p17.displaySize;
-	var _p18 = _p17.displayPosition;
+var _chemmi$elm_rocket$Rocket_Scene$drawScene = function (_p17) {
+	var _p18 = _p17;
+	var _p21 = _p18.world;
+	var _p20 = _p18.displaySize;
+	var _p19 = _p18.displayPosition;
 	var timerPos = {
 		ctor: '_Tuple2',
 		_0: _elm_lang$core$Basics$toFloat(
-			((_elm_lang$core$Basics$fst(_p19) / 2) | 0) - 20),
+			((_elm_lang$core$Basics$fst(_p20) / 2) | 0) - 20),
 		_1: _elm_lang$core$Basics$toFloat(
-			((_elm_lang$core$Basics$snd(_p19) / 2) | 0) - 15)
+			((_elm_lang$core$Basics$snd(_p20) / 2) | 0) - 15)
 	};
 	var offset = {
 		ctor: '_Tuple2',
 		_0: 0 - _elm_lang$core$Basics$toFloat(
-			_elm_lang$core$Basics$fst(_p18)),
+			_elm_lang$core$Basics$fst(_p19)),
 		_1: 0 - _elm_lang$core$Basics$toFloat(
-			_elm_lang$core$Basics$snd(_p18))
+			_elm_lang$core$Basics$snd(_p19))
 	};
 	return A3(
 		_elm_lang$core$Basics$uncurry,
 		_evancz$elm_graphics$Collage$collage,
-		_p19,
+		_p20,
 		_elm_lang$core$Native_List.fromArray(
 			[
 				A2(
@@ -10908,15 +10933,15 @@ var _chemmi$elm_rocket$Rocket_Scene$drawScene = function (_p16) {
 				_evancz$elm_graphics$Collage$group(
 					_elm_lang$core$Native_List.fromArray(
 						[
-							_chemmi$elm_rocket$Rocket_Scene$backgroundForm(_p20.size),
-							_chemmi$elm_rocket$Rocket_Scene$worldForm(_p20),
-							_chemmi$elm_rocket$Rocket_Scene$rocketForm(_p17.rocket),
-							_chemmi$elm_rocket$Rocket_Scene$frameForm(_p20.size)
+							_chemmi$elm_rocket$Rocket_Scene$backgroundForm(_p21.size),
+							_chemmi$elm_rocket$Rocket_Scene$worldForm(_p21),
+							_chemmi$elm_rocket$Rocket_Scene$rocketForm(_p18.rocket),
+							_chemmi$elm_rocket$Rocket_Scene$frameForm(_p21.size)
 						]))),
 				A2(
 				_evancz$elm_graphics$Collage$move,
 				timerPos,
-				_chemmi$elm_rocket$Rocket_Scene$countdownForm(_p17.timeRemaining))
+				_chemmi$elm_rocket$Rocket_Scene$countdownForm(_p18.timeRemaining))
 			]));
 };
 var _chemmi$elm_rocket$Rocket_Scene$drawWorldThumbnail = function (world) {
@@ -11007,7 +11032,19 @@ var _chemmi$elm_rocket$Rocket_Inits$initPlay = function () {
 var _chemmi$elm_rocket$Rocket_Inits$initInfo = {
 	accelerateAnimation: {rocket: _chemmi$elm_rocket$Rocket_Inits$initRocket, platform: _elm_lang$core$Maybe$Nothing},
 	rotateAnimation: {rocket: _chemmi$elm_rocket$Rocket_Inits$initRocket, platform: _elm_lang$core$Maybe$Nothing},
-	landAnimation: {rocket: _chemmi$elm_rocket$Rocket_Inits$initRocket, platform: _elm_lang$core$Maybe$Nothing}
+	landAnimation: {
+		rocket: _elm_lang$core$Native_Utils.update(
+			_chemmi$elm_rocket$Rocket_Inits$initRocket,
+			{
+				position: {ctor: '_Tuple2', _0: 0, _1: 20}
+			}),
+		platform: _elm_lang$core$Maybe$Just(
+			A3(
+				_chemmi$elm_rocket$Rocket_Types$Platform,
+				{ctor: '_Tuple2', _0: 0, _1: -30},
+				80,
+				false))
+	}
 };
 var _chemmi$elm_rocket$Rocket_Inits$initOptions = {worldChoice: _chemmi$elm_rocket$Rocket_Worlds$allWorlds, ambientMusic: true};
 var _chemmi$elm_rocket$Rocket_Inits$initModel = A2(_chemmi$elm_rocket$Rocket_Types$Model, _chemmi$elm_rocket$Rocket_Types$StartScreen, _chemmi$elm_rocket$Rocket_Inits$initOptions);
@@ -12648,8 +12685,8 @@ var _chemmi$elm_rocket$Rocket_Updates$rotateLeft = function (xs) {
 				return _elm_lang$core$Native_Utils.crashCase(
 					'Rocket.Updates',
 					{
-						start: {line: 242, column: 21},
-						end: {line: 247, column: 72}
+						start: {line: 349, column: 21},
+						end: {line: 354, column: 72}
 					},
 					_p1)('List should not be empty here');
 			}
@@ -12662,8 +12699,8 @@ var _chemmi$elm_rocket$Rocket_Updates$rotateLeft = function (xs) {
 				return _elm_lang$core$Native_Utils.crashCase(
 					'Rocket.Updates',
 					{
-						start: {line: 234, column: 21},
-						end: {line: 239, column: 72}
+						start: {line: 341, column: 21},
+						end: {line: 346, column: 72}
 					},
 					_p3)('List should not be empty here');
 			}
@@ -12743,8 +12780,8 @@ var _chemmi$elm_rocket$Rocket_Updates$updateKeyDown = F2(
 				return _elm_lang$core$Native_Utils.crashCase(
 					'Rocket.Updates',
 					{
-						start: {line: 177, column: 5},
-						end: {line: 207, column: 84}
+						start: {line: 284, column: 5},
+						end: {line: 314, column: 84}
 					},
 					_p7)('updateKeyDown called with neither KeyDownMsg nor KeyUpMsg');
 		}
@@ -12834,8 +12871,8 @@ var _chemmi$elm_rocket$Rocket_Updates$updateLanding = function (_p26) {
 		return _elm_lang$core$Native_Utils.crashCase(
 			'Rocket.Updates',
 			{
-				start: {line: 97, column: 5},
-				end: {line: 108, column: 77}
+				start: {line: 204, column: 5},
+				end: {line: 215, column: 77}
 			},
 			_p28)('update Landing called with non \"Landing ...\" Msg');
 	}
@@ -12883,7 +12920,7 @@ var _chemmi$elm_rocket$Rocket_Updates$isWin = function (_p38) {
 	var _p40 = _p39.world;
 	return _p40.isWin(_p40.platforms);
 };
-var _chemmi$elm_rocket$Rocket_Updates$updatePlayScreen = F2(
+var _chemmi$elm_rocket$Rocket_Updates$updatePlay = F2(
 	function (msg, _p41) {
 		var _p42 = _p41;
 		var _p46 = _p42.keyDown;
@@ -12941,7 +12978,7 @@ var _chemmi$elm_rocket$Rocket_Updates$updatePlayScreen = F2(
 					{timeRemaining: _p45.timeRemaining - (1 * _elm_lang$core$Time$second)});
 		}
 	});
-var _chemmi$elm_rocket$Rocket_Updates$updateWorldChoiceScreen = F2(
+var _chemmi$elm_rocket$Rocket_Updates$updateWorldChoice = F2(
 	function (msg, _p47) {
 		var _p48 = _p47;
 		var _p51 = _p48.worldChoice;
@@ -12971,6 +13008,145 @@ var _chemmi$elm_rocket$Rocket_Updates$updateWorldChoiceScreen = F2(
 			}
 		} while(false);
 		return _p50;
+	});
+var _chemmi$elm_rocket$Rocket_Updates$updateLandAnimation = F2(
+	function (msg, _p52) {
+		var _p53 = _p52;
+		var _p62 = _p53.rocket;
+		var _p61 = _p53.platform;
+		var jPlatform = function () {
+			var _p54 = _p61;
+			if (_p54.ctor === 'Just') {
+				return _p54._0;
+			} else {
+				return _elm_lang$core$Native_Utils.crashCase(
+					'Rocket.Updates',
+					{
+						start: {line: 62, column: 13},
+						end: {line: 67, column: 71}
+					},
+					_p54)('LandAnimation should have a platform');
+			}
+		}();
+		var updatedRocket = function () {
+			var _p56 = _p62.movement;
+			switch (_p56.ctor) {
+				case 'Flying':
+					var _p57 = msg;
+					if (_p57.ctor === 'Step') {
+						return (_elm_lang$core$Native_Utils.cmp(
+							_elm_lang$core$Basics$snd(_p62.position) - 5,
+							_elm_lang$core$Basics$snd(jPlatform.center)) < 1) ? _elm_lang$core$Native_Utils.update(
+							_p62,
+							{
+								movement: _chemmi$elm_rocket$Rocket_Types$Landing(jPlatform)
+							}) : _elm_lang$core$Native_Utils.update(
+							_p62,
+							{
+								position: {
+									ctor: '_Tuple2',
+									_0: _elm_lang$core$Basics$fst(_p62.position),
+									_1: _elm_lang$core$Basics$snd(_p62.position) - 0.5
+								}
+							});
+					} else {
+						return _p62;
+					}
+				case 'Landing':
+					var _p58 = msg;
+					if (_p58.ctor === 'TimerTick') {
+						return _elm_lang$core$Native_Utils.update(
+							_p62,
+							{
+								movement: _chemmi$elm_rocket$Rocket_Types$Landed(_p56._0)
+							});
+					} else {
+						return _p62;
+					}
+				case 'Landed':
+					var _p59 = msg;
+					if (_p59.ctor === 'TimerTick') {
+						return _elm_lang$core$Native_Utils.update(
+							_p62,
+							{movement: _chemmi$elm_rocket$Rocket_Types$Flying, position: _chemmi$elm_rocket$Rocket_Inits$initInfo.landAnimation.rocket.position});
+					} else {
+						return _p62;
+					}
+				default:
+					return _p62;
+			}
+		}();
+		var updatedPlatform = function () {
+			var _p60 = _p62.movement;
+			switch (_p60.ctor) {
+				case 'Landing':
+					return _elm_lang$core$Maybe$Just(
+						_elm_lang$core$Native_Utils.update(
+							jPlatform,
+							{marked: true}));
+				case 'Flying':
+					return _elm_lang$core$Maybe$Just(
+						_elm_lang$core$Native_Utils.update(
+							jPlatform,
+							{marked: false}));
+				default:
+					return _p61;
+			}
+		}();
+		return _elm_lang$core$Native_Utils.update(
+			_p53,
+			{rocket: updatedRocket, platform: updatedPlatform});
+	});
+var _chemmi$elm_rocket$Rocket_Updates$updateRotateAnimation = F2(
+	function (msg, _p63) {
+		var _p64 = _p63;
+		var _p67 = _p64.rocket;
+		var _p66 = _p64;
+		var updatedRocket = (_elm_lang$core$Native_Utils.cmp(
+			_elm_lang$core$Basics$abs(_p67.angle),
+			60) < 0) ? _elm_lang$core$Native_Utils.update(
+			_p67,
+			{angle: _p67.angle + _p67.twist}) : _elm_lang$core$Native_Utils.update(
+			_p67,
+			{twist: 0 - _p67.twist, angle: _p67.angle - _p67.twist});
+		var _p65 = msg;
+		if (_p65.ctor === 'Step') {
+			return _elm_lang$core$Native_Utils.update(
+				_p66,
+				{rocket: updatedRocket});
+		} else {
+			return _p66;
+		}
+	});
+var _chemmi$elm_rocket$Rocket_Updates$updateAccelerateAnimation = F2(
+	function (msg, _p68) {
+		var _p69 = _p68;
+		var _p72 = _p69.rocket;
+		var _p71 = _p69;
+		var updatedRocket = _elm_lang$core$Native_Utils.update(
+			_p72,
+			{
+				fire: _elm_lang$core$Basics$not(_p72.fire)
+			});
+		var _p70 = msg;
+		if (_p70.ctor === 'TimerTick') {
+			return _elm_lang$core$Native_Utils.update(
+				_p71,
+				{rocket: updatedRocket});
+		} else {
+			return _p71;
+		}
+	});
+var _chemmi$elm_rocket$Rocket_Updates$updateInfo = F2(
+	function (msg, _p73) {
+		var _p74 = _p73;
+		return _elm_lang$core$Native_Utils.update(
+			_p74,
+			{
+				accelerateAnimation: A2(_chemmi$elm_rocket$Rocket_Updates$updateAccelerateAnimation, msg, _p74.accelerateAnimation),
+				rotateAnimation: A2(_chemmi$elm_rocket$Rocket_Updates$updateRotateAnimation, msg, _p74.rotateAnimation),
+				landAnimation: A2(_chemmi$elm_rocket$Rocket_Updates$updateLandAnimation, msg, _p74.landAnimation)
+			});
 	});
 
 var _chemmi$elm_rocket$Rocket_Views$showMessageBox = function (_p0) {
@@ -13212,21 +13388,14 @@ var _chemmi$elm_rocket$Rocket_Views$viewInfoScreen = function (_p8) {
 					800,
 					600,
 					_evancz$elm_graphics$Element$middle,
-					A3(
-						_evancz$elm_graphics$Collage$collage,
-						800,
-						600,
+					A2(
+						_evancz$elm_graphics$Element$flow,
+						_evancz$elm_graphics$Element$down,
 						_elm_lang$core$Native_List.fromArray(
 							[
-								A2(
-								_evancz$elm_graphics$Collage$moveY,
-								200,
-								_chemmi$elm_rocket$Rocket_Scene$rocketPortraitForm(_p9.accelerateAnimation)),
-								_chemmi$elm_rocket$Rocket_Scene$rocketPortraitForm(_p9.rotateAnimation),
-								A2(
-								_evancz$elm_graphics$Collage$moveY,
-								-200,
-								_chemmi$elm_rocket$Rocket_Scene$rocketPortraitForm(_p9.landAnimation))
+								_chemmi$elm_rocket$Rocket_Scene$drawPortrait(_p9.accelerateAnimation),
+								_chemmi$elm_rocket$Rocket_Scene$drawPortrait(_p9.rotateAnimation),
+								_chemmi$elm_rocket$Rocket_Scene$drawPortrait(_p9.landAnimation)
 							]))))
 			]));
 };
@@ -14089,8 +14258,8 @@ var _chemmi$elm_rocket$Rocket$changeToPlay = function (_p3) {
 			return _elm_lang$core$Native_Utils.crashCase(
 				'Rocket',
 				{
-					start: {line: 192, column: 13},
-					end: {line: 197, column: 49}
+					start: {line: 195, column: 13},
+					end: {line: 200, column: 49}
 				},
 				_p5)('No world found');
 		}
@@ -14285,7 +14454,7 @@ var _chemmi$elm_rocket$Rocket$updateModel = F2(
 						return A2(
 							_chemmi$elm_rocket$Rocket_Types$Model,
 							_chemmi$elm_rocket$Rocket_Types$PlayScreen(
-								A2(_chemmi$elm_rocket$Rocket_Updates$updatePlayScreen, msg, _p23)),
+								A2(_chemmi$elm_rocket$Rocket_Updates$updatePlay, msg, _p23)),
 							_p25);
 					} else {
 						if (_p22._0.ctor === 'Gameover') {
@@ -14312,7 +14481,13 @@ var _chemmi$elm_rocket$Rocket$updateModel = F2(
 					return A2(
 						_chemmi$elm_rocket$Rocket_Types$Model,
 						_chemmi$elm_rocket$Rocket_Types$WorldChoiceScreen(
-							A2(_chemmi$elm_rocket$Rocket_Updates$updateWorldChoiceScreen, msg, _p21._0)),
+							A2(_chemmi$elm_rocket$Rocket_Updates$updateWorldChoice, msg, _p21._0)),
+						_p25);
+				case 'InfoScreen':
+					return A2(
+						_chemmi$elm_rocket$Rocket_Types$Model,
+						_chemmi$elm_rocket$Rocket_Types$InfoScreen(
+							A2(_chemmi$elm_rocket$Rocket_Updates$updateInfo, msg, _p21._0)),
 						_p25);
 				default:
 					return _p24;
@@ -14369,18 +14544,28 @@ var _chemmi$elm_rocket$Rocket$subscriptions = function (_p27) {
 				]),
 			function () {
 				var _p31 = _p28._0;
-				if (_p31.ctor === 'PlayScreen') {
-					return _elm_lang$core$Native_List.fromArray(
-						[
-							_elm_lang$animation_frame$AnimationFrame$diffs(_chemmi$elm_rocket$Rocket_Types$Step),
-							A2(
-							_elm_lang$core$Time$every,
-							_elm_lang$core$Time$second,
-							_elm_lang$core$Basics$always(_chemmi$elm_rocket$Rocket_Types$TimerTick))
-						]);
-				} else {
-					return _elm_lang$core$Native_List.fromArray(
-						[]);
+				switch (_p31.ctor) {
+					case 'PlayScreen':
+						return _elm_lang$core$Native_List.fromArray(
+							[
+								_elm_lang$animation_frame$AnimationFrame$diffs(_chemmi$elm_rocket$Rocket_Types$Step),
+								A2(
+								_elm_lang$core$Time$every,
+								_elm_lang$core$Time$second,
+								_elm_lang$core$Basics$always(_chemmi$elm_rocket$Rocket_Types$TimerTick))
+							]);
+					case 'InfoScreen':
+						return _elm_lang$core$Native_List.fromArray(
+							[
+								_elm_lang$animation_frame$AnimationFrame$diffs(_chemmi$elm_rocket$Rocket_Types$Step),
+								A2(
+								_elm_lang$core$Time$every,
+								_elm_lang$core$Time$second,
+								_elm_lang$core$Basics$always(_chemmi$elm_rocket$Rocket_Types$TimerTick))
+							]);
+					default:
+						return _elm_lang$core$Native_List.fromArray(
+							[]);
 				}
 			}()));
 };

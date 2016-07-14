@@ -116,7 +116,7 @@ frameForm : ( Float, Float ) -> Form
 frameForm =
     let
         line =
-            solid black
+            solid white
     in
         outlined { line | width = 6 } << uncurry rect
 
@@ -239,12 +239,15 @@ drawWorldThumbnail world =
 drawPortrait : PortraitData -> Element
 drawPortrait { rocket, platform } =
     collage 130 130
-        <| [ rocketForm rocket ]
+        <| [ backgroundForm ( 110, 110 ), rocketForm rocket ]
         ++ (case platform of
                 Just p ->
-                    [ platformsForm [ p ] ]
+                    [ moveY (snd p.center - (55 + snd p.center) / 2)
+                        <| filled lightCharcoal (rect 110 (55 + snd p.center))
+                    , platformsForm [ p ]
+                    ]
 
                 Nothing ->
                     []
            )
-        ++ [ outlined (solid black) (rect 110 110) ]
+        ++ [ outlined (solid white) (rect 110 110) ]

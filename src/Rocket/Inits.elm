@@ -25,7 +25,9 @@ initInfo =
     , rotateAnimation =
         { rocket = initRocket, platform = Nothing }
     , landAnimation =
-        { rocket = initRocket, platform = Nothing }
+        { rocket = { initRocket | position = ( 0, 20 ) }
+        , platform = Just (Platform ( 0, -30 ) 80 False)
+        }
     }
 
 

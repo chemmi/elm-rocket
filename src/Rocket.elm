@@ -97,7 +97,7 @@ updateModel msg ((Model screen options) as model) =
             PlayScreen data ->
                 case data.playEvent of
                     Nothing ->
-                        Model (PlayScreen (updatePlayScreen msg data)) options
+                        Model (PlayScreen (updatePlay msg data)) options
 
                     Just (Gameover data) ->
                         let
@@ -114,7 +114,10 @@ updateModel msg ((Model screen options) as model) =
                             Model (WinScreen { initWin | background = background }) options
 
             WorldChoiceScreen data ->
-                Model (WorldChoiceScreen (updateWorldChoiceScreen msg data)) options
+                Model (WorldChoiceScreen (updateWorldChoice msg data)) options
+
+            InfoScreen data ->
+                Model (InfoScreen (updateInfo msg data)) options
 
             _ ->
                 model
@@ -236,6 +239,11 @@ subscriptions ((Model screen options) as model) =
            ]
         ++ case screen of
             PlayScreen _ ->
+                [ diffs Step
+                , every second <| always TimerTick
+                ]
+
+            InfoScreen _ ->
                 [ diffs Step
                 , every second <| always TimerTick
                 ]

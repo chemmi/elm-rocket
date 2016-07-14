@@ -10,8 +10,115 @@ import List.Extra exposing (updateIf, last, init)
 import Debug
 
 
-updateWorldChoiceScreen : Msg -> WorldChoiceData -> WorldChoiceData
-updateWorldChoiceScreen msg ({ worldChoice } as data) =
+updateInfo : Msg -> InfoData -> InfoData
+updateInfo msg ({ accelerateAnimation, rotateAnimation, landAnimation } as data) =
+    { data
+        | accelerateAnimation = updateAccelerateAnimation msg accelerateAnimation
+        , rotateAnimation = updateRotateAnimation msg rotateAnimation
+        , landAnimation = updateLandAnimation msg landAnimation
+    }
+
+
+updateAccelerateAnimation : Msg -> PortraitData -> PortraitData
+updateAccelerateAnimation msg ({ rocket } as data) =
+    let
+        updatedRocket =
+            { rocket | fire = not rocket.fire }
+    in
+        case msg of
+            TimerTick ->
+                { data | rocket = updatedRocket }
+
+            _ ->
+                data
+
+
+updateRotateAnimation : Msg -> PortraitData -> PortraitData
+updateRotateAnimation msg ({ rocket } as data) =
+    let
+        updatedRocket =
+            if abs rocket.angle < 60 then
+                { rocket
+                    | angle = rocket.angle + rocket.twist
+                }
+            else
+                { rocket
+                    | twist = -rocket.twist
+                    , angle = rocket.angle - rocket.twist
+                }
+    in
+        case msg of
+            Step _ ->
+                { data | rocket = updatedRocket }
+
+            _ ->
+                data
+
+
+updateLandAnimation : Msg -> PortraitData -> PortraitData
+updateLandAnimation msg ({ rocket, platform } as data) =
+    let
+        jPlatform =
+            case platform of
+                Just p ->
+                    p
+
+                Nothing ->
+                    Debug.crash "LandAnimation should have a platform"
+
+        updatedRocket =
+            case rocket.movement of
+                Flying ->
+                    case msg of
+                        Step _ ->
+                            if (snd rocket.position) - 5 <= snd jPlatform.center then
+                                { rocket | movement = Landing jPlatform }
+                            else
+                                { rocket
+                                    | position = ( fst rocket.position, snd rocket.position - 0.5 )
+                                }
+
+                        _ ->
+                            rocket
+
+                Landing p ->
+                    case msg of
+                        TimerTick ->
+                            { rocket | movement = Landed p }
+
+                        _ ->
+                            rocket
+
+                Landed p ->
+                    case msg of
+                        TimerTick ->
+                            { rocket
+                                | movement = Flying
+                                , position = ((initInfo.landAnimation).rocket).position
+                            }
+
+                        _ ->
+                            rocket
+
+                _ ->
+                    rocket
+
+        updatedPlatform =
+            case rocket.movement of
+                Landing p ->
+                    Just { jPlatform | marked = True }
+
+                Flying ->
+                    Just { jPlatform | marked = False }
+
+                _ ->
+                    platform
+    in
+        { data | rocket = updatedRocket, platform = updatedPlatform }
+
+
+updateWorldChoice : Msg -> WorldChoiceData -> WorldChoiceData
+updateWorldChoice msg ({ worldChoice } as data) =
     case msg of
         KeyUpMsg Right ->
             { data | worldChoice = rotateRight worldChoice }
@@ -23,8 +130,8 @@ updateWorldChoiceScreen msg ({ worldChoice } as data) =
             data
 
 
-updatePlayScreen : Msg -> PlayData -> PlayData
-updatePlayScreen msg ({ world, rocket, keyDown } as data) =
+updatePlay : Msg -> PlayData -> PlayData
+updatePlay msg ({ world, rocket, keyDown } as data) =
     case msg of
         KeyDownMsg key ->
             { data | keyDown = updateKeyDown keyDown (KeyDownMsg key) }
