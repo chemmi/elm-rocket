@@ -36,7 +36,7 @@ viewStartScreen =
     div []
         [ toHtml
             <| layers
-                [ showMessageBox "StartScreen - Press [SPACE] to choose level"
+                [ showMessageBox ( "StartScreen", "Press [SPACE] to choose level" )
                 ]
         ]
 
@@ -53,7 +53,7 @@ viewWorldChoiceScreen { worldChoice } =
 
                         Nothing ->
                             Debug.crash "No worlds found"
-                , showMessageBox "<-- [A]    Choose and press [SPACE] to start level    [D] -->"
+                , showMessageBox ( "Choose world", "<-- [A]    [SPACE] to start level    [D] -->" )
                 ]
         ]
 
@@ -64,7 +64,7 @@ viewGameoverScreen data =
         [ toHtml
             <| layers
                 [ data.background
-                , showMessageBox data.message
+                , showMessageBox ( "Gameover!", data.message )
                 ]
         ]
 
@@ -75,7 +75,7 @@ viewWinScreen data =
         [ toHtml
             <| layers
                 [ data.background
-                , showMessageBox data.message
+                , showMessageBox ( "Congratulations! YOU WIN!", data.message )
                 ]
         ]
 
@@ -88,6 +88,8 @@ viewPlayScreen data =
         ]
 
 
+{-| Can be used for debugging or analizing
+-}
 viewRocketStatus : Rocket -> Html a
 viewRocketStatus r =
     div []
@@ -126,17 +128,43 @@ viewValue name value =
         ]
 
 
-showMessageBox : String -> Element
-showMessageBox message =
-    container 800 600 middle
-        <| Collage.collage 800 300
-        <| [ Collage.alpha 0.8
-                <| Collage.moveY -3
-                <| Collage.filled yellow (Collage.rect 700 40)
-           , Collage.text
-                <| Text.height 20
-                <| Text.color red
-                <| Text.typeface [ "Helvetica" ]
-                <| Text.fromString
-                <| message
-           ]
+showMessageBox : ( String, String ) -> Element
+showMessageBox ( caption, message ) =
+    let
+        default =
+            Text.defaultStyle
+
+        height =
+            20
+
+        messageStyle =
+            { default
+                | height = Just height
+                , color = black
+                , typeface = [ "helvetica" ]
+            }
+
+        captionStyle =
+            { messageStyle
+                | bold = True
+                , color = black
+            }
+    in
+        container 800 600 middle
+            <| Collage.collage 700 300
+            <| [ Collage.moveY (-(toFloat height) * 0.7)
+                    <| Collage.alpha 0.8
+                    <| Collage.filled white (Collage.rect 700 (2 * height + 30))
+               , Collage.alpha 0.5
+                    <| Collage.filled blue (Collage.rect 650 (height + 10))
+               , Collage.moveY ((toFloat height) / 8)
+                    <| Collage.text
+                    <| Text.style captionStyle
+                    <| Text.fromString
+                    <| caption
+               , Collage.moveY ((toFloat height) / 8 - (toFloat height) * 1.5)
+                    <| Collage.text
+                    <| Text.style messageStyle
+                    <| Text.fromString
+                    <| message
+               ]

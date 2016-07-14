@@ -5,7 +5,7 @@ import Collage exposing (..)
 import Element exposing (..)
 import Color exposing (..)
 import List exposing (map)
-import Time exposing (inSeconds)
+import Time exposing (Time, inSeconds)
 import Text
 
 
@@ -150,6 +150,26 @@ rocketForm { position, angle, fire, top, base } =
                )
 
 
+countdownForm : Time -> Form
+countdownForm t =
+    let
+        default =
+            Text.defaultStyle
+
+        style =
+            { default
+                | height = Just 20
+                , color = red
+                , typeface = [ "helvetica" ]
+            }
+    in
+        Collage.text
+            <| Text.style style
+            <| Text.fromString
+            <| toString
+            <| inSeconds t
+
+
 drawScene : PlayData -> Element
 drawScene { world, rocket, displaySize, displayPosition, timeRemaining } =
     let
@@ -157,7 +177,7 @@ drawScene { world, rocket, displaySize, displayPosition, timeRemaining } =
             ( -(toFloat <| fst displayPosition), -(toFloat <| snd displayPosition) )
 
         timerPos =
-            ( toFloat <| fst displaySize // 2 - 15, toFloat <| snd displaySize // 2 - 12 )
+            ( toFloat <| fst displaySize // 2 - 20, toFloat <| snd displaySize // 2 - 15 )
     in
         uncurry collage displaySize
             <| [ move offset
@@ -168,13 +188,7 @@ drawScene { world, rocket, displaySize, displayPosition, timeRemaining } =
                         , frameForm world.size
                         ]
                , move timerPos
-                    <| text
-                    <| Text.height 20
-                    <| Text.color red
-                    <| Text.bold
-                    <| Text.fromString
-                    <| toString
-                    <| inSeconds timeRemaining
+                    <| countdownForm timeRemaining
                ]
 
 

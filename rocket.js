@@ -10681,6 +10681,24 @@ var _evancz$elm_graphics$Collage$ngon = F2(
 				_elm_lang$core$Native_List.range(0, m - 1)));
 	});
 
+var _chemmi$elm_rocket$Rocket_Scene$countdownForm = function (t) {
+	var $default = _evancz$elm_graphics$Text$defaultStyle;
+	var style = _elm_lang$core$Native_Utils.update(
+		$default,
+		{
+			height: _elm_lang$core$Maybe$Just(20),
+			color: _elm_lang$core$Color$red,
+			typeface: _elm_lang$core$Native_List.fromArray(
+				['helvetica'])
+		});
+	return _evancz$elm_graphics$Collage$text(
+		A2(
+			_evancz$elm_graphics$Text$style,
+			style,
+			_evancz$elm_graphics$Text$fromString(
+				_elm_lang$core$Basics$toString(
+					_elm_lang$core$Time$inSeconds(t)))));
+};
 var _chemmi$elm_rocket$Rocket_Scene$rocketForm = function (_p0) {
 	var _p1 = _p0;
 	var fireShape = _evancz$elm_graphics$Collage$polygon(
@@ -10834,9 +10852,9 @@ var _chemmi$elm_rocket$Rocket_Scene$drawScene = function (_p13) {
 	var timerPos = {
 		ctor: '_Tuple2',
 		_0: _elm_lang$core$Basics$toFloat(
-			((_elm_lang$core$Basics$fst(_p16) / 2) | 0) - 15),
+			((_elm_lang$core$Basics$fst(_p16) / 2) | 0) - 20),
 		_1: _elm_lang$core$Basics$toFloat(
-			((_elm_lang$core$Basics$snd(_p16) / 2) | 0) - 12)
+			((_elm_lang$core$Basics$snd(_p16) / 2) | 0) - 15)
 	};
 	var offset = {
 		ctor: '_Tuple2',
@@ -10865,17 +10883,7 @@ var _chemmi$elm_rocket$Rocket_Scene$drawScene = function (_p13) {
 				A2(
 				_evancz$elm_graphics$Collage$move,
 				timerPos,
-				_evancz$elm_graphics$Collage$text(
-					A2(
-						_evancz$elm_graphics$Text$height,
-						20,
-						A2(
-							_evancz$elm_graphics$Text$color,
-							_elm_lang$core$Color$red,
-							_evancz$elm_graphics$Text$bold(
-								_evancz$elm_graphics$Text$fromString(
-									_elm_lang$core$Basics$toString(
-										_elm_lang$core$Time$inSeconds(_p14.timeRemaining))))))))
+				_chemmi$elm_rocket$Rocket_Scene$countdownForm(_p14.timeRemaining))
 			]));
 };
 var _chemmi$elm_rocket$Rocket_Scene$drawWorldThumbnail = function (world) {
@@ -12927,7 +12935,21 @@ var _chemmi$elm_rocket$Rocket_Updates$updateWorldChoiceScreen = F2(
 		return _p50;
 	});
 
-var _chemmi$elm_rocket$Rocket_Views$showMessageBox = function (message) {
+var _chemmi$elm_rocket$Rocket_Views$showMessageBox = function (_p0) {
+	var _p1 = _p0;
+	var height = 20;
+	var $default = _evancz$elm_graphics$Text$defaultStyle;
+	var messageStyle = _elm_lang$core$Native_Utils.update(
+		$default,
+		{
+			height: _elm_lang$core$Maybe$Just(height),
+			color: _elm_lang$core$Color$black,
+			typeface: _elm_lang$core$Native_List.fromArray(
+				['helvetica'])
+		});
+	var captionStyle = _elm_lang$core$Native_Utils.update(
+		messageStyle,
+		{bold: true, color: _elm_lang$core$Color$black});
 	return A4(
 		_evancz$elm_graphics$Element$container,
 		800,
@@ -12935,32 +12957,43 @@ var _chemmi$elm_rocket$Rocket_Views$showMessageBox = function (message) {
 		_evancz$elm_graphics$Element$middle,
 		A3(
 			_evancz$elm_graphics$Collage$collage,
-			800,
+			700,
 			300,
 			_elm_lang$core$Native_List.fromArray(
 				[
 					A2(
-					_evancz$elm_graphics$Collage$alpha,
-					0.8,
+					_evancz$elm_graphics$Collage$moveY,
+					(0 - _elm_lang$core$Basics$toFloat(height)) * 0.7,
 					A2(
-						_evancz$elm_graphics$Collage$moveY,
-						-3,
+						_evancz$elm_graphics$Collage$alpha,
+						0.8,
 						A2(
 							_evancz$elm_graphics$Collage$filled,
-							_elm_lang$core$Color$yellow,
-							A2(_evancz$elm_graphics$Collage$rect, 700, 40)))),
-					_evancz$elm_graphics$Collage$text(
+							_elm_lang$core$Color$white,
+							A2(_evancz$elm_graphics$Collage$rect, 700, (2 * height) + 30)))),
 					A2(
-						_evancz$elm_graphics$Text$height,
-						20,
+					_evancz$elm_graphics$Collage$alpha,
+					0.5,
+					A2(
+						_evancz$elm_graphics$Collage$filled,
+						_elm_lang$core$Color$blue,
+						A2(_evancz$elm_graphics$Collage$rect, 650, height + 10))),
+					A2(
+					_evancz$elm_graphics$Collage$moveY,
+					_elm_lang$core$Basics$toFloat(height) / 8,
+					_evancz$elm_graphics$Collage$text(
 						A2(
-							_evancz$elm_graphics$Text$color,
-							_elm_lang$core$Color$red,
-							A2(
-								_evancz$elm_graphics$Text$typeface,
-								_elm_lang$core$Native_List.fromArray(
-									['Helvetica']),
-								_evancz$elm_graphics$Text$fromString(message)))))
+							_evancz$elm_graphics$Text$style,
+							captionStyle,
+							_evancz$elm_graphics$Text$fromString(_p1._0)))),
+					A2(
+					_evancz$elm_graphics$Collage$moveY,
+					(_elm_lang$core$Basics$toFloat(height) / 8) - (_elm_lang$core$Basics$toFloat(height) * 1.5),
+					_evancz$elm_graphics$Collage$text(
+						A2(
+							_evancz$elm_graphics$Text$style,
+							messageStyle,
+							_evancz$elm_graphics$Text$fromString(_p1._1))))
 				])));
 };
 var _chemmi$elm_rocket$Rocket_Views$viewValue = F2(
@@ -13015,9 +13048,9 @@ var _chemmi$elm_rocket$Rocket_Views$viewRocketStatus = function (r) {
 						_chemmi$elm_rocket$Rocket_Views$viewValue,
 						'Position',
 						function () {
-							var _p0 = r.position;
-							var x = _p0._0;
-							var y = _p0._1;
+							var _p2 = r.position;
+							var x = _p2._0;
+							var y = _p2._1;
 							return {
 								ctor: '_Tuple2',
 								_0: _elm_lang$core$Basics$round(x),
@@ -13032,9 +13065,9 @@ var _chemmi$elm_rocket$Rocket_Views$viewRocketStatus = function (r) {
 						_chemmi$elm_rocket$Rocket_Views$viewValue,
 						'Velocity',
 						function () {
-							var _p1 = r.velocity;
-							var vx = _p1._0;
-							var vy = _p1._1;
+							var _p3 = r.velocity;
+							var vx = _p3._0;
+							var vy = _p3._1;
 							return {
 								ctor: '_Tuple2',
 								_0: _elm_lang$core$Basics$round(vx),
@@ -13073,7 +13106,8 @@ var _chemmi$elm_rocket$Rocket_Views$viewWinScreen = function (data) {
 					_elm_lang$core$Native_List.fromArray(
 						[
 							data.background,
-							_chemmi$elm_rocket$Rocket_Views$showMessageBox(data.message)
+							_chemmi$elm_rocket$Rocket_Views$showMessageBox(
+							{ctor: '_Tuple2', _0: 'Congratulations! YOU WIN!', _1: data.message})
 						])))
 			]));
 };
@@ -13089,12 +13123,13 @@ var _chemmi$elm_rocket$Rocket_Views$viewGameoverScreen = function (data) {
 					_elm_lang$core$Native_List.fromArray(
 						[
 							data.background,
-							_chemmi$elm_rocket$Rocket_Views$showMessageBox(data.message)
+							_chemmi$elm_rocket$Rocket_Views$showMessageBox(
+							{ctor: '_Tuple2', _0: 'Gameover!', _1: data.message})
 						])))
 			]));
 };
-var _chemmi$elm_rocket$Rocket_Views$viewWorldChoiceScreen = function (_p2) {
-	var _p3 = _p2;
+var _chemmi$elm_rocket$Rocket_Views$viewWorldChoiceScreen = function (_p4) {
+	var _p5 = _p4;
 	return A2(
 		_elm_lang$html$Html$div,
 		_elm_lang$core$Native_List.fromArray(
@@ -13107,9 +13142,9 @@ var _chemmi$elm_rocket$Rocket_Views$viewWorldChoiceScreen = function (_p2) {
 						[
 							_chemmi$elm_rocket$Rocket_Scene$drawWorldThumbnail(
 							function () {
-								var _p4 = _elm_lang$core$List$head(_p3.worldChoice);
-								if (_p4.ctor === 'Just') {
-									return _p4._0;
+								var _p6 = _elm_lang$core$List$head(_p5.worldChoice);
+								if (_p6.ctor === 'Just') {
+									return _p6._0;
 								} else {
 									return _elm_lang$core$Native_Utils.crashCase(
 										'Rocket.Views',
@@ -13117,10 +13152,11 @@ var _chemmi$elm_rocket$Rocket_Views$viewWorldChoiceScreen = function (_p2) {
 											start: {line: 50, column: 24},
 											end: {line: 55, column: 58}
 										},
-										_p4)('No worlds found');
+										_p6)('No worlds found');
 								}
 							}()),
-							_chemmi$elm_rocket$Rocket_Views$showMessageBox('<-- [A]    Choose and press [SPACE] to start level    [D] -->')
+							_chemmi$elm_rocket$Rocket_Views$showMessageBox(
+							{ctor: '_Tuple2', _0: 'Choose world', _1: '<-- [A]    [SPACE] to start level    [D] -->'})
 						])))
 			]));
 };
@@ -13134,22 +13170,23 @@ var _chemmi$elm_rocket$Rocket_Views$viewStartScreen = A2(
 			_evancz$elm_graphics$Element$layers(
 				_elm_lang$core$Native_List.fromArray(
 					[
-						_chemmi$elm_rocket$Rocket_Views$showMessageBox('StartScreen - Press [SPACE] to choose level')
+						_chemmi$elm_rocket$Rocket_Views$showMessageBox(
+						{ctor: '_Tuple2', _0: 'StartScreen', _1: 'Press [SPACE] to choose level'})
 					])))
 		]));
 var _chemmi$elm_rocket$Rocket_Views$viewScreen = function (screen) {
-	var _p6 = screen;
-	switch (_p6.ctor) {
+	var _p8 = screen;
+	switch (_p8.ctor) {
 		case 'PlayScreen':
-			return _chemmi$elm_rocket$Rocket_Views$viewPlayScreen(_p6._0);
+			return _chemmi$elm_rocket$Rocket_Views$viewPlayScreen(_p8._0);
 		case 'StartScreen':
 			return _chemmi$elm_rocket$Rocket_Views$viewStartScreen;
 		case 'WorldChoiceScreen':
-			return _chemmi$elm_rocket$Rocket_Views$viewWorldChoiceScreen(_p6._0);
+			return _chemmi$elm_rocket$Rocket_Views$viewWorldChoiceScreen(_p8._0);
 		case 'GameoverScreen':
-			return _chemmi$elm_rocket$Rocket_Views$viewGameoverScreen(_p6._0);
+			return _chemmi$elm_rocket$Rocket_Views$viewGameoverScreen(_p8._0);
 		default:
-			return _chemmi$elm_rocket$Rocket_Views$viewWinScreen(_p6._0);
+			return _chemmi$elm_rocket$Rocket_Views$viewWinScreen(_p8._0);
 	}
 };
 
