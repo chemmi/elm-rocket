@@ -13149,8 +13149,69 @@ var _chemmi$elm_rocket$Rocket_Updates$updateInfo = F2(
 			});
 	});
 
-var _chemmi$elm_rocket$Rocket_Views$showMessageBox = function (_p0) {
+var _chemmi$elm_rocket$Rocket_Views$showSmallMessageBox = function (_p0) {
 	var _p1 = _p0;
+	var height = 15;
+	var $default = _evancz$elm_graphics$Text$defaultStyle;
+	var messageStyle = _elm_lang$core$Native_Utils.update(
+		$default,
+		{
+			height: _elm_lang$core$Maybe$Just(height),
+			color: _elm_lang$core$Color$black,
+			typeface: _elm_lang$core$Native_List.fromArray(
+				['helvetica'])
+		});
+	var captionStyle = _elm_lang$core$Native_Utils.update(
+		messageStyle,
+		{bold: true, color: _elm_lang$core$Color$black});
+	return A4(
+		_evancz$elm_graphics$Element$container,
+		130,
+		130,
+		_evancz$elm_graphics$Element$middle,
+		A3(
+			_evancz$elm_graphics$Collage$collage,
+			130,
+			130,
+			_elm_lang$core$Native_List.fromArray(
+				[
+					A2(
+					_evancz$elm_graphics$Collage$moveY,
+					(0 - _elm_lang$core$Basics$toFloat(height)) * 0.7,
+					A2(
+						_evancz$elm_graphics$Collage$alpha,
+						0.8,
+						A2(
+							_evancz$elm_graphics$Collage$filled,
+							_elm_lang$core$Color$grey,
+							A2(_evancz$elm_graphics$Collage$rect, 100, (2 * height) + 30)))),
+					A2(
+					_evancz$elm_graphics$Collage$alpha,
+					0.6,
+					A2(
+						_evancz$elm_graphics$Collage$filled,
+						_elm_lang$core$Color$lightBlue,
+						A2(_evancz$elm_graphics$Collage$rect, 90, height + 10))),
+					A2(
+					_evancz$elm_graphics$Collage$moveY,
+					_elm_lang$core$Basics$toFloat(height) / 8,
+					_evancz$elm_graphics$Collage$text(
+						A2(
+							_evancz$elm_graphics$Text$style,
+							captionStyle,
+							_evancz$elm_graphics$Text$fromString(_p1._0)))),
+					A2(
+					_evancz$elm_graphics$Collage$moveY,
+					(_elm_lang$core$Basics$toFloat(height) / 8) - (_elm_lang$core$Basics$toFloat(height) * 1.7),
+					_evancz$elm_graphics$Collage$text(
+						A2(
+							_evancz$elm_graphics$Text$style,
+							messageStyle,
+							_evancz$elm_graphics$Text$fromString(_p1._1))))
+				])));
+};
+var _chemmi$elm_rocket$Rocket_Views$showMessageBox = function (_p2) {
+	var _p3 = _p2;
 	var height = 20;
 	var $default = _evancz$elm_graphics$Text$defaultStyle;
 	var messageStyle = _elm_lang$core$Native_Utils.update(
@@ -13199,7 +13260,7 @@ var _chemmi$elm_rocket$Rocket_Views$showMessageBox = function (_p0) {
 						A2(
 							_evancz$elm_graphics$Text$style,
 							captionStyle,
-							_evancz$elm_graphics$Text$fromString(_p1._0)))),
+							_evancz$elm_graphics$Text$fromString(_p3._0)))),
 					A2(
 					_evancz$elm_graphics$Collage$moveY,
 					(_elm_lang$core$Basics$toFloat(height) / 8) - (_elm_lang$core$Basics$toFloat(height) * 1.5),
@@ -13207,7 +13268,7 @@ var _chemmi$elm_rocket$Rocket_Views$showMessageBox = function (_p0) {
 						A2(
 							_evancz$elm_graphics$Text$style,
 							messageStyle,
-							_evancz$elm_graphics$Text$fromString(_p1._1))))
+							_evancz$elm_graphics$Text$fromString(_p3._1))))
 				])));
 };
 var _chemmi$elm_rocket$Rocket_Views$viewValue = F2(
@@ -13262,9 +13323,9 @@ var _chemmi$elm_rocket$Rocket_Views$viewRocketStatus = function (r) {
 						_chemmi$elm_rocket$Rocket_Views$viewValue,
 						'Position',
 						function () {
-							var _p2 = r.position;
-							var x = _p2._0;
-							var y = _p2._1;
+							var _p4 = r.position;
+							var x = _p4._0;
+							var y = _p4._1;
 							return {
 								ctor: '_Tuple2',
 								_0: _elm_lang$core$Basics$round(x),
@@ -13279,9 +13340,9 @@ var _chemmi$elm_rocket$Rocket_Views$viewRocketStatus = function (r) {
 						_chemmi$elm_rocket$Rocket_Views$viewValue,
 						'Velocity',
 						function () {
-							var _p3 = r.velocity;
-							var vx = _p3._0;
-							var vy = _p3._1;
+							var _p5 = r.velocity;
+							var vx = _p5._0;
+							var vy = _p5._1;
 							return {
 								ctor: '_Tuple2',
 								_0: _elm_lang$core$Basics$round(vx),
@@ -13342,8 +13403,8 @@ var _chemmi$elm_rocket$Rocket_Views$viewGameoverScreen = function (data) {
 						])))
 			]));
 };
-var _chemmi$elm_rocket$Rocket_Views$viewWorldChoiceScreen = function (_p4) {
-	var _p5 = _p4;
+var _chemmi$elm_rocket$Rocket_Views$viewWorldChoiceScreen = function (_p6) {
+	var _p7 = _p6;
 	return A2(
 		_elm_lang$html$Html$div,
 		_elm_lang$core$Native_List.fromArray(
@@ -13356,17 +13417,17 @@ var _chemmi$elm_rocket$Rocket_Views$viewWorldChoiceScreen = function (_p4) {
 						[
 							_chemmi$elm_rocket$Rocket_Scene$drawWorldThumbnail(
 							function () {
-								var _p6 = _elm_lang$core$List$head(_p5.worldChoice);
-								if (_p6.ctor === 'Just') {
-									return _p6._0;
+								var _p8 = _elm_lang$core$List$head(_p7.worldChoice);
+								if (_p8.ctor === 'Just') {
+									return _p8._0;
 								} else {
 									return _elm_lang$core$Native_Utils.crashCase(
 										'Rocket.Views',
 										{
-											start: {line: 69, column: 24},
-											end: {line: 74, column: 58}
+											start: {line: 90, column: 24},
+											end: {line: 95, column: 58}
 										},
-										_p6)('No worlds found');
+										_p8)('No worlds found');
 								}
 							}()),
 							_chemmi$elm_rocket$Rocket_Views$showMessageBox(
@@ -13374,8 +13435,54 @@ var _chemmi$elm_rocket$Rocket_Views$viewWorldChoiceScreen = function (_p4) {
 						])))
 			]));
 };
-var _chemmi$elm_rocket$Rocket_Views$viewInfoScreen = function (_p8) {
-	var _p9 = _p8;
+var _chemmi$elm_rocket$Rocket_Views$showInstructions = function (_p10) {
+	var _p11 = _p10;
+	return _evancz$elm_graphics$Element$layers(
+		_elm_lang$core$Native_List.fromArray(
+			[
+				A4(
+				_evancz$elm_graphics$Element$container,
+				800,
+				600,
+				A2(
+					_evancz$elm_graphics$Element$middleAt,
+					_evancz$elm_graphics$Element$absolute(400),
+					_evancz$elm_graphics$Element$absolute(200)),
+				A2(
+					_evancz$elm_graphics$Element$flow,
+					_evancz$elm_graphics$Element$right,
+					_elm_lang$core$Native_List.fromArray(
+						[
+							_chemmi$elm_rocket$Rocket_Views$showSmallMessageBox(
+							{ctor: '_Tuple2', _0: 'Accelerate', _1: '[W]'}),
+							_chemmi$elm_rocket$Rocket_Scene$drawPortrait(_p11.accelerateAnimation),
+							A2(_evancz$elm_graphics$Element$spacer, 50, 1),
+							_chemmi$elm_rocket$Rocket_Scene$drawPortrait(_p11.rotateAnimation),
+							_chemmi$elm_rocket$Rocket_Views$showSmallMessageBox(
+							{ctor: '_Tuple2', _0: 'Rotate', _1: '[A] and [D]'})
+						]))),
+				A4(
+				_evancz$elm_graphics$Element$container,
+				800,
+				600,
+				A2(
+					_evancz$elm_graphics$Element$middleAt,
+					_evancz$elm_graphics$Element$absolute(400),
+					_evancz$elm_graphics$Element$absolute(430)),
+				A2(
+					_evancz$elm_graphics$Element$flow,
+					_evancz$elm_graphics$Element$right,
+					_elm_lang$core$Native_List.fromArray(
+						[
+							_chemmi$elm_rocket$Rocket_Views$showSmallMessageBox(
+							{ctor: '_Tuple2', _0: 'Landing', _1: 'Not too fast !!'}),
+							_chemmi$elm_rocket$Rocket_Scene$drawPortrait(_p11.landAnimation),
+							_chemmi$elm_rocket$Rocket_Views$showSmallMessageBox(
+							{ctor: '_Tuple2', _0: 'Toggle Music', _1: '[M]'})
+						])))
+			]));
+};
+var _chemmi$elm_rocket$Rocket_Views$viewInfoScreen = function (data) {
 	return A2(
 		_elm_lang$html$Html$div,
 		_elm_lang$core$Native_List.fromArray(
@@ -13383,20 +13490,13 @@ var _chemmi$elm_rocket$Rocket_Views$viewInfoScreen = function (_p8) {
 		_elm_lang$core$Native_List.fromArray(
 			[
 				_evancz$elm_graphics$Element$toHtml(
-				A4(
-					_evancz$elm_graphics$Element$container,
-					800,
-					600,
-					_evancz$elm_graphics$Element$middle,
-					A2(
-						_evancz$elm_graphics$Element$flow,
-						_evancz$elm_graphics$Element$down,
-						_elm_lang$core$Native_List.fromArray(
-							[
-								_chemmi$elm_rocket$Rocket_Scene$drawPortrait(_p9.accelerateAnimation),
-								_chemmi$elm_rocket$Rocket_Scene$drawPortrait(_p9.rotateAnimation),
-								_chemmi$elm_rocket$Rocket_Scene$drawPortrait(_p9.landAnimation)
-							]))))
+				_evancz$elm_graphics$Element$layers(
+					_elm_lang$core$Native_List.fromArray(
+						[
+							_chemmi$elm_rocket$Rocket_Views$showInstructions(data),
+							_chemmi$elm_rocket$Rocket_Views$showMessageBox(
+							{ctor: '_Tuple2', _0: 'Objective', _1: 'Land on all platforms in time !'})
+						])))
 			]));
 };
 var _chemmi$elm_rocket$Rocket_Views$viewStartScreen = A2(
@@ -13414,20 +13514,20 @@ var _chemmi$elm_rocket$Rocket_Views$viewStartScreen = A2(
 					])))
 		]));
 var _chemmi$elm_rocket$Rocket_Views$viewScreen = function (screen) {
-	var _p10 = screen;
-	switch (_p10.ctor) {
+	var _p12 = screen;
+	switch (_p12.ctor) {
 		case 'StartScreen':
 			return _chemmi$elm_rocket$Rocket_Views$viewStartScreen;
 		case 'InfoScreen':
-			return _chemmi$elm_rocket$Rocket_Views$viewInfoScreen(_p10._0);
+			return _chemmi$elm_rocket$Rocket_Views$viewInfoScreen(_p12._0);
 		case 'WorldChoiceScreen':
-			return _chemmi$elm_rocket$Rocket_Views$viewWorldChoiceScreen(_p10._0);
+			return _chemmi$elm_rocket$Rocket_Views$viewWorldChoiceScreen(_p12._0);
 		case 'PlayScreen':
-			return _chemmi$elm_rocket$Rocket_Views$viewPlayScreen(_p10._0);
+			return _chemmi$elm_rocket$Rocket_Views$viewPlayScreen(_p12._0);
 		case 'GameoverScreen':
-			return _chemmi$elm_rocket$Rocket_Views$viewGameoverScreen(_p10._0);
+			return _chemmi$elm_rocket$Rocket_Views$viewGameoverScreen(_p12._0);
 		default:
-			return _chemmi$elm_rocket$Rocket_Views$viewWinScreen(_p10._0);
+			return _chemmi$elm_rocket$Rocket_Views$viewWinScreen(_p12._0);
 	}
 };
 
@@ -14258,8 +14358,8 @@ var _chemmi$elm_rocket$Rocket$changeToPlay = function (_p3) {
 			return _elm_lang$core$Native_Utils.crashCase(
 				'Rocket',
 				{
-					start: {line: 195, column: 13},
-					end: {line: 200, column: 49}
+					start: {line: 183, column: 13},
+					end: {line: 188, column: 49}
 				},
 				_p5)('No world found');
 		}
@@ -14362,58 +14462,12 @@ var _chemmi$elm_rocket$Rocket$view = function (_p15) {
 	return A2(
 		_elm_lang$html$Html$div,
 		_elm_lang$core$Native_List.fromArray(
-			[]),
+			[
+				_elm_lang$html$Html_Attributes$id('gameScreen')
+			]),
 		_elm_lang$core$Native_List.fromArray(
 			[
-				A2(
-				_elm_lang$html$Html$div,
-				_elm_lang$core$Native_List.fromArray(
-					[
-						_elm_lang$html$Html_Attributes$id('gameScreen')
-					]),
-				_elm_lang$core$Native_List.fromArray(
-					[
-						_chemmi$elm_rocket$Rocket_Views$viewScreen(_p16._0)
-					])),
-				A2(
-				_elm_lang$html$Html$div,
-				_elm_lang$core$Native_List.fromArray(
-					[
-						_elm_lang$html$Html_Attributes$id('gameControl')
-					]),
-				_elm_lang$core$Native_List.fromArray(
-					[
-						A2(
-						_elm_lang$html$Html$h3,
-						_elm_lang$core$Native_List.fromArray(
-							[]),
-						_elm_lang$core$Native_List.fromArray(
-							[
-								_elm_lang$html$Html$text('Short Introduction:')
-							])),
-						_elm_lang$html$Html$text('Control the rocket with W (accelerate), A (turn left) and D (turn right).'),
-						A2(
-						_elm_lang$html$Html$br,
-						_elm_lang$core$Native_List.fromArray(
-							[]),
-						_elm_lang$core$Native_List.fromArray(
-							[])),
-						_elm_lang$html$Html$text('Try to land on all platforms in the given time.'),
-						A2(
-						_elm_lang$html$Html$br,
-						_elm_lang$core$Native_List.fromArray(
-							[]),
-						_elm_lang$core$Native_List.fromArray(
-							[])),
-						_elm_lang$html$Html$text('(Visited platforms turn from red to green).'),
-						A2(
-						_elm_lang$html$Html$br,
-						_elm_lang$core$Native_List.fromArray(
-							[]),
-						_elm_lang$core$Native_List.fromArray(
-							[])),
-						_elm_lang$html$Html$text('The rocket must have an apropriate angle and speed when landing.')
-					]))
+				_chemmi$elm_rocket$Rocket_Views$viewScreen(_p16._0)
 			]));
 };
 var _chemmi$elm_rocket$Rocket$isScreenControlKey = function (key) {

@@ -63,20 +63,8 @@ isScreenControlKey key =
 
 view : Model -> Html a
 view (Model screen options) =
-    div []
-        [ div [ id "gameScreen" ]
-            [ viewScreen screen ]
-        , div [ id "gameControl" ]
-            [ h3 [] [ text "Short Introduction:" ]
-            , text "Control the rocket with W (accelerate), A (turn left) and D (turn right)."
-            , br [] []
-            , text "Try to land on all platforms in the given time."
-            , br [] []
-            , text "(Visited platforms turn from red to green)."
-            , br [] []
-            , text "The rocket must have an apropriate angle and speed when landing."
-            ]
-        ]
+    div [ id "gameScreen" ]
+        [ viewScreen screen ]
 
 
 update : Msg -> Model -> ( Model, Cmd msg )
