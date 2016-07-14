@@ -6,6 +6,9 @@ import Html exposing (..)
 import Element exposing (..)
 import Time exposing (inSeconds)
 import List
+import Collage
+import Text
+import Color exposing (..)
 import Debug
 
 
@@ -33,8 +36,7 @@ viewStartScreen =
     div []
         [ toHtml
             <| layers
-                [ container 800 600 middle
-                    <| show "StartScreen - Press [SPACE] to choose level"
+                [ showMessageBox "StartScreen - Press [SPACE] to choose level"
                 ]
         ]
 
@@ -51,8 +53,7 @@ viewWorldChoiceScreen { worldChoice } =
 
                         Nothing ->
                             Debug.crash "No worlds found"
-                , container 800 600 middle
-                    <| show "<-- [A]    Choose and press [SPACE] to start level    [D] -->"
+                , showMessageBox "<-- [A]    Choose and press [SPACE] to start level    [D] -->"
                 ]
         ]
 
@@ -63,7 +64,7 @@ viewGameoverScreen data =
         [ toHtml
             <| layers
                 [ data.background
-                , container 800 600 middle (show data.message)
+                , showMessageBox data.message
                 ]
         ]
 
@@ -74,7 +75,7 @@ viewWinScreen data =
         [ toHtml
             <| layers
                 [ data.background
-                , container 800 600 middle (show data.message)
+                , showMessageBox data.message
                 ]
         ]
 
@@ -123,3 +124,19 @@ viewValue name value =
             [ text <| toString value
             ]
         ]
+
+
+showMessageBox : String -> Element
+showMessageBox message =
+    container 800 600 middle
+        <| Collage.collage 800 300
+        <| [ Collage.alpha 0.8
+                <| Collage.moveY -3
+                <| Collage.filled yellow (Collage.rect 700 40)
+           , Collage.text
+                <| Text.height 20
+                <| Text.color red
+                <| Text.typeface [ "Helvetica" ]
+                <| Text.fromString
+                <| message
+           ]
