@@ -17,7 +17,7 @@ type Screen
 
 
 type alias Options =
-    {}
+    { worldChoice : List World}
 
 
 type Msg
@@ -38,7 +38,7 @@ type Key
 
 
 type alias WorldChoiceData =
-    { worlds : List World }
+    { worldChoice : List World }
 
 
 type alias GameoverData =

@@ -8,7 +8,11 @@ import Element exposing (empty)
 
 initModel : Model
 initModel =
-    Model StartScreen {}
+    Model StartScreen initOptions
+
+
+initOptions =
+    { worldChoice = allWorlds }
 
 
 initPlay : PlayData
@@ -32,7 +36,7 @@ initPlay =
 
 initWorldChoice : WorldChoiceData
 initWorldChoice =
-    { worlds = allWorlds }
+    { worldChoice = [] }
 
 
 initGameover : GameoverData

@@ -11,13 +11,13 @@ import Debug
 
 
 updateWorldChoiceScreen : Msg -> WorldChoiceData -> WorldChoiceData
-updateWorldChoiceScreen msg ({ worlds } as data) =
+updateWorldChoiceScreen msg ({ worldChoice } as data) =
     case msg of
         KeyUpMsg Right ->
-            { data | worlds = rotateRight worlds }
+            { data | worldChoice = rotateRight worldChoice }
 
         KeyUpMsg Left ->
-            { data | worlds = rotateLeft worlds }
+            { data | worldChoice = rotateLeft worldChoice }
 
         _ ->
             data

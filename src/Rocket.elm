@@ -122,21 +122,16 @@ changeScreen msg ((Model screen options) as model) =
         KeyUpMsg Start ->
             case screen of
                 StartScreen ->
-                    Model (WorldChoiceScreen initWorldChoice) options
+                    changeToWorldChoice options
 
                 WorldChoiceScreen data ->
-                    case List.head data.worlds of
-                        Just world ->
-                            Model (PlayScreen (startPlayScreen world)) options
-
-                        Nothing ->
-                            Debug.crash "No world found"
+                    changeToPlay { options | worldChoice = data.worldChoice }
 
                 GameoverScreen _ ->
-                    Model (WorldChoiceScreen initWorldChoice) options
+                    changeToWorldChoice options
 
                 WinScreen _ ->
-                    Model (WorldChoiceScreen initWorldChoice) options
+                    changeToWorldChoice options
 
                 PlayScreen _ ->
                     model
@@ -150,28 +145,45 @@ changeScreen msg ((Model screen options) as model) =
                     Model StartScreen options
 
                 GameoverScreen _ ->
-                    Model (WorldChoiceScreen initWorldChoice) options
+                    changeToWorldChoice options
 
                 WinScreen _ ->
-                    Model (WorldChoiceScreen initWorldChoice) options
+                    changeToWorldChoice options
 
                 PlayScreen _ ->
-                    Model (WorldChoiceScreen initWorldChoice) options
+                    changeToWorldChoice options
 
         _ ->
             model
 
 
-startPlayScreen : World -> PlayData
-startPlayScreen world =
-    { initPlay
-        | world = world
-        , timeRemaining = world.totalTime
-        , rocket =
-            { initRocket
-                | position = world.rocketStartPosition
+changeToWorldChoice : Options -> Model
+changeToWorldChoice options =
+    Model (WorldChoiceScreen { initWorldChoice | worldChoice = options.worldChoice }) options
+
+
+changeToPlay : Options -> Model
+changeToPlay ({ worldChoice } as options) =
+    let
+        world =
+            case List.head worldChoice of
+                Just w ->
+                    w
+
+                Nothing ->
+                    Debug.crash "No world found"
+
+        playData =
+            { initPlay
+                | world = world
+                , timeRemaining = world.totalTime
+                , rocket =
+                    { initRocket
+                        | position = world.rocketStartPosition
+                    }
             }
-    }
+    in
+        Model (PlayScreen playData) options
 
 
 sendCmd : Msg -> Model -> Cmd msg

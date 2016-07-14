@@ -40,12 +40,12 @@ viewStartScreen =
 
 
 viewWorldChoiceScreen : WorldChoiceData -> Html a
-viewWorldChoiceScreen { worlds } =
+viewWorldChoiceScreen { worldChoice } =
     div []
         [ toHtml
             <| layers
                 [ drawWorldThumbnail
-                    <| case List.head worlds of
+                    <| case List.head worldChoice of
                         Just world ->
                             world
 
