@@ -142,7 +142,7 @@ changeScreen msg ((Model screen options) as model) =
                     changeToPlay { options | worldChoice = data.worldChoice }
 
                 GameoverScreen _ ->
-                    changeToWorldChoice options
+                    changeToPlay options
 
                 WinScreen _ ->
                     changeToWorldChoice options
