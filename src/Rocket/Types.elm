@@ -42,7 +42,17 @@ type Key
 
 
 type alias InfoData =
-    {}
+    { accelerateAnimation : PortraitData
+    , rotateAnimation : PortraitData
+    , landAnimation : PortraitData
+    }
+
+
+type alias PortraitData =
+    { rocket : Rocket
+    , platform : Maybe Platform
+    }
+
 
 type alias WorldChoiceData =
     { worldChoice : List World }

@@ -20,7 +20,13 @@ initOptions =
 
 initInfo : InfoData
 initInfo =
-    {}
+    { accelerateAnimation =
+        { rocket = initRocket, platform = Nothing }
+    , rotateAnimation =
+        { rocket = initRocket, platform = Nothing }
+    , landAnimation =
+        { rocket = initRocket, platform = Nothing }
+    }
 
 
 initPlay : PlayData

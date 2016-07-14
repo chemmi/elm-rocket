@@ -234,3 +234,17 @@ drawWorldThumbnail world =
                         , frameForm world.size
                         ]
                ]
+
+
+drawPortrait : PortraitData -> Element
+drawPortrait { rocket, platform } =
+    collage 130 130
+        <| [ rocketForm rocket ]
+        ++ (case platform of
+                Just p ->
+                    [ platformsForm [ p ] ]
+
+                Nothing ->
+                    []
+           )
+        ++ [ outlined (solid black) (rect 110 110) ]

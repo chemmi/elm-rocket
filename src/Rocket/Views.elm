@@ -48,10 +48,15 @@ viewStartScreen =
 
 
 viewInfoScreen : InfoData -> Html a
-viewInfoScreen data =
+viewInfoScreen ({ accelerateAnimation, rotateAnimation, landAnimation } as data) =
     div []
         [ toHtml
-            <| container 800 600 middle Element.empty
+            <| container 800 600 middle
+            <| Element.flow Element.down
+                [ drawPortrait accelerateAnimation
+                , drawPortrait rotateAnimation
+                , drawPortrait landAnimation
+                ]
         ]
 
 
