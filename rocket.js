@@ -282,49 +282,123 @@ var _elm_lang$core$Native_Utils = function() {
 
 // COMPARISONS
 
-function eq(rootX, rootY)
+function eq(x, y)
 {
-	var stack = [{ x: rootX, y: rootY }];
-	while (stack.length > 0)
+	var stack = [];
+	var isEqual = eqHelp(x, y, 0, stack);
+	var pair;
+	while (isEqual && (pair = stack.pop()))
 	{
-		var front = stack.pop();
-		var x = front.x;
-		var y = front.y;
-		if (x === y)
+		isEqual = eqHelp(pair.x, pair.y, 0, stack);
+	}
+	return isEqual;
+}
+
+
+function eqHelp(x, y, depth, stack)
+{
+	if (depth > 100)
+	{
+		stack.push({ x: x, y: y });
+		return true;
+	}
+
+	if (x === y)
+	{
+		return true;
+	}
+
+	if (typeof x !== 'object')
+	{
+		if (typeof x === 'function')
 		{
-			continue;
+			throw new Error(
+				'Trying to use `(==)` on functions. There is no way to know if functions are "the same" in the Elm sense.'
+				+ ' Read more about this at http://package.elm-lang.org/packages/elm-lang/core/latest/Basics#=='
+				+ ' which describes why it is this way and what the better version will look like.'
+			);
 		}
-		if (typeof x === 'object')
+		return false;
+	}
+
+	if (x === null || y === null)
+	{
+		return false
+	}
+
+	if (x instanceof Date)
+	{
+		return x.getTime() === y.getTime();
+	}
+
+	if (!('ctor' in x))
+	{
+		for (var key in x)
 		{
-			var c = 0;
-			for (var key in x)
-			{
-				++c;
-				if (!(key in y))
-				{
-					return false;
-				}
-				if (key === 'ctor')
-				{
-					continue;
-				}
-				stack.push({ x: x[key], y: y[key] });
-			}
-			if ('ctor' in x)
-			{
-				stack.push({ x: x.ctor, y: y.ctor});
-			}
-			if (c !== Object.keys(y).length)
+			if (!eqHelp(x[key], y[key], depth + 1, stack))
 			{
 				return false;
 			}
 		}
-		else if (typeof x === 'function')
+		return true;
+	}
+
+	// convert Dicts and Sets to lists
+	if (x.ctor === 'RBNode_elm_builtin' || x.ctor === 'RBEmpty_elm_builtin')
+	{
+		x = _elm_lang$core$Dict$toList(x);
+		y = _elm_lang$core$Dict$toList(y);
+	}
+	if (x.ctor === 'Set_elm_builtin')
+	{
+		x = _elm_lang$core$Set$toList(x);
+		y = _elm_lang$core$Set$toList(y);
+	}
+
+	// check if lists are equal without recursion
+	if (x.ctor === '::')
+	{
+		var a = x;
+		var b = y;
+		while (a.ctor === '::' && b.ctor === '::')
 		{
-			throw new Error('Equality error: general function equality is ' +
-							'undecidable, and therefore, unsupported');
+			if (!eqHelp(a._0, b._0, depth + 1, stack))
+			{
+				return false;
+			}
+			a = a._1;
+			b = b._1;
 		}
-		else
+		return a.ctor === b.ctor;
+	}
+
+	// check if Arrays are equal
+	if (x.ctor === '_Array')
+	{
+		var xs = _elm_lang$core$Native_Array.toJSArray(x);
+		var ys = _elm_lang$core$Native_Array.toJSArray(y);
+		if (xs.length !== ys.length)
+		{
+			return false;
+		}
+		for (var i = 0; i < xs.length; i++)
+		{
+			if (!eqHelp(xs[i], ys[i], depth + 1, stack))
+			{
+				return false;
+			}
+		}
+		return true;
+	}
+
+	if (!eqHelp(x.ctor, y.ctor, depth + 1, stack))
+	{
+		return false;
+	}
+
+	for (var key in x)
+	{
+		if (!eqHelp(x[key], y[key], depth + 1, stack))
 		{
 			return false;
 		}
@@ -339,34 +413,23 @@ var LT = -1, EQ = 0, GT = 1;
 
 function cmp(x, y)
 {
-	var ord;
 	if (typeof x !== 'object')
 	{
 		return x === y ? EQ : x < y ? LT : GT;
 	}
-	else if (x instanceof String)
+
+	if (x instanceof String)
 	{
 		var a = x.valueOf();
 		var b = y.valueOf();
-		return a === b
-			? EQ
-			: a < b
-				? LT
-				: GT;
+		return a === b ? EQ : a < b ? LT : GT;
 	}
-	else if (x.ctor === '::' || x.ctor === '[]')
+
+	if (x.ctor === '::' || x.ctor === '[]')
 	{
-		while (true)
+		while (x.ctor === '::' && y.ctor === '::')
 		{
-			if (x.ctor === '[]' && y.ctor === '[]')
-			{
-				return EQ;
-			}
-			if (x.ctor !== y.ctor)
-			{
-				return x.ctor === '[]' ? LT : GT;
-			}
-			ord = cmp(x._0, y._0);
+			var ord = cmp(x._0, y._0);
 			if (ord !== EQ)
 			{
 				return ord;
@@ -374,9 +437,12 @@ function cmp(x, y)
 			x = x._1;
 			y = y._1;
 		}
+		return x.ctor === y.ctor ? EQ : x.ctor === '[]' ? LT : GT;
 	}
-	else if (x.ctor.slice(0, 6) === '_Tuple')
+
+	if (x.ctor.slice(0, 6) === '_Tuple')
 	{
+		var ord;
 		var n = x.ctor.slice(6) - 0;
 		var err = 'cannot compare tuples with more than 6 elements.';
 		if (n === 0) return EQ;
@@ -389,12 +455,12 @@ function cmp(x, y)
 		if (n >= 7) throw new Error('Comparison error: ' + err); } } } } } }
 		return EQ;
 	}
-	else
-	{
-		throw new Error('Comparison error: comparison is only defined on ints, ' +
-						'floats, times, chars, strings, lists of comparable values, ' +
-						'and tuples of comparable values.');
-	}
+
+	throw new Error(
+		'Comparison error: comparison is only defined on ints, '
+		+ 'floats, times, chars, strings, lists of comparable values, '
+		+ 'and tuples of comparable values.'
+	);
 }
 
 
@@ -607,24 +673,14 @@ function toString(v)
 			return '[]';
 		}
 
-		if (v.ctor === 'RBNode_elm_builtin' || v.ctor === 'RBEmpty_elm_builtin' || v.ctor === 'Set_elm_builtin')
+		if (v.ctor === 'Set_elm_builtin')
 		{
-			var name, list;
-			if (v.ctor === 'Set_elm_builtin')
-			{
-				name = 'Set';
-				list = A2(
-					_elm_lang$core$List$map,
-					function(x) {return x._0; },
-					_elm_lang$core$Dict$toList(v._0)
-				);
-			}
-			else
-			{
-				name = 'Dict';
-				list = _elm_lang$core$Dict$toList(v);
-			}
-			return name + '.fromList ' + toString(list);
+			return 'Set.fromList ' + toString(_elm_lang$core$Set$toList(v));
+		}
+
+		if (v.ctor === 'RBNode_elm_builtin' || v.ctor === 'RBEmpty_elm_builtin')
+		{
+			return 'Dict.fromList ' + toString(_elm_lang$core$Dict$toList(v));
 		}
 
 		var output = '';
@@ -641,6 +697,16 @@ function toString(v)
 
 	if (type === 'object')
 	{
+		if (v instanceof Date)
+		{
+			return '<' + v.toString() + '>';
+		}
+
+		if (v.elm_web_socket)
+		{
+			return '<websocket>';
+		}
+
 		var output = [];
 		for (var k in v)
 		{
@@ -3036,33 +3102,50 @@ var _elm_lang$core$Dict$merge = F6(
 	function (leftStep, bothStep, rightStep, leftDict, rightDict, initialResult) {
 		var stepState = F3(
 			function (rKey, rValue, _p2) {
-				var _p3 = _p2;
-				var _p9 = _p3._1;
-				var _p8 = _p3._0;
-				var _p4 = _p8;
-				if (_p4.ctor === '[]') {
-					return {
-						ctor: '_Tuple2',
-						_0: _p8,
-						_1: A3(rightStep, rKey, rValue, _p9)
-					};
-				} else {
-					var _p7 = _p4._1;
-					var _p6 = _p4._0._1;
-					var _p5 = _p4._0._0;
-					return (_elm_lang$core$Native_Utils.cmp(_p5, rKey) < 0) ? {
-						ctor: '_Tuple2',
-						_0: _p7,
-						_1: A3(leftStep, _p5, _p6, _p9)
-					} : ((_elm_lang$core$Native_Utils.cmp(_p5, rKey) > 0) ? {
-						ctor: '_Tuple2',
-						_0: _p8,
-						_1: A3(rightStep, rKey, rValue, _p9)
-					} : {
-						ctor: '_Tuple2',
-						_0: _p7,
-						_1: A4(bothStep, _p5, _p6, rValue, _p9)
-					});
+				stepState:
+				while (true) {
+					var _p3 = _p2;
+					var _p9 = _p3._1;
+					var _p8 = _p3._0;
+					var _p4 = _p8;
+					if (_p4.ctor === '[]') {
+						return {
+							ctor: '_Tuple2',
+							_0: _p8,
+							_1: A3(rightStep, rKey, rValue, _p9)
+						};
+					} else {
+						var _p7 = _p4._1;
+						var _p6 = _p4._0._1;
+						var _p5 = _p4._0._0;
+						if (_elm_lang$core$Native_Utils.cmp(_p5, rKey) < 0) {
+							var _v10 = rKey,
+								_v11 = rValue,
+								_v12 = {
+								ctor: '_Tuple2',
+								_0: _p7,
+								_1: A3(leftStep, _p5, _p6, _p9)
+							};
+							rKey = _v10;
+							rValue = _v11;
+							_p2 = _v12;
+							continue stepState;
+						} else {
+							if (_elm_lang$core$Native_Utils.cmp(_p5, rKey) > 0) {
+								return {
+									ctor: '_Tuple2',
+									_0: _p8,
+									_1: A3(rightStep, rKey, rValue, _p9)
+								};
+							} else {
+								return {
+									ctor: '_Tuple2',
+									_0: _p7,
+									_1: A4(bothStep, _p5, _p6, rValue, _p9)
+								};
+							}
+						}
+					}
 				}
 			});
 		var _p10 = A3(
@@ -3105,19 +3188,19 @@ var _elm_lang$core$Dict$reportRemBug = F4(
 	});
 var _elm_lang$core$Dict$isBBlack = function (dict) {
 	var _p13 = dict;
-	_v11_2:
+	_v14_2:
 	do {
 		if (_p13.ctor === 'RBNode_elm_builtin') {
 			if (_p13._0.ctor === 'BBlack') {
 				return true;
 			} else {
-				break _v11_2;
+				break _v14_2;
 			}
 		} else {
 			if (_p13._0.ctor === 'LBBlack') {
 				return true;
 			} else {
-				break _v11_2;
+				break _v14_2;
 			}
 		}
 	} while(false);
@@ -3131,10 +3214,10 @@ var _elm_lang$core$Dict$sizeHelp = F2(
 			if (_p14.ctor === 'RBEmpty_elm_builtin') {
 				return n;
 			} else {
-				var _v13 = A2(_elm_lang$core$Dict$sizeHelp, n + 1, _p14._4),
-					_v14 = _p14._3;
-				n = _v13;
-				dict = _v14;
+				var _v16 = A2(_elm_lang$core$Dict$sizeHelp, n + 1, _p14._4),
+					_v17 = _p14._3;
+				n = _v16;
+				dict = _v17;
 				continue sizeHelp;
 			}
 		}
@@ -3153,18 +3236,18 @@ var _elm_lang$core$Dict$get = F2(
 				var _p16 = A2(_elm_lang$core$Basics$compare, targetKey, _p15._1);
 				switch (_p16.ctor) {
 					case 'LT':
-						var _v17 = targetKey,
-							_v18 = _p15._3;
-						targetKey = _v17;
-						dict = _v18;
+						var _v20 = targetKey,
+							_v21 = _p15._3;
+						targetKey = _v20;
+						dict = _v21;
 						continue get;
 					case 'EQ':
 						return _elm_lang$core$Maybe$Just(_p15._2);
 					default:
-						var _v19 = targetKey,
-							_v20 = _p15._4;
-						targetKey = _v19;
-						dict = _v20;
+						var _v22 = targetKey,
+							_v23 = _p15._4;
+						targetKey = _v22;
+						dict = _v23;
 						continue get;
 				}
 			}
@@ -3187,12 +3270,12 @@ var _elm_lang$core$Dict$maxWithDefault = F3(
 			if (_p18.ctor === 'RBEmpty_elm_builtin') {
 				return {ctor: '_Tuple2', _0: k, _1: v};
 			} else {
-				var _v23 = _p18._1,
-					_v24 = _p18._2,
-					_v25 = _p18._4;
-				k = _v23;
-				v = _v24;
-				r = _v25;
+				var _v26 = _p18._1,
+					_v27 = _p18._2,
+					_v28 = _p18._4;
+				k = _v26;
+				v = _v27;
+				r = _v28;
 				continue maxWithDefault;
 			}
 		}
@@ -3318,19 +3401,19 @@ var _elm_lang$core$Dict$redden = function (t) {
 };
 var _elm_lang$core$Dict$balanceHelp = function (tree) {
 	var _p27 = tree;
-	_v33_6:
+	_v36_6:
 	do {
-		_v33_5:
+		_v36_5:
 		do {
-			_v33_4:
+			_v36_4:
 			do {
-				_v33_3:
+				_v36_3:
 				do {
-					_v33_2:
+					_v36_2:
 					do {
-						_v33_1:
+						_v36_1:
 						do {
-							_v33_0:
+							_v36_0:
 							do {
 								if (_p27.ctor === 'RBNode_elm_builtin') {
 									if (_p27._3.ctor === 'RBNode_elm_builtin') {
@@ -3340,44 +3423,44 @@ var _elm_lang$core$Dict$balanceHelp = function (tree) {
 													switch (_p27._4._0.ctor) {
 														case 'Red':
 															if ((_p27._3._3.ctor === 'RBNode_elm_builtin') && (_p27._3._3._0.ctor === 'Red')) {
-																break _v33_0;
+																break _v36_0;
 															} else {
 																if ((_p27._3._4.ctor === 'RBNode_elm_builtin') && (_p27._3._4._0.ctor === 'Red')) {
-																	break _v33_1;
+																	break _v36_1;
 																} else {
 																	if ((_p27._4._3.ctor === 'RBNode_elm_builtin') && (_p27._4._3._0.ctor === 'Red')) {
-																		break _v33_2;
+																		break _v36_2;
 																	} else {
 																		if ((_p27._4._4.ctor === 'RBNode_elm_builtin') && (_p27._4._4._0.ctor === 'Red')) {
-																			break _v33_3;
+																			break _v36_3;
 																		} else {
-																			break _v33_6;
+																			break _v36_6;
 																		}
 																	}
 																}
 															}
 														case 'NBlack':
 															if ((_p27._3._3.ctor === 'RBNode_elm_builtin') && (_p27._3._3._0.ctor === 'Red')) {
-																break _v33_0;
+																break _v36_0;
 															} else {
 																if ((_p27._3._4.ctor === 'RBNode_elm_builtin') && (_p27._3._4._0.ctor === 'Red')) {
-																	break _v33_1;
+																	break _v36_1;
 																} else {
 																	if (((((_p27._0.ctor === 'BBlack') && (_p27._4._3.ctor === 'RBNode_elm_builtin')) && (_p27._4._3._0.ctor === 'Black')) && (_p27._4._4.ctor === 'RBNode_elm_builtin')) && (_p27._4._4._0.ctor === 'Black')) {
-																		break _v33_4;
+																		break _v36_4;
 																	} else {
-																		break _v33_6;
+																		break _v36_6;
 																	}
 																}
 															}
 														default:
 															if ((_p27._3._3.ctor === 'RBNode_elm_builtin') && (_p27._3._3._0.ctor === 'Red')) {
-																break _v33_0;
+																break _v36_0;
 															} else {
 																if ((_p27._3._4.ctor === 'RBNode_elm_builtin') && (_p27._3._4._0.ctor === 'Red')) {
-																	break _v33_1;
+																	break _v36_1;
 																} else {
-																	break _v33_6;
+																	break _v36_6;
 																}
 															}
 													}
@@ -3385,81 +3468,81 @@ var _elm_lang$core$Dict$balanceHelp = function (tree) {
 													switch (_p27._4._0.ctor) {
 														case 'Red':
 															if ((_p27._4._3.ctor === 'RBNode_elm_builtin') && (_p27._4._3._0.ctor === 'Red')) {
-																break _v33_2;
+																break _v36_2;
 															} else {
 																if ((_p27._4._4.ctor === 'RBNode_elm_builtin') && (_p27._4._4._0.ctor === 'Red')) {
-																	break _v33_3;
+																	break _v36_3;
 																} else {
 																	if (((((_p27._0.ctor === 'BBlack') && (_p27._3._3.ctor === 'RBNode_elm_builtin')) && (_p27._3._3._0.ctor === 'Black')) && (_p27._3._4.ctor === 'RBNode_elm_builtin')) && (_p27._3._4._0.ctor === 'Black')) {
-																		break _v33_5;
+																		break _v36_5;
 																	} else {
-																		break _v33_6;
+																		break _v36_6;
 																	}
 																}
 															}
 														case 'NBlack':
 															if (_p27._0.ctor === 'BBlack') {
 																if ((((_p27._4._3.ctor === 'RBNode_elm_builtin') && (_p27._4._3._0.ctor === 'Black')) && (_p27._4._4.ctor === 'RBNode_elm_builtin')) && (_p27._4._4._0.ctor === 'Black')) {
-																	break _v33_4;
+																	break _v36_4;
 																} else {
 																	if ((((_p27._3._3.ctor === 'RBNode_elm_builtin') && (_p27._3._3._0.ctor === 'Black')) && (_p27._3._4.ctor === 'RBNode_elm_builtin')) && (_p27._3._4._0.ctor === 'Black')) {
-																		break _v33_5;
+																		break _v36_5;
 																	} else {
-																		break _v33_6;
+																		break _v36_6;
 																	}
 																}
 															} else {
-																break _v33_6;
+																break _v36_6;
 															}
 														default:
 															if (((((_p27._0.ctor === 'BBlack') && (_p27._3._3.ctor === 'RBNode_elm_builtin')) && (_p27._3._3._0.ctor === 'Black')) && (_p27._3._4.ctor === 'RBNode_elm_builtin')) && (_p27._3._4._0.ctor === 'Black')) {
-																break _v33_5;
+																break _v36_5;
 															} else {
-																break _v33_6;
+																break _v36_6;
 															}
 													}
 												default:
 													switch (_p27._4._0.ctor) {
 														case 'Red':
 															if ((_p27._4._3.ctor === 'RBNode_elm_builtin') && (_p27._4._3._0.ctor === 'Red')) {
-																break _v33_2;
+																break _v36_2;
 															} else {
 																if ((_p27._4._4.ctor === 'RBNode_elm_builtin') && (_p27._4._4._0.ctor === 'Red')) {
-																	break _v33_3;
+																	break _v36_3;
 																} else {
-																	break _v33_6;
+																	break _v36_6;
 																}
 															}
 														case 'NBlack':
 															if (((((_p27._0.ctor === 'BBlack') && (_p27._4._3.ctor === 'RBNode_elm_builtin')) && (_p27._4._3._0.ctor === 'Black')) && (_p27._4._4.ctor === 'RBNode_elm_builtin')) && (_p27._4._4._0.ctor === 'Black')) {
-																break _v33_4;
+																break _v36_4;
 															} else {
-																break _v33_6;
+																break _v36_6;
 															}
 														default:
-															break _v33_6;
+															break _v36_6;
 													}
 											}
 										} else {
 											switch (_p27._3._0.ctor) {
 												case 'Red':
 													if ((_p27._3._3.ctor === 'RBNode_elm_builtin') && (_p27._3._3._0.ctor === 'Red')) {
-														break _v33_0;
+														break _v36_0;
 													} else {
 														if ((_p27._3._4.ctor === 'RBNode_elm_builtin') && (_p27._3._4._0.ctor === 'Red')) {
-															break _v33_1;
+															break _v36_1;
 														} else {
-															break _v33_6;
+															break _v36_6;
 														}
 													}
 												case 'NBlack':
 													if (((((_p27._0.ctor === 'BBlack') && (_p27._3._3.ctor === 'RBNode_elm_builtin')) && (_p27._3._3._0.ctor === 'Black')) && (_p27._3._4.ctor === 'RBNode_elm_builtin')) && (_p27._3._4._0.ctor === 'Black')) {
-														break _v33_5;
+														break _v36_5;
 													} else {
-														break _v33_6;
+														break _v36_6;
 													}
 												default:
-													break _v33_6;
+													break _v36_6;
 											}
 										}
 									} else {
@@ -3467,29 +3550,29 @@ var _elm_lang$core$Dict$balanceHelp = function (tree) {
 											switch (_p27._4._0.ctor) {
 												case 'Red':
 													if ((_p27._4._3.ctor === 'RBNode_elm_builtin') && (_p27._4._3._0.ctor === 'Red')) {
-														break _v33_2;
+														break _v36_2;
 													} else {
 														if ((_p27._4._4.ctor === 'RBNode_elm_builtin') && (_p27._4._4._0.ctor === 'Red')) {
-															break _v33_3;
+															break _v36_3;
 														} else {
-															break _v33_6;
+															break _v36_6;
 														}
 													}
 												case 'NBlack':
 													if (((((_p27._0.ctor === 'BBlack') && (_p27._4._3.ctor === 'RBNode_elm_builtin')) && (_p27._4._3._0.ctor === 'Black')) && (_p27._4._4.ctor === 'RBNode_elm_builtin')) && (_p27._4._4._0.ctor === 'Black')) {
-														break _v33_4;
+														break _v36_4;
 													} else {
-														break _v33_6;
+														break _v36_6;
 													}
 												default:
-													break _v33_6;
+													break _v36_6;
 											}
 										} else {
-											break _v33_6;
+											break _v36_6;
 										}
 									}
 								} else {
-									break _v33_6;
+									break _v36_6;
 								}
 							} while(false);
 							return _elm_lang$core$Dict$balancedTree(_p27._0)(_p27._3._3._1)(_p27._3._3._2)(_p27._3._1)(_p27._3._2)(_p27._1)(_p27._2)(_p27._3._3._3)(_p27._3._3._4)(_p27._3._4)(_p27._4);
@@ -6250,6 +6333,34 @@ function nodeHelp(tag, factList, kidList)
 }
 
 
+function keyedNode(tag, factList, kidList)
+{
+	var organized = organizeFacts(factList);
+	var namespace = organized.namespace;
+	var facts = organized.facts;
+
+	var children = [];
+	var descendantsCount = 0;
+	while (kidList.ctor !== '[]')
+	{
+		var kid = kidList._0;
+		descendantsCount += (kid._1.descendantsCount || 0);
+		children.push(kid);
+		kidList = kidList._1;
+	}
+	descendantsCount += children.length;
+
+	return {
+		type: 'keyed-node',
+		tag: tag,
+		facts: facts,
+		children: children,
+		namespace: namespace,
+		descendantsCount: descendantsCount
+	};
+}
+
+
 function custom(factList, model, impl)
 {
 	var facts = organizeFacts(factList).facts;
@@ -6281,7 +6392,7 @@ function thunk(func, args, thunk)
 		func: func,
 		args: args,
 		thunk: thunk,
-		node: null
+		node: undefined
 	};
 }
 
@@ -6433,7 +6544,7 @@ function equalEvents(a, b)
 
 function renderer(parent, tagger, initialVirtualNode)
 {
-	var eventNode = { tagger: tagger, parent: null };
+	var eventNode = { tagger: tagger, parent: undefined };
 
 	var domNode = render(initialVirtualNode, eventNode);
 	parent.appendChild(domNode);
@@ -6506,7 +6617,7 @@ function render(vNode, eventNode)
 		case 'tagger':
 			var subNode = vNode.node;
 			var tagger = vNode.tagger;
-		
+
 			while (subNode.type === 'tagger')
 			{
 				typeof tagger !== 'object'
@@ -6515,12 +6626,12 @@ function render(vNode, eventNode)
 
 				subNode = subNode.node;
 			}
-            
+
 			var subEventRoot = {
 				tagger: tagger,
 				parent: eventNode
 			};
-			
+
 			var domNode = render(subNode, subEventRoot);
 			domNode.elm_event_node_ref = subEventRoot;
 			return domNode;
@@ -6540,6 +6651,22 @@ function render(vNode, eventNode)
 			for (var i = 0; i < children.length; i++)
 			{
 				domNode.appendChild(render(children[i], eventNode));
+			}
+
+			return domNode;
+
+		case 'keyed-node':
+			var domNode = vNode.namespace
+				? document.createElementNS(vNode.namespace, vNode.tag)
+				: document.createElement(vNode.tag);
+
+			applyFacts(domNode, eventNode, vNode.facts);
+
+			var children = vNode.children;
+
+			for (var i = 0; i < children.length; i++)
+			{
+				domNode.appendChild(render(children[i]._1, eventNode));
 			}
 
 			return domNode;
@@ -6734,8 +6861,8 @@ function makePatch(type, index, data)
 		index: index,
 		type: type,
 		data: data,
-		domNode: null,
-		eventNode: null
+		domNode: undefined,
+		eventNode: undefined
 	};
 }
 
@@ -6860,6 +6987,25 @@ function diffHelp(a, b, patches, index)
 			diffChildren(a, b, patches, index);
 			return;
 
+		case 'keyed-node':
+			// Bail if obvious indicators have changed. Implies more serious
+			// structural changes such that it's not worth it to diff.
+			if (a.tag !== b.tag || a.namespace !== b.namespace)
+			{
+				patches.push(makePatch('p-redraw', index, b));
+				return;
+			}
+
+			var factsDiff = diffFacts(a.facts, b.facts);
+
+			if (typeof factsDiff !== 'undefined')
+			{
+				patches.push(makePatch('p-facts', index, factsDiff));
+			}
+
+			diffKeyedChildren(a, b, patches, index);
+			return;
+
 		case 'custom':
 			if (a.impl !== b.impl)
 			{
@@ -6980,11 +7126,11 @@ function diffChildren(aParent, bParent, patches, rootIndex)
 
 	if (aLen > bLen)
 	{
-		patches.push(makePatch('p-remove', rootIndex, aLen - bLen));
+		patches.push(makePatch('p-remove-last', rootIndex, aLen - bLen));
 	}
 	else if (aLen < bLen)
 	{
-		patches.push(makePatch('p-insert', rootIndex, bChildren.slice(aLen)));
+		patches.push(makePatch('p-append', rootIndex, bChildren.slice(aLen)));
 	}
 
 	// PAIRWISE DIFF EVERYTHING ELSE
@@ -6998,6 +7144,260 @@ function diffChildren(aParent, bParent, patches, rootIndex)
 		diffHelp(aChild, bChildren[i], patches, index);
 		index += aChild.descendantsCount || 0;
 	}
+}
+
+
+
+////////////  KEYED DIFF  ////////////
+
+
+function diffKeyedChildren(aParent, bParent, patches, rootIndex)
+{
+	var localPatches = [];
+
+	var changes = {}; // Dict String Entry
+	var inserts = []; // Array { index : Int, entry : Entry }
+	// type Entry = { tag : String, vnode : VNode, index : Int, data : _ }
+
+	var aChildren = aParent.children;
+	var bChildren = bParent.children;
+	var aLen = aChildren.length;
+	var bLen = bChildren.length;
+	var aIndex = 0;
+	var bIndex = 0;
+
+	var index = rootIndex;
+
+	while (aIndex < aLen && bIndex < bLen)
+	{
+		var a = aChildren[aIndex];
+		var b = bChildren[bIndex];
+
+		var aKey = a._0;
+		var bKey = b._0;
+		var aNode = a._1;
+		var bNode = b._1;
+
+		// check if keys match
+
+		if (aKey === bKey)
+		{
+			index++;
+			diffHelp(aNode, bNode, localPatches, index);
+			index += aNode.descendantsCount || 0;
+
+			aIndex++;
+			bIndex++;
+			continue;
+		}
+
+		// look ahead 1 to detect insertions and removals.
+
+		var aLookAhead = aIndex + 1 < aLen;
+		var bLookAhead = bIndex + 1 < bLen;
+
+		if (aLookAhead)
+		{
+			var aNext = aChildren[aIndex + 1];
+			var aNextKey = aNext._0;
+			var aNextNode = aNext._1;
+			var oldMatch = bKey === aNextKey;
+		}
+
+		if (bLookAhead)
+		{
+			var bNext = bChildren[bIndex + 1];
+			var bNextKey = bNext._0;
+			var bNextNode = bNext._1;
+			var newMatch = aKey === bNextKey;
+		}
+
+
+		// swap a and b
+		if (aLookAhead && bLookAhead && newMatch && oldMatch)
+		{
+			index++;
+			diffHelp(aNode, bNextNode, localPatches, index);
+			insertNode(changes, localPatches, aKey, bNode, bIndex, inserts);
+			index += aNode.descendantsCount || 0;
+
+			index++;
+			removeNode(changes, localPatches, aKey, aNextNode, index);
+			index += aNextNode.descendantsCount || 0;
+
+			aIndex += 2;
+			bIndex += 2;
+			continue;
+		}
+
+		// insert b
+		if (bLookAhead && newMatch)
+		{
+			index++;
+			insertNode(changes, localPatches, bKey, bNode, bIndex, inserts);
+			diffHelp(aNode, bNextNode, localPatches, index);
+			index += aNode.descendantsCount || 0;
+
+			aIndex += 1;
+			bIndex += 2;
+			continue;
+		}
+
+		// remove a
+		if (aLookAhead && oldMatch)
+		{
+			index++;
+			removeNode(changes, localPatches, aKey, aNode, index);
+			index += aNode.descendantsCount || 0;
+
+			index++;
+			diffHelp(aNextNode, bNode, localPatches, index);
+			index += aNextNode.descendantsCount || 0;
+
+			aIndex += 2;
+			bIndex += 1;
+			continue;
+		}
+
+		// remove a, insert b
+		if (aLookAhead && bLookAhead && aNextKey === bNextKey)
+		{
+			index++;
+			removeNode(changes, localPatches, aKey, aNode, index);
+			insertNode(changes, localPatches, bKey, bNode, bIndex, inserts);
+			index += aNode.descendantsCount || 0;
+
+			index++;
+			diffHelp(aNextNode, bNextNode, localPatches, index);
+			index += aNextNode.descendantsCount || 0;
+
+			aIndex += 2;
+			bIndex += 2;
+			continue;
+		}
+
+		break;
+	}
+
+	// eat up any remaining nodes with removeNode and insertNode
+
+	while (aIndex < aLen)
+	{
+		index++;
+		var a = aChildren[aIndex];
+		var aNode = a._1;
+		removeNode(changes, localPatches, a._0, aNode, index);
+		index += aNode.descendantsCount || 0;
+		aIndex++;
+	}
+
+	var endInserts;
+	while (bIndex < bLen)
+	{
+		endInserts = endInserts || [];
+		var b = bChildren[bIndex];
+		insertNode(changes, localPatches, b._0, b._1, undefined, endInserts);
+		bIndex++;
+	}
+
+	if (localPatches.length > 0 || inserts.length > 0 || typeof endInserts !== 'undefined')
+	{
+		patches.push(makePatch('p-reorder', rootIndex, {
+			patches: localPatches,
+			inserts: inserts,
+			endInserts: endInserts
+		}));
+	}
+}
+
+
+
+////////////  CHANGES FROM KEYED DIFF  ////////////
+
+
+var POSTFIX = '_elmW6BL';
+
+
+function insertNode(changes, localPatches, key, vnode, bIndex, inserts)
+{
+	var entry = changes[key];
+
+	// never seen this key before
+	if (typeof entry === 'undefined')
+	{
+		entry = {
+			tag: 'insert',
+			vnode: vnode,
+			index: bIndex,
+			data: undefined
+		};
+
+		inserts.push({ index: bIndex, entry: entry });
+		changes[key] = entry;
+
+		return;
+	}
+
+	// this key was removed earlier, a match!
+	if (entry.tag === 'remove')
+	{
+		inserts.push({ index: bIndex, entry: entry });
+
+		entry.tag = 'move';
+		var subPatches = [];
+		diffHelp(entry.vnode, vnode, subPatches, entry.index);
+		entry.index = bIndex;
+		entry.data.data = {
+			patches: subPatches,
+			entry: entry
+		};
+
+		return;
+	}
+
+	// this key has already been inserted or moved, a duplicate!
+	insertNode(changes, localPatches, key + POSTFIX, vnode, bIndex, inserts);
+}
+
+
+function removeNode(changes, localPatches, key, vnode, index)
+{
+	var entry = changes[key];
+
+	// never seen this key before
+	if (typeof entry === 'undefined')
+	{
+		var patch = makePatch('p-remove', index, undefined);
+		localPatches.push(patch);
+
+		changes[key] = {
+			tag: 'remove',
+			vnode: vnode,
+			index: index,
+			data: patch
+		};
+
+		return;
+	}
+
+	// this key was inserted earlier, a match!
+	if (entry.tag === 'insert')
+	{
+		entry.tag = 'move';
+		var subPatches = [];
+		diffHelp(vnode, entry.vnode, subPatches, index);
+
+		var patch = makePatch('p-remove', index, {
+			patches: subPatches,
+			entry: entry
+		});
+		localPatches.push(patch);
+
+		return;
+	}
+
+	// this key has already been removed or moved, a duplicate!
+	removeNode(changes, localPatches, key + POSTFIX, vnode, index);
 }
 
 
@@ -7030,6 +7430,33 @@ function addDomNodesHelp(domNode, vNode, patches, i, low, high, eventNode)
 		{
 			addDomNodes(domNode, vNode.node, patch.data, eventNode);
 		}
+		else if (patchType === 'p-reorder')
+		{
+			patch.domNode = domNode;
+			patch.eventNode = eventNode;
+
+			var subPatches = patch.data.patches;
+			if (subPatches.length > 0)
+			{
+				addDomNodesHelp(domNode, vNode, subPatches, 0, low, high, eventNode);
+			}
+		}
+		else if (patchType === 'p-remove')
+		{
+			patch.domNode = domNode;
+			patch.eventNode = eventNode;
+
+			var data = patch.data;
+			if (typeof data !== 'undefined')
+			{
+				data.entry.data = domNode;
+				var subPatches = data.patches;
+				if (subPatches.length > 0)
+				{
+					addDomNodesHelp(domNode, vNode, subPatches, 0, low, high, eventNode);
+				}
+			}
+		}
 		else
 		{
 			patch.domNode = domNode;
@@ -7048,12 +7475,12 @@ function addDomNodesHelp(domNode, vNode, patches, i, low, high, eventNode)
 	{
 		case 'tagger':
 			var subNode = vNode.node;
-            
+
 			while (subNode.type === "tagger")
 			{
 				subNode = subNode.node;
 			}
-            
+
 			return addDomNodesHelp(domNode, subNode, patches, i, low + 1, high, domNode.elm_event_node_ref);
 
 		case 'node':
@@ -7063,6 +7490,26 @@ function addDomNodesHelp(domNode, vNode, patches, i, low, high, eventNode)
 			{
 				low++;
 				var vChild = vChildren[j];
+				var nextLow = low + (vChild.descendantsCount || 0);
+				if (low <= index && index <= nextLow)
+				{
+					i = addDomNodesHelp(childNodes[j], vChild, patches, i, low, nextLow, eventNode);
+					if (!(patch = patches[i]) || (index = patch.index) > high)
+					{
+						return i;
+					}
+				}
+				low = nextLow;
+			}
+			return i;
+
+		case 'keyed-node':
+			var vChildren = vNode.children;
+			var childNodes = domNode.childNodes;
+			for (var j = 0; j < vChildren.length; j++)
+			{
+				low++;
+				var vChild = vChildren[j]._1;
 				var nextLow = low + (vChild.descendantsCount || 0);
 				if (low <= index && index <= nextLow)
 				{
@@ -7135,7 +7582,7 @@ function applyPatch(domNode, patch)
 			domNode.elm_event_node_ref.tagger = patch.data;
 			return domNode;
 
-		case 'p-remove':
+		case 'p-remove-last':
 			var i = patch.data;
 			while (i--)
 			{
@@ -7143,12 +7590,80 @@ function applyPatch(domNode, patch)
 			}
 			return domNode;
 
-		case 'p-insert':
+		case 'p-append':
 			var newNodes = patch.data;
 			for (var i = 0; i < newNodes.length; i++)
 			{
 				domNode.appendChild(render(newNodes[i], patch.eventNode));
 			}
+			return domNode;
+
+		case 'p-remove':
+			var data = patch.data;
+			if (typeof data === 'undefined')
+			{
+				domNode.parentNode.removeChild(domNode);
+				return domNode;
+			}
+			var entry = data.entry;
+			if (typeof entry.index !== 'undefined')
+			{
+				domNode.parentNode.removeChild(domNode);
+			}
+			entry.data = applyPatchesHelp(domNode, data.patches);
+			return domNode;
+
+		case 'p-reorder':
+			var data = patch.data;
+
+			// end inserts
+			var endInserts = data.endInserts;
+			var end;
+			if (typeof endInserts !== 'undefined')
+			{
+				if (endInserts.length === 1)
+				{
+					var insert = endInserts[0];
+					var entry = insert.entry;
+					var end = entry.tag === 'move'
+						? entry.data
+						: render(entry.vnode, patch.eventNode);
+				}
+				else
+				{
+					end = document.createDocumentFragment();
+					for (var i = 0; i < endInserts.length; i++)
+					{
+						var insert = endInserts[i];
+						var entry = insert.entry;
+						var node = entry.tag === 'move'
+							? entry.data
+							: render(entry.vnode, patch.eventNode);
+						end.appendChild(node);
+					}
+				}
+			}
+
+			// removals
+			domNode = applyPatchesHelp(domNode, data.patches);
+
+			// inserts
+			var inserts = data.inserts;
+			for (var i = 0; i < inserts.length; i++)
+			{
+				var insert = inserts[i];
+				var entry = insert.entry;
+				var node = entry.tag === 'move'
+					? entry.data
+					: render(entry.vnode, patch.eventNode);
+				domNode.insertBefore(node, domNode.childNodes[insert.index]);
+			}
+
+			if (typeof end !== 'undefined')
+			{
+				domNode.appendChild(end);
+			}
+
 			return domNode;
 
 		case 'p-custom':
@@ -7212,12 +7727,14 @@ return {
 	lazy: F2(lazy),
 	lazy2: F3(lazy2),
 	lazy3: F4(lazy3),
+	keyedNode: F3(keyedNode),
 
 	programWithFlags: programWithFlags
 };
 
 }();
 var _elm_lang$virtual_dom$VirtualDom$programWithFlags = _elm_lang$virtual_dom$Native_VirtualDom.programWithFlags;
+var _elm_lang$virtual_dom$VirtualDom$keyedNode = _elm_lang$virtual_dom$Native_VirtualDom.keyedNode;
 var _elm_lang$virtual_dom$VirtualDom$lazy3 = _elm_lang$virtual_dom$Native_VirtualDom.lazy3;
 var _elm_lang$virtual_dom$VirtualDom$lazy2 = _elm_lang$virtual_dom$Native_VirtualDom.lazy2;
 var _elm_lang$virtual_dom$VirtualDom$lazy = _elm_lang$virtual_dom$Native_VirtualDom.lazy;
@@ -8826,11 +9343,12 @@ var _evancz$elm_graphics$Element$down = _evancz$elm_graphics$Element$DDown;
 var _evancz$elm_graphics$Element$DUp = {ctor: 'DUp'};
 var _evancz$elm_graphics$Element$up = _evancz$elm_graphics$Element$DUp;
 
-var _chemmi$elm_rocket$Rocket_Types$StartscreenData = function (a) {
-	return {background: a};
-};
+var _chemmi$elm_rocket$Rocket_Types$Options = F2(
+	function (a, b) {
+		return {worldChoice: a, ambientMusic: b};
+	});
 var _chemmi$elm_rocket$Rocket_Types$WorldChoiceData = function (a) {
-	return {worlds: a};
+	return {worldChoice: a};
 };
 var _chemmi$elm_rocket$Rocket_Types$GameoverData = F2(
 	function (a, b) {
@@ -8842,11 +9360,11 @@ var _chemmi$elm_rocket$Rocket_Types$WinData = F2(
 	});
 var _chemmi$elm_rocket$Rocket_Types$PlayData = F7(
 	function (a, b, c, d, e, f, g) {
-		return {keyDown: a, timeRemaining: b, displaySize: c, displayPosition: d, rocket: e, world: f, gameover: g};
+		return {keyDown: a, timeRemaining: b, displaySize: c, displayPosition: d, rocket: e, world: f, playEvent: g};
 	});
 var _chemmi$elm_rocket$Rocket_Types$KeyDown = F3(
 	function (a, b, c) {
-		return {left: a, right: b, forward: c};
+		return {left: a, right: b, up: c};
 	});
 var _chemmi$elm_rocket$Rocket_Types$Rocket = function (a) {
 	return function (b) {
@@ -8883,21 +9401,23 @@ var _chemmi$elm_rocket$Rocket_Types$Rect = F3(
 	function (a, b, c) {
 		return {topLeft: a, width: b, height: c};
 	});
-var _chemmi$elm_rocket$Rocket_Types$Win = function (a) {
-	return {ctor: 'Win', _0: a};
+var _chemmi$elm_rocket$Rocket_Types$Model = F2(
+	function (a, b) {
+		return {ctor: 'Model', _0: a, _1: b};
+	});
+var _chemmi$elm_rocket$Rocket_Types$WinScreen = function (a) {
+	return {ctor: 'WinScreen', _0: a};
 };
-var _chemmi$elm_rocket$Rocket_Types$Gameover = function (a) {
-	return {ctor: 'Gameover', _0: a};
+var _chemmi$elm_rocket$Rocket_Types$GameoverScreen = function (a) {
+	return {ctor: 'GameoverScreen', _0: a};
 };
-var _chemmi$elm_rocket$Rocket_Types$WorldChoice = function (a) {
-	return {ctor: 'WorldChoice', _0: a};
+var _chemmi$elm_rocket$Rocket_Types$WorldChoiceScreen = function (a) {
+	return {ctor: 'WorldChoiceScreen', _0: a};
 };
-var _chemmi$elm_rocket$Rocket_Types$Startscreen = function (a) {
-	return {ctor: 'Startscreen', _0: a};
+var _chemmi$elm_rocket$Rocket_Types$PlayScreen = function (a) {
+	return {ctor: 'PlayScreen', _0: a};
 };
-var _chemmi$elm_rocket$Rocket_Types$Play = function (a) {
-	return {ctor: 'Play', _0: a};
-};
+var _chemmi$elm_rocket$Rocket_Types$StartScreen = {ctor: 'StartScreen'};
 var _chemmi$elm_rocket$Rocket_Types$TimerTick = {ctor: 'TimerTick'};
 var _chemmi$elm_rocket$Rocket_Types$Step = function (a) {
 	return {ctor: 'Step', _0: a};
@@ -8909,10 +9429,19 @@ var _chemmi$elm_rocket$Rocket_Types$KeyDownMsg = function (a) {
 	return {ctor: 'KeyDownMsg', _0: a};
 };
 var _chemmi$elm_rocket$Rocket_Types$NotBound = {ctor: 'NotBound'};
+var _chemmi$elm_rocket$Rocket_Types$AmbientMusic = {ctor: 'AmbientMusic'};
+var _chemmi$elm_rocket$Rocket_Types$Back = {ctor: 'Back'};
 var _chemmi$elm_rocket$Rocket_Types$Start = {ctor: 'Start'};
-var _chemmi$elm_rocket$Rocket_Types$Forward = {ctor: 'Forward'};
+var _chemmi$elm_rocket$Rocket_Types$Down = {ctor: 'Down'};
+var _chemmi$elm_rocket$Rocket_Types$Up = {ctor: 'Up'};
 var _chemmi$elm_rocket$Rocket_Types$Right = {ctor: 'Right'};
 var _chemmi$elm_rocket$Rocket_Types$Left = {ctor: 'Left'};
+var _chemmi$elm_rocket$Rocket_Types$Win = function (a) {
+	return {ctor: 'Win', _0: a};
+};
+var _chemmi$elm_rocket$Rocket_Types$Gameover = function (a) {
+	return {ctor: 'Gameover', _0: a};
+};
 var _chemmi$elm_rocket$Rocket_Types$Colliding = {ctor: 'Colliding'};
 var _chemmi$elm_rocket$Rocket_Types$Flying = {ctor: 'Flying'};
 var _chemmi$elm_rocket$Rocket_Types$Landing = function (a) {
@@ -10205,17 +10734,18 @@ var _chemmi$elm_rocket$Rocket_Scene$frameForm = function () {
 	};
 }();
 var _chemmi$elm_rocket$Rocket_Scene$backgroundForm = function (_p5) {
-	return A2(
-		_evancz$elm_graphics$Collage$filled,
-		_elm_lang$core$Color$lightGreen,
-		A2(_elm_lang$core$Basics$uncurry, _evancz$elm_graphics$Collage$rect, _p5));
+	var _p6 = _p5;
+	var b$ = _elm_lang$core$Basics$round(_p6._1);
+	var a$ = _elm_lang$core$Basics$round(_p6._0);
+	return _evancz$elm_graphics$Collage$toForm(
+		A3(_evancz$elm_graphics$Element$fittedImage, a$, b$, 'img/space.jpg'));
 };
 var _chemmi$elm_rocket$Rocket_Scene$platformShape = function (platform) {
 	var height = 10;
 	var hWidth = platform.width / 2;
-	var _p6 = platform.center;
-	var x = _p6._0;
-	var y = _p6._1;
+	var _p7 = platform.center;
+	var x = _p7._0;
+	var y = _p7._1;
 	return _evancz$elm_graphics$Collage$polygon(
 		_elm_lang$core$Native_List.fromArray(
 			[
@@ -10253,9 +10783,9 @@ var _chemmi$elm_rocket$Rocket_Scene$polyShape = function (poly) {
 var _chemmi$elm_rocket$Rocket_Scene$rectShape = function (rect) {
 	var w = rect.width;
 	var h = rect.height;
-	var _p7 = rect.topLeft;
-	var x = _p7._0;
-	var y = _p7._1;
+	var _p8 = rect.topLeft;
+	var x = _p8._0;
+	var y = _p8._1;
 	return _evancz$elm_graphics$Collage$polygon(
 		_elm_lang$core$Native_List.fromArray(
 			[
@@ -10265,60 +10795,60 @@ var _chemmi$elm_rocket$Rocket_Scene$rectShape = function (rect) {
 				{ctor: '_Tuple2', _0: x, _1: y - h}
 			]));
 };
-var _chemmi$elm_rocket$Rocket_Scene$worldForm = function (_p8) {
-	var _p9 = _p8;
+var _chemmi$elm_rocket$Rocket_Scene$worldForm = function (_p9) {
+	var _p10 = _p9;
 	var color = _elm_lang$core$Color$lightCharcoal;
 	return _evancz$elm_graphics$Collage$group(
 		A2(
 			_elm_lang$core$Basics_ops['++'],
 			A2(
 				_elm_lang$core$List$map,
-				function (_p10) {
+				function (_p11) {
 					return A2(
 						_evancz$elm_graphics$Collage$filled,
 						color,
-						_chemmi$elm_rocket$Rocket_Scene$rectShape(_p10));
+						_chemmi$elm_rocket$Rocket_Scene$rectShape(_p11));
 				},
-				_p9.rects),
+				_p10.rects),
 			A2(
 				_elm_lang$core$Basics_ops['++'],
 				A2(
 					_elm_lang$core$List$map,
-					function (_p11) {
+					function (_p12) {
 						return A2(
 							_evancz$elm_graphics$Collage$filled,
 							color,
-							_chemmi$elm_rocket$Rocket_Scene$polyShape(_p11));
+							_chemmi$elm_rocket$Rocket_Scene$polyShape(_p12));
 					},
-					_p9.polygons),
+					_p10.polygons),
 				_elm_lang$core$Native_List.fromArray(
 					[
-						_chemmi$elm_rocket$Rocket_Scene$platformsForm(_p9.platforms)
+						_chemmi$elm_rocket$Rocket_Scene$platformsForm(_p10.platforms)
 					]))));
 };
-var _chemmi$elm_rocket$Rocket_Scene$drawScene = function (_p12) {
-	var _p13 = _p12;
-	var _p16 = _p13.world;
-	var _p15 = _p13.displaySize;
-	var _p14 = _p13.displayPosition;
+var _chemmi$elm_rocket$Rocket_Scene$drawScene = function (_p13) {
+	var _p14 = _p13;
+	var _p17 = _p14.world;
+	var _p16 = _p14.displaySize;
+	var _p15 = _p14.displayPosition;
 	var timerPos = {
 		ctor: '_Tuple2',
 		_0: _elm_lang$core$Basics$toFloat(
-			((_elm_lang$core$Basics$fst(_p15) / 2) | 0) - 15),
+			((_elm_lang$core$Basics$fst(_p16) / 2) | 0) - 15),
 		_1: _elm_lang$core$Basics$toFloat(
-			((_elm_lang$core$Basics$snd(_p15) / 2) | 0) - 12)
+			((_elm_lang$core$Basics$snd(_p16) / 2) | 0) - 12)
 	};
 	var offset = {
 		ctor: '_Tuple2',
 		_0: 0 - _elm_lang$core$Basics$toFloat(
-			_elm_lang$core$Basics$fst(_p14)),
+			_elm_lang$core$Basics$fst(_p15)),
 		_1: 0 - _elm_lang$core$Basics$toFloat(
-			_elm_lang$core$Basics$snd(_p14))
+			_elm_lang$core$Basics$snd(_p15))
 	};
 	return A3(
 		_elm_lang$core$Basics$uncurry,
 		_evancz$elm_graphics$Collage$collage,
-		_p15,
+		_p16,
 		_elm_lang$core$Native_List.fromArray(
 			[
 				A2(
@@ -10327,10 +10857,10 @@ var _chemmi$elm_rocket$Rocket_Scene$drawScene = function (_p12) {
 				_evancz$elm_graphics$Collage$group(
 					_elm_lang$core$Native_List.fromArray(
 						[
-							_chemmi$elm_rocket$Rocket_Scene$backgroundForm(_p16.size),
-							_chemmi$elm_rocket$Rocket_Scene$worldForm(_p16),
-							_chemmi$elm_rocket$Rocket_Scene$rocketForm(_p13.rocket),
-							_chemmi$elm_rocket$Rocket_Scene$frameForm(_p16.size)
+							_chemmi$elm_rocket$Rocket_Scene$backgroundForm(_p17.size),
+							_chemmi$elm_rocket$Rocket_Scene$worldForm(_p17),
+							_chemmi$elm_rocket$Rocket_Scene$rocketForm(_p14.rocket),
+							_chemmi$elm_rocket$Rocket_Scene$frameForm(_p17.size)
 						]))),
 				A2(
 				_evancz$elm_graphics$Collage$move,
@@ -10345,7 +10875,7 @@ var _chemmi$elm_rocket$Rocket_Scene$drawScene = function (_p12) {
 							_evancz$elm_graphics$Text$bold(
 								_evancz$elm_graphics$Text$fromString(
 									_elm_lang$core$Basics$toString(
-										_elm_lang$core$Time$inSeconds(_p13.timeRemaining))))))))
+										_elm_lang$core$Time$inSeconds(_p14.timeRemaining))))))))
 			]));
 };
 var _chemmi$elm_rocket$Rocket_Scene$drawWorldThumbnail = function (world) {
@@ -10412,11 +10942,13 @@ var _chemmi$elm_rocket$Rocket_Inits$initRocket = {
 	},
 	top: {ctor: '_Tuple2', _0: 0, _1: 20}
 };
-var _chemmi$elm_rocket$Rocket_Inits$noKeyDown = {left: false, right: false, forward: false};
+var _chemmi$elm_rocket$Rocket_Inits$noKeyDown = {left: false, right: false, up: false};
 var _chemmi$elm_rocket$Rocket_Inits$initWin = {message: 'YEAH! WIN! - Press [SPACE] to continue', background: _evancz$elm_graphics$Element$empty};
 var _chemmi$elm_rocket$Rocket_Inits$initGameover = {message: 'Gameover - Press [SPACE] to continue', background: _evancz$elm_graphics$Element$empty};
-var _chemmi$elm_rocket$Rocket_Inits$initWorldChoice = {worlds: _chemmi$elm_rocket$Rocket_Worlds$allWorlds};
-var _chemmi$elm_rocket$Rocket_Inits$initStartscreen = {background: _evancz$elm_graphics$Element$empty};
+var _chemmi$elm_rocket$Rocket_Inits$initWorldChoice = {
+	worldChoice: _elm_lang$core$Native_List.fromArray(
+		[])
+};
 var _chemmi$elm_rocket$Rocket_Inits$initPlay = function () {
 	var world = _chemmi$elm_rocket$Rocket_Worlds$visitChambers;
 	return {
@@ -10428,10 +10960,11 @@ var _chemmi$elm_rocket$Rocket_Inits$initPlay = function () {
 		rocket: _elm_lang$core$Native_Utils.update(
 			_chemmi$elm_rocket$Rocket_Inits$initRocket,
 			{position: world.rocketStartPosition}),
-		gameover: false
+		playEvent: _elm_lang$core$Maybe$Nothing
 	};
 }();
-var _chemmi$elm_rocket$Rocket_Inits$init = _chemmi$elm_rocket$Rocket_Types$Startscreen(_chemmi$elm_rocket$Rocket_Inits$initStartscreen);
+var _chemmi$elm_rocket$Rocket_Inits$initOptions = {worldChoice: _chemmi$elm_rocket$Rocket_Worlds$allWorlds, ambientMusic: true};
+var _chemmi$elm_rocket$Rocket_Inits$initModel = A2(_chemmi$elm_rocket$Rocket_Types$Model, _chemmi$elm_rocket$Rocket_Types$StartScreen, _chemmi$elm_rocket$Rocket_Inits$initOptions);
 
 var _elm_lang$core$Set$foldr = F3(
 	function (f, b, _p0) {
@@ -12047,10 +12580,10 @@ var _chemmi$elm_rocket$Rocket_Movement$moveRocket = F4(
 					_chemmi$elm_rocket$Rocket_Movement$accelerate,
 					gravity * diffSeconds,
 					180,
-					(keyDown.forward ? A2(_chemmi$elm_rocket$Rocket_Movement$accelerate, _p17.acceleration * diffSeconds, _p20) : _elm_lang$core$Basics$identity)(
+					(keyDown.up ? A2(_chemmi$elm_rocket$Rocket_Movement$accelerate, _p17.acceleration * diffSeconds, _p20) : _elm_lang$core$Basics$identity)(
 						{ctor: '_Tuple2', _0: vx, _1: vy})),
 				position: {ctor: '_Tuple2', _0: vx + x, _1: vy + y},
-				fire: keyDown.forward
+				fire: keyDown.up
 			});
 	});
 
@@ -12069,8 +12602,8 @@ var _chemmi$elm_rocket$Rocket_Updates$rotateLeft = function (xs) {
 				return _elm_lang$core$Native_Utils.crashCase(
 					'Rocket.Updates',
 					{
-						start: {line: 232, column: 21},
-						end: {line: 237, column: 72}
+						start: {line: 242, column: 21},
+						end: {line: 247, column: 72}
 					},
 					_p1)('List should not be empty here');
 			}
@@ -12083,8 +12616,8 @@ var _chemmi$elm_rocket$Rocket_Updates$rotateLeft = function (xs) {
 				return _elm_lang$core$Native_Utils.crashCase(
 					'Rocket.Updates',
 					{
-						start: {line: 224, column: 21},
-						end: {line: 229, column: 72}
+						start: {line: 234, column: 21},
+						end: {line: 239, column: 72}
 					},
 					_p3)('List should not be empty here');
 			}
@@ -12135,10 +12668,10 @@ var _chemmi$elm_rocket$Rocket_Updates$updateKeyDown = F2(
 						return _elm_lang$core$Native_Utils.update(
 							keyDown,
 							{right: true});
-					case 'Forward':
+					case 'Up':
 						return _elm_lang$core$Native_Utils.update(
 							keyDown,
-							{forward: true});
+							{up: true});
 					default:
 						return keyDown;
 				}
@@ -12153,10 +12686,10 @@ var _chemmi$elm_rocket$Rocket_Updates$updateKeyDown = F2(
 						return _elm_lang$core$Native_Utils.update(
 							keyDown,
 							{right: false});
-					case 'Forward':
+					case 'Up':
 						return _elm_lang$core$Native_Utils.update(
 							keyDown,
-							{forward: false});
+							{up: false});
 					default:
 						return keyDown;
 				}
@@ -12164,8 +12697,8 @@ var _chemmi$elm_rocket$Rocket_Updates$updateKeyDown = F2(
 				return _elm_lang$core$Native_Utils.crashCase(
 					'Rocket.Updates',
 					{
-						start: {line: 167, column: 5},
-						end: {line: 197, column: 84}
+						start: {line: 177, column: 5},
+						end: {line: 207, column: 84}
 					},
 					_p7)('updateKeyDown called with neither KeyDownMsg nor KeyUpMsg');
 		}
@@ -12228,7 +12761,7 @@ var _chemmi$elm_rocket$Rocket_Updates$updateDisplayPosition = function (_p11) {
 var _chemmi$elm_rocket$Rocket_Updates$updateLanded = function (_p23) {
 	var _p24 = _p23;
 	var _p25 = _p24;
-	return _p24.keyDown.forward ? _elm_lang$core$Native_Utils.update(
+	return _p24.keyDown.up ? _elm_lang$core$Native_Utils.update(
 		_p25,
 		{
 			rocket: _chemmi$elm_rocket$Rocket_Movement$startRocket(_p24.rocket)
@@ -12255,8 +12788,8 @@ var _chemmi$elm_rocket$Rocket_Updates$updateLanding = function (_p26) {
 		return _elm_lang$core$Native_Utils.crashCase(
 			'Rocket.Updates',
 			{
-				start: {line: 87, column: 5},
-				end: {line: 98, column: 77}
+				start: {line: 97, column: 5},
+				end: {line: 108, column: 77}
 			},
 			_p28)('update Landing called with non \"Landing ...\" Msg');
 	}
@@ -12264,7 +12797,10 @@ var _chemmi$elm_rocket$Rocket_Updates$updateLanding = function (_p26) {
 var _chemmi$elm_rocket$Rocket_Updates$updateColliding = function (data) {
 	return _elm_lang$core$Native_Utils.update(
 		data,
-		{gameover: true});
+		{
+			playEvent: _elm_lang$core$Maybe$Just(
+				_chemmi$elm_rocket$Rocket_Types$Gameover(data))
+		});
 };
 var _chemmi$elm_rocket$Rocket_Updates$updateFlying = F2(
 	function (_p33, diffTime) {
@@ -12296,75 +12832,137 @@ var _chemmi$elm_rocket$Rocket_Updates$updateFlying = F2(
 					{rocket: movedRocket}));
 		}
 	});
-var _chemmi$elm_rocket$Rocket_Updates$updatePlay = F2(
-	function (msg, _p38) {
-		var _p39 = _p38;
-		var _p43 = _p39.keyDown;
-		var _p42 = _p39;
-		var _p40 = msg;
-		switch (_p40.ctor) {
+var _chemmi$elm_rocket$Rocket_Updates$isWin = function (_p38) {
+	var _p39 = _p38;
+	var _p40 = _p39.world;
+	return _p40.isWin(_p40.platforms);
+};
+var _chemmi$elm_rocket$Rocket_Updates$updatePlayScreen = F2(
+	function (msg, _p41) {
+		var _p42 = _p41;
+		var _p46 = _p42.keyDown;
+		var _p45 = _p42;
+		var _p43 = msg;
+		switch (_p43.ctor) {
 			case 'KeyDownMsg':
 				return _elm_lang$core$Native_Utils.update(
-					_p42,
+					_p45,
 					{
 						keyDown: A2(
 							_chemmi$elm_rocket$Rocket_Updates$updateKeyDown,
-							_p43,
-							_chemmi$elm_rocket$Rocket_Types$KeyDownMsg(_p40._0))
+							_p46,
+							_chemmi$elm_rocket$Rocket_Types$KeyDownMsg(_p43._0))
 					});
 			case 'KeyUpMsg':
 				return _elm_lang$core$Native_Utils.update(
-					_p42,
+					_p45,
 					{
 						keyDown: A2(
 							_chemmi$elm_rocket$Rocket_Updates$updateKeyDown,
-							_p43,
-							_chemmi$elm_rocket$Rocket_Types$KeyUpMsg(_p40._0))
+							_p46,
+							_chemmi$elm_rocket$Rocket_Types$KeyUpMsg(_p43._0))
 					});
 			case 'Step':
-				var _p41 = _p39.rocket.movement;
-				switch (_p41.ctor) {
-					case 'Landed':
-						return _chemmi$elm_rocket$Rocket_Updates$updateLanded(_p42);
-					case 'Landing':
-						return _chemmi$elm_rocket$Rocket_Updates$updateLanding(_p42);
-					case 'Colliding':
-						return _chemmi$elm_rocket$Rocket_Updates$updateColliding(_p42);
-					default:
-						return A2(_chemmi$elm_rocket$Rocket_Updates$updateFlying, _p42, _p40._0);
+				if (_elm_lang$core$Basics$not(
+					_chemmi$elm_rocket$Rocket_Updates$isWin(_p45))) {
+					var _p44 = _p42.rocket.movement;
+					switch (_p44.ctor) {
+						case 'Landed':
+							return _chemmi$elm_rocket$Rocket_Updates$updateLanded(_p45);
+						case 'Landing':
+							return _chemmi$elm_rocket$Rocket_Updates$updateLanding(_p45);
+						case 'Colliding':
+							return _chemmi$elm_rocket$Rocket_Updates$updateColliding(_p45);
+						default:
+							return A2(_chemmi$elm_rocket$Rocket_Updates$updateFlying, _p45, _p43._0);
+					}
+				} else {
+					return _elm_lang$core$Native_Utils.update(
+						_p45,
+						{
+							playEvent: _elm_lang$core$Maybe$Just(
+								_chemmi$elm_rocket$Rocket_Types$Win(_p45))
+						});
 				}
 			default:
-				return (_elm_lang$core$Native_Utils.cmp(_p42.timeRemaining, 0 * _elm_lang$core$Time$second) < 1) ? _elm_lang$core$Native_Utils.update(
-					_p42,
-					{gameover: true}) : _elm_lang$core$Native_Utils.update(
-					_p42,
-					{timeRemaining: _p42.timeRemaining - (1 * _elm_lang$core$Time$second)});
+				return (_elm_lang$core$Native_Utils.cmp(_p45.timeRemaining, 0 * _elm_lang$core$Time$second) < 1) ? _elm_lang$core$Native_Utils.update(
+					_p45,
+					{
+						playEvent: _elm_lang$core$Maybe$Just(
+							_chemmi$elm_rocket$Rocket_Types$Gameover(_p45))
+					}) : _elm_lang$core$Native_Utils.update(
+					_p45,
+					{timeRemaining: _p45.timeRemaining - (1 * _elm_lang$core$Time$second)});
 		}
 	});
-var _chemmi$elm_rocket$Rocket_Updates$updateWorldChoice = F2(
-	function (key, _p44) {
-		var _p45 = _p44;
-		var _p48 = _p45.worlds;
-		var _p47 = _p45;
-		var _p46 = key;
-		switch (_p46.ctor) {
-			case 'Right':
-				return _elm_lang$core$Native_Utils.update(
-					_p47,
-					{
-						worlds: _chemmi$elm_rocket$Rocket_Updates$rotateRight(_p48)
-					});
-			case 'Left':
-				return _elm_lang$core$Native_Utils.update(
-					_p47,
-					{
-						worlds: _chemmi$elm_rocket$Rocket_Updates$rotateLeft(_p48)
-					});
-			default:
-				return _p47;
-		}
+var _chemmi$elm_rocket$Rocket_Updates$updateWorldChoiceScreen = F2(
+	function (msg, _p47) {
+		var _p48 = _p47;
+		var _p51 = _p48.worldChoice;
+		var _p50 = _p48;
+		var _p49 = msg;
+		_v20_2:
+		do {
+			if (_p49.ctor === 'KeyUpMsg') {
+				switch (_p49._0.ctor) {
+					case 'Right':
+						return _elm_lang$core$Native_Utils.update(
+							_p50,
+							{
+								worldChoice: _chemmi$elm_rocket$Rocket_Updates$rotateRight(_p51)
+							});
+					case 'Left':
+						return _elm_lang$core$Native_Utils.update(
+							_p50,
+							{
+								worldChoice: _chemmi$elm_rocket$Rocket_Updates$rotateLeft(_p51)
+							});
+					default:
+						break _v20_2;
+				}
+			} else {
+				break _v20_2;
+			}
+		} while(false);
+		return _p50;
 	});
 
+var _chemmi$elm_rocket$Rocket_Views$showMessageBox = function (message) {
+	return A4(
+		_evancz$elm_graphics$Element$container,
+		800,
+		600,
+		_evancz$elm_graphics$Element$middle,
+		A3(
+			_evancz$elm_graphics$Collage$collage,
+			800,
+			300,
+			_elm_lang$core$Native_List.fromArray(
+				[
+					A2(
+					_evancz$elm_graphics$Collage$alpha,
+					0.8,
+					A2(
+						_evancz$elm_graphics$Collage$moveY,
+						-3,
+						A2(
+							_evancz$elm_graphics$Collage$filled,
+							_elm_lang$core$Color$yellow,
+							A2(_evancz$elm_graphics$Collage$rect, 700, 40)))),
+					_evancz$elm_graphics$Collage$text(
+					A2(
+						_evancz$elm_graphics$Text$height,
+						20,
+						A2(
+							_evancz$elm_graphics$Text$color,
+							_elm_lang$core$Color$red,
+							A2(
+								_evancz$elm_graphics$Text$typeface,
+								_elm_lang$core$Native_List.fromArray(
+									['Helvetica']),
+								_evancz$elm_graphics$Text$fromString(message)))))
+				])));
+};
 var _chemmi$elm_rocket$Rocket_Views$viewValue = F2(
 	function (name, value) {
 		return A2(
@@ -12452,7 +13050,7 @@ var _chemmi$elm_rocket$Rocket_Views$viewRocketStatus = function (r) {
 					]))
 			]));
 };
-var _chemmi$elm_rocket$Rocket_Views$viewPlay = function (data) {
+var _chemmi$elm_rocket$Rocket_Views$viewPlayScreen = function (data) {
 	return A2(
 		_elm_lang$html$Html$div,
 		_elm_lang$core$Native_List.fromArray(
@@ -12463,7 +13061,7 @@ var _chemmi$elm_rocket$Rocket_Views$viewPlay = function (data) {
 				_chemmi$elm_rocket$Rocket_Scene$drawScene(data))
 			]));
 };
-var _chemmi$elm_rocket$Rocket_Views$viewWin = function (data) {
+var _chemmi$elm_rocket$Rocket_Views$viewWinScreen = function (data) {
 	return A2(
 		_elm_lang$html$Html$div,
 		_elm_lang$core$Native_List.fromArray(
@@ -12475,16 +13073,11 @@ var _chemmi$elm_rocket$Rocket_Views$viewWin = function (data) {
 					_elm_lang$core$Native_List.fromArray(
 						[
 							data.background,
-							A4(
-							_evancz$elm_graphics$Element$container,
-							800,
-							600,
-							_evancz$elm_graphics$Element$middle,
-							_evancz$elm_graphics$Element$show(data.message))
+							_chemmi$elm_rocket$Rocket_Views$showMessageBox(data.message)
 						])))
 			]));
 };
-var _chemmi$elm_rocket$Rocket_Views$viewGameover = function (data) {
+var _chemmi$elm_rocket$Rocket_Views$viewGameoverScreen = function (data) {
 	return A2(
 		_elm_lang$html$Html$div,
 		_elm_lang$core$Native_List.fromArray(
@@ -12496,16 +13089,11 @@ var _chemmi$elm_rocket$Rocket_Views$viewGameover = function (data) {
 					_elm_lang$core$Native_List.fromArray(
 						[
 							data.background,
-							A4(
-							_evancz$elm_graphics$Element$container,
-							800,
-							600,
-							_evancz$elm_graphics$Element$middle,
-							_evancz$elm_graphics$Element$show(data.message))
+							_chemmi$elm_rocket$Rocket_Views$showMessageBox(data.message)
 						])))
 			]));
 };
-var _chemmi$elm_rocket$Rocket_Views$viewWorldChoice = function (_p2) {
+var _chemmi$elm_rocket$Rocket_Views$viewWorldChoiceScreen = function (_p2) {
 	var _p3 = _p2;
 	return A2(
 		_elm_lang$html$Html$div,
@@ -12519,47 +13107,50 @@ var _chemmi$elm_rocket$Rocket_Views$viewWorldChoice = function (_p2) {
 						[
 							_chemmi$elm_rocket$Rocket_Scene$drawWorldThumbnail(
 							function () {
-								var _p4 = _elm_lang$core$List$head(_p3.worlds);
+								var _p4 = _elm_lang$core$List$head(_p3.worldChoice);
 								if (_p4.ctor === 'Just') {
 									return _p4._0;
 								} else {
 									return _elm_lang$core$Native_Utils.crashCase(
 										'Rocket.Views',
 										{
-											start: {line: 29, column: 24},
-											end: {line: 34, column: 58}
+											start: {line: 50, column: 24},
+											end: {line: 55, column: 58}
 										},
 										_p4)('No worlds found');
 								}
 							}()),
-							A4(
-							_evancz$elm_graphics$Element$container,
-							800,
-							600,
-							_evancz$elm_graphics$Element$middle,
-							_evancz$elm_graphics$Element$show('<-- [A]    Choose and press [SPACE] to start level    [D] -->'))
+							_chemmi$elm_rocket$Rocket_Views$showMessageBox('<-- [A]    Choose and press [SPACE] to start level    [D] -->')
 						])))
 			]));
 };
-var _chemmi$elm_rocket$Rocket_Views$viewStartscreen = function (data) {
-	return A2(
-		_elm_lang$html$Html$div,
-		_elm_lang$core$Native_List.fromArray(
-			[]),
-		_elm_lang$core$Native_List.fromArray(
-			[
-				_evancz$elm_graphics$Element$toHtml(
-				_evancz$elm_graphics$Element$layers(
-					_elm_lang$core$Native_List.fromArray(
-						[
-							A4(
-							_evancz$elm_graphics$Element$container,
-							800,
-							600,
-							_evancz$elm_graphics$Element$middle,
-							_evancz$elm_graphics$Element$show('Startscreen - Press [SPACE] to choose level'))
-						])))
-			]));
+var _chemmi$elm_rocket$Rocket_Views$viewStartScreen = A2(
+	_elm_lang$html$Html$div,
+	_elm_lang$core$Native_List.fromArray(
+		[]),
+	_elm_lang$core$Native_List.fromArray(
+		[
+			_evancz$elm_graphics$Element$toHtml(
+			_evancz$elm_graphics$Element$layers(
+				_elm_lang$core$Native_List.fromArray(
+					[
+						_chemmi$elm_rocket$Rocket_Views$showMessageBox('StartScreen - Press [SPACE] to choose level')
+					])))
+		]));
+var _chemmi$elm_rocket$Rocket_Views$viewScreen = function (screen) {
+	var _p6 = screen;
+	switch (_p6.ctor) {
+		case 'PlayScreen':
+			return _chemmi$elm_rocket$Rocket_Views$viewPlayScreen(_p6._0);
+		case 'StartScreen':
+			return _chemmi$elm_rocket$Rocket_Views$viewStartScreen;
+		case 'WorldChoiceScreen':
+			return _chemmi$elm_rocket$Rocket_Views$viewWorldChoiceScreen(_p6._0);
+		case 'GameoverScreen':
+			return _chemmi$elm_rocket$Rocket_Views$viewGameoverScreen(_p6._0);
+		default:
+			return _chemmi$elm_rocket$Rocket_Views$viewWinScreen(_p6._0);
+	}
 };
 
 var _elm_lang$html$Html_App$programWithFlags = _elm_lang$virtual_dom$VirtualDom$programWithFlags;
@@ -12994,97 +13585,18 @@ var _chemmi$elm_rocket$Rocket_Audio$audio = _elm_lang$core$Native_Platform.outgo
 		return [v._0, v._1];
 	});
 
-var _chemmi$elm_rocket$Rocket$isWin = function (_p0) {
+var _chemmi$elm_rocket$Rocket$sendCmd = function (_p0) {
 	var _p1 = _p0;
-	var _p2 = _p1.world;
-	return _p2.isWin(_p2.platforms);
-};
-var _chemmi$elm_rocket$Rocket$isGameover = function (data) {
-	return data.gameover;
-};
-var _chemmi$elm_rocket$Rocket$startPlay = function (world) {
-	return _elm_lang$core$Native_Utils.update(
-		_chemmi$elm_rocket$Rocket_Inits$initPlay,
-		{
-			world: world,
-			timeRemaining: world.totalTime,
-			rocket: _elm_lang$core$Native_Utils.update(
-				_chemmi$elm_rocket$Rocket_Inits$initRocket,
-				{position: world.rocketStartPosition})
-		});
-};
-var _chemmi$elm_rocket$Rocket$update = F2(
-	function (msg, model) {
-		return {
-			ctor: '_Tuple2',
-			_0: function () {
-				var _p3 = model;
-				switch (_p3.ctor) {
-					case 'Startscreen':
-						var _p4 = msg;
-						if ((_p4.ctor === 'KeyUpMsg') && (_p4._0.ctor === 'Start')) {
-							return _chemmi$elm_rocket$Rocket_Types$WorldChoice(_chemmi$elm_rocket$Rocket_Inits$initWorldChoice);
-						} else {
-							return model;
-						}
-					case 'WorldChoice':
-						var _p8 = _p3._0;
-						var _p5 = msg;
-						if (_p5.ctor === 'KeyUpMsg') {
-							if (_p5._0.ctor === 'Start') {
-								var _p6 = _elm_lang$core$List$head(_p8.worlds);
-								if (_p6.ctor === 'Just') {
-									return _chemmi$elm_rocket$Rocket_Types$Play(
-										_chemmi$elm_rocket$Rocket$startPlay(_p6._0));
-								} else {
-									return _elm_lang$core$Native_Utils.crashCase(
-										'Rocket',
-										{
-											start: {line: 107, column: 21},
-											end: {line: 112, column: 57}
-										},
-										_p6)('No world found');
-								}
-							} else {
-								return _chemmi$elm_rocket$Rocket_Types$WorldChoice(
-									A2(_chemmi$elm_rocket$Rocket_Updates$updateWorldChoice, _p5._0, _p8));
-							}
-						} else {
-							return model;
-						}
-					case 'Play':
-						var updatedPlay = A2(_chemmi$elm_rocket$Rocket_Updates$updatePlay, msg, _p3._0);
-						return _chemmi$elm_rocket$Rocket$isGameover(updatedPlay) ? _chemmi$elm_rocket$Rocket_Types$Gameover(
-							_elm_lang$core$Native_Utils.update(
-								_chemmi$elm_rocket$Rocket_Inits$initGameover,
-								{
-									background: _chemmi$elm_rocket$Rocket_Scene$drawScene(updatedPlay)
-								})) : (_chemmi$elm_rocket$Rocket$isWin(updatedPlay) ? _chemmi$elm_rocket$Rocket_Types$Win(
-							_elm_lang$core$Native_Utils.update(
-								_chemmi$elm_rocket$Rocket_Inits$initWin,
-								{
-									background: _chemmi$elm_rocket$Rocket_Scene$drawScene(updatedPlay)
-								})) : _chemmi$elm_rocket$Rocket_Types$Play(updatedPlay));
-					case 'Gameover':
-						var _p9 = msg;
-						if ((_p9.ctor === 'KeyUpMsg') && (_p9._0.ctor === 'Start')) {
-							return _chemmi$elm_rocket$Rocket_Types$Startscreen(_chemmi$elm_rocket$Rocket_Inits$initStartscreen);
-						} else {
-							return model;
-						}
-					default:
-						var _p10 = msg;
-						if ((_p10.ctor === 'KeyUpMsg') && (_p10._0.ctor === 'Start')) {
-							return _chemmi$elm_rocket$Rocket_Types$Startscreen(_chemmi$elm_rocket$Rocket_Inits$initStartscreen);
-						} else {
-							return model;
-						}
-				}
-			}(),
-			_1: function () {
-				var _p11 = model;
-				if (_p11.ctor === 'Play') {
-					return _p11._0.rocket.fire ? _chemmi$elm_rocket$Rocket_Audio$audio(
+	return _elm_lang$core$Platform_Cmd$batch(
+		_elm_lang$core$Native_List.fromArray(
+			[
+				_p1._1.ambientMusic ? _chemmi$elm_rocket$Rocket_Audio$audio(
+				{ctor: '_Tuple2', _0: 'ambient', _1: 'play'}) : _chemmi$elm_rocket$Rocket_Audio$audio(
+				{ctor: '_Tuple2', _0: 'ambient', _1: 'pause'}),
+				function () {
+				var _p2 = _p1._0;
+				if (_p2.ctor === 'PlayScreen') {
+					return _p2._0.rocket.fire ? _chemmi$elm_rocket$Rocket_Audio$audio(
 						{ctor: '_Tuple2', _0: 'rocket', _1: 'play'}) : _elm_lang$core$Platform_Cmd$batch(
 						_elm_lang$core$Native_List.fromArray(
 							[
@@ -13104,30 +13616,116 @@ var _chemmi$elm_rocket$Rocket$update = F2(
 							]));
 				}
 			}()
-		};
+			]));
+};
+var _chemmi$elm_rocket$Rocket$changeToPlay = function (_p3) {
+	var _p4 = _p3;
+	var world = function () {
+		var _p5 = _elm_lang$core$List$head(_p4.worldChoice);
+		if (_p5.ctor === 'Just') {
+			return _p5._0;
+		} else {
+			return _elm_lang$core$Native_Utils.crashCase(
+				'Rocket',
+				{
+					start: {line: 182, column: 13},
+					end: {line: 187, column: 49}
+				},
+				_p5)('No world found');
+		}
+	}();
+	var playData = _elm_lang$core$Native_Utils.update(
+		_chemmi$elm_rocket$Rocket_Inits$initPlay,
+		{
+			world: world,
+			timeRemaining: world.totalTime,
+			rocket: _elm_lang$core$Native_Utils.update(
+				_chemmi$elm_rocket$Rocket_Inits$initRocket,
+				{position: world.rocketStartPosition})
+		});
+	return A2(
+		_chemmi$elm_rocket$Rocket_Types$Model,
+		_chemmi$elm_rocket$Rocket_Types$PlayScreen(playData),
+		_p4);
+};
+var _chemmi$elm_rocket$Rocket$changeToWorldChoice = function (options) {
+	return A2(
+		_chemmi$elm_rocket$Rocket_Types$Model,
+		_chemmi$elm_rocket$Rocket_Types$WorldChoiceScreen(
+			_elm_lang$core$Native_Utils.update(
+				_chemmi$elm_rocket$Rocket_Inits$initWorldChoice,
+				{worldChoice: options.worldChoice})),
+		options);
+};
+var _chemmi$elm_rocket$Rocket$changeScreen = F2(
+	function (msg, _p7) {
+		var _p8 = _p7;
+		var _p14 = _p8._0;
+		var _p13 = _p8._1;
+		var _p12 = _p8;
+		var _p9 = msg;
+		_v5_3:
+		do {
+			if (_p9.ctor === 'KeyUpMsg') {
+				switch (_p9._0.ctor) {
+					case 'Start':
+						var _p10 = _p14;
+						switch (_p10.ctor) {
+							case 'StartScreen':
+								return _chemmi$elm_rocket$Rocket$changeToWorldChoice(_p13);
+							case 'WorldChoiceScreen':
+								return _chemmi$elm_rocket$Rocket$changeToPlay(
+									_elm_lang$core$Native_Utils.update(
+										_p13,
+										{worldChoice: _p10._0.worldChoice}));
+							case 'GameoverScreen':
+								return _chemmi$elm_rocket$Rocket$changeToWorldChoice(_p13);
+							case 'WinScreen':
+								return _chemmi$elm_rocket$Rocket$changeToWorldChoice(_p13);
+							default:
+								return _p12;
+						}
+					case 'Back':
+						var _p11 = _p14;
+						switch (_p11.ctor) {
+							case 'StartScreen':
+								return _p12;
+							case 'WorldChoiceScreen':
+								return A2(_chemmi$elm_rocket$Rocket_Types$Model, _chemmi$elm_rocket$Rocket_Types$StartScreen, _p13);
+							case 'GameoverScreen':
+								return _chemmi$elm_rocket$Rocket$changeToWorldChoice(_p13);
+							case 'WinScreen':
+								return _chemmi$elm_rocket$Rocket$changeToWorldChoice(_p13);
+							default:
+								return _chemmi$elm_rocket$Rocket$changeToWorldChoice(_p13);
+						}
+					case 'AmbientMusic':
+						return A2(
+							_chemmi$elm_rocket$Rocket_Types$Model,
+							_p14,
+							_elm_lang$core$Native_Utils.update(
+								_p13,
+								{
+									ambientMusic: _elm_lang$core$Basics$not(_p13.ambientMusic)
+								}));
+					default:
+						break _v5_3;
+				}
+			} else {
+				break _v5_3;
+			}
+		} while(false);
+		return _p12;
 	});
-var _chemmi$elm_rocket$Rocket$view = function (model) {
+var _chemmi$elm_rocket$Rocket$view = function (_p15) {
+	var _p16 = _p15;
 	return A2(
 		_elm_lang$html$Html$div,
 		_elm_lang$core$Native_List.fromArray(
 			[]),
 		_elm_lang$core$Native_List.fromArray(
 			[
-				function () {
-				var _p12 = model;
-				switch (_p12.ctor) {
-					case 'Play':
-						return _chemmi$elm_rocket$Rocket_Views$viewPlay(_p12._0);
-					case 'Startscreen':
-						return _chemmi$elm_rocket$Rocket_Views$viewStartscreen(_p12._0);
-					case 'WorldChoice':
-						return _chemmi$elm_rocket$Rocket_Views$viewWorldChoice(_p12._0);
-					case 'Gameover':
-						return _chemmi$elm_rocket$Rocket_Views$viewGameover(_p12._0);
-					default:
-						return _chemmi$elm_rocket$Rocket_Views$viewWin(_p12._0);
-				}
-			}(),
+				_chemmi$elm_rocket$Rocket_Views$viewScreen(_p16._0),
 				A2(
 				_elm_lang$html$Html$h3,
 				_elm_lang$core$Native_List.fromArray(
@@ -13160,68 +13758,129 @@ var _chemmi$elm_rocket$Rocket$view = function (model) {
 				_elm_lang$html$Html$text('The rocket must have an apropriate angle and speed when landing.')
 			]));
 };
-var _chemmi$elm_rocket$Rocket$keyBinding = function (model) {
-	var _p13 = model;
-	switch (_p13.ctor) {
-		case 'WorldChoice':
-			return function (code) {
-				var _p14 = _elm_lang$core$Char$fromCode(code);
-				switch (_p14.valueOf()) {
-					case 'A':
-						return _chemmi$elm_rocket$Rocket_Types$Left;
-					case 'D':
-						return _chemmi$elm_rocket$Rocket_Types$Right;
-					case ' ':
-						return _chemmi$elm_rocket$Rocket_Types$Start;
-					default:
-						return _chemmi$elm_rocket$Rocket_Types$NotBound;
-				}
-			};
-		case 'Play':
-			return function (code) {
-				var _p15 = _elm_lang$core$Char$fromCode(code);
-				switch (_p15.valueOf()) {
-					case 'W':
-						return _chemmi$elm_rocket$Rocket_Types$Forward;
-					case 'A':
-						return _chemmi$elm_rocket$Rocket_Types$Left;
-					case 'D':
-						return _chemmi$elm_rocket$Rocket_Types$Right;
-					default:
-						return _chemmi$elm_rocket$Rocket_Types$NotBound;
-				}
-			};
+var _chemmi$elm_rocket$Rocket$isScreenControlKey = function (key) {
+	var _p17 = key;
+	switch (_p17.ctor) {
+		case 'Start':
+			return true;
+		case 'Back':
+			return true;
+		case 'AmbientMusic':
+			return true;
 		default:
-			return function (code) {
-				var _p16 = _elm_lang$core$Char$fromCode(code);
-				if (_p16.valueOf() === ' ') {
-					return _chemmi$elm_rocket$Rocket_Types$Start;
-				} else {
-					return _chemmi$elm_rocket$Rocket_Types$NotBound;
-				}
-			};
+			return false;
 	}
 };
-var _chemmi$elm_rocket$Rocket$subscriptions = function (model) {
+var _chemmi$elm_rocket$Rocket$isScreenControlMsg = function (msg) {
+	var _p18 = msg;
+	if (_p18.ctor === 'KeyUpMsg') {
+		return _chemmi$elm_rocket$Rocket$isScreenControlKey(_p18._0);
+	} else {
+		return false;
+	}
+};
+var _chemmi$elm_rocket$Rocket$updateModel = F2(
+	function (msg, _p19) {
+		var _p20 = _p19;
+		var _p25 = _p20._1;
+		var _p24 = _p20;
+		if (_chemmi$elm_rocket$Rocket$isScreenControlMsg(msg)) {
+			return A2(_chemmi$elm_rocket$Rocket$changeScreen, msg, _p24);
+		} else {
+			var _p21 = _p20._0;
+			switch (_p21.ctor) {
+				case 'PlayScreen':
+					var _p23 = _p21._0;
+					var _p22 = _p23.playEvent;
+					if (_p22.ctor === 'Nothing') {
+						return A2(
+							_chemmi$elm_rocket$Rocket_Types$Model,
+							_chemmi$elm_rocket$Rocket_Types$PlayScreen(
+								A2(_chemmi$elm_rocket$Rocket_Updates$updatePlayScreen, msg, _p23)),
+							_p25);
+					} else {
+						if (_p22._0.ctor === 'Gameover') {
+							var background = _chemmi$elm_rocket$Rocket_Scene$drawScene(_p22._0._0);
+							return A2(
+								_chemmi$elm_rocket$Rocket_Types$Model,
+								_chemmi$elm_rocket$Rocket_Types$GameoverScreen(
+									_elm_lang$core$Native_Utils.update(
+										_chemmi$elm_rocket$Rocket_Inits$initGameover,
+										{background: background})),
+								_p25);
+						} else {
+							var background = _chemmi$elm_rocket$Rocket_Scene$drawScene(_p22._0._0);
+							return A2(
+								_chemmi$elm_rocket$Rocket_Types$Model,
+								_chemmi$elm_rocket$Rocket_Types$WinScreen(
+									_elm_lang$core$Native_Utils.update(
+										_chemmi$elm_rocket$Rocket_Inits$initWin,
+										{background: background})),
+								_p25);
+						}
+					}
+				case 'WorldChoiceScreen':
+					return A2(
+						_chemmi$elm_rocket$Rocket_Types$Model,
+						_chemmi$elm_rocket$Rocket_Types$WorldChoiceScreen(
+							A2(_chemmi$elm_rocket$Rocket_Updates$updateWorldChoiceScreen, msg, _p21._0)),
+						_p25);
+				default:
+					return _p24;
+			}
+		}
+	});
+var _chemmi$elm_rocket$Rocket$update = F2(
+	function (msg, model) {
+		var updatedModel = A2(_chemmi$elm_rocket$Rocket$updateModel, msg, model);
+		return {
+			ctor: '_Tuple2',
+			_0: updatedModel,
+			_1: _chemmi$elm_rocket$Rocket$sendCmd(updatedModel)
+		};
+	});
+var _chemmi$elm_rocket$Rocket$keyBinding = function (code) {
+	var _p26 = _elm_lang$core$Char$fromCode(code);
+	switch (_p26.valueOf()) {
+		case 'A':
+			return _chemmi$elm_rocket$Rocket_Types$Left;
+		case 'D':
+			return _chemmi$elm_rocket$Rocket_Types$Right;
+		case 'W':
+			return _chemmi$elm_rocket$Rocket_Types$Up;
+		case 'S':
+			return _chemmi$elm_rocket$Rocket_Types$Down;
+		case ' ':
+			return _chemmi$elm_rocket$Rocket_Types$Start;
+		case 'B':
+			return _chemmi$elm_rocket$Rocket_Types$Back;
+		case 'M':
+			return _chemmi$elm_rocket$Rocket_Types$AmbientMusic;
+		default:
+			return _chemmi$elm_rocket$Rocket_Types$NotBound;
+	}
+};
+var _chemmi$elm_rocket$Rocket$subscriptions = function (_p27) {
+	var _p28 = _p27;
 	return _elm_lang$core$Platform_Sub$batch(
 		A2(
 			_elm_lang$core$Basics_ops['++'],
 			_elm_lang$core$Native_List.fromArray(
 				[
 					_elm_lang$keyboard$Keyboard$downs(
-					function (_p17) {
+					function (_p29) {
 						return _chemmi$elm_rocket$Rocket_Types$KeyDownMsg(
-							A2(_chemmi$elm_rocket$Rocket$keyBinding, model, _p17));
+							_chemmi$elm_rocket$Rocket$keyBinding(_p29));
 					}),
 					_elm_lang$keyboard$Keyboard$ups(
-					function (_p18) {
+					function (_p30) {
 						return _chemmi$elm_rocket$Rocket_Types$KeyUpMsg(
-							A2(_chemmi$elm_rocket$Rocket$keyBinding, model, _p18));
+							_chemmi$elm_rocket$Rocket$keyBinding(_p30));
 					})
 				]),
 			function () {
-				var _p19 = model;
-				if (_p19.ctor === 'Play') {
+				var _p31 = _p28._0;
+				if (_p31.ctor === 'PlayScreen') {
 					return _elm_lang$core$Native_List.fromArray(
 						[
 							_elm_lang$animation_frame$AnimationFrame$diffs(_chemmi$elm_rocket$Rocket_Types$Step),
@@ -13241,9 +13900,8 @@ var _chemmi$elm_rocket$Rocket$main = {
 		{
 			init: {
 				ctor: '_Tuple2',
-				_0: _chemmi$elm_rocket$Rocket_Inits$init,
-				_1: _chemmi$elm_rocket$Rocket_Audio$audio(
-					{ctor: '_Tuple2', _0: 'ambient', _1: 'play'})
+				_0: _chemmi$elm_rocket$Rocket_Inits$initModel,
+				_1: _chemmi$elm_rocket$Rocket$sendCmd(_chemmi$elm_rocket$Rocket_Inits$initModel)
 			},
 			view: _chemmi$elm_rocket$Rocket$view,
 			update: _chemmi$elm_rocket$Rocket$update,
