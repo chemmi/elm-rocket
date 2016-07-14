@@ -7,7 +7,6 @@
          html,head,body { padding:0; margin:0; }
          body { font-family: calibri, helvetica, arial, sans-serif; }
         </style>
-        <script type="text/javascript" src="rocket.js"></script>
     </head>
     <body>
         <audio id="ambient" loop>
@@ -16,23 +15,25 @@
         <audio id="rocket" loop>
             <source src="snd/rocket.mp3">
         </audio>
-        <script type="text/javascript">
-         var app = Elm.Rocket.fullscreen()
-         app.ports.audio.subscribe(function(data) {
-             //data[0] = id, data[1] = action
-             var element = document.getElementById(data[0])
-             switch(data[1]) {
-                 case "play":
-                     element.play();
-                     break;
-                 case "pause":
-                     element.pause();
-                     break;
-                 case "reset":
-                     element.currentTime = 0;
-                     break;
-             }
-         });
-        </script>
+    </body>
+    <script type="text/javascript" src="rocket.js"></script>
+    <script type="text/javascript">
+     var app = Elm.Rocket.fullscreen()
+     app.ports.audio.subscribe(function(data) {
+	 //data[0] = id, data[1] = action
+	 var element = document.getElementById(data[0])
+	 switch(data[1]) {
+	     case "play":
+		 element.play();
+		 break;
+	     case "pause":
+		 element.pause();
+		 break;
+	     case "reset":
+		 element.currentTime = 0;
+                 break;
+         }
+     });
+    </script>
     </body>
 </html>
