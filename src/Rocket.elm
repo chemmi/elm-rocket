@@ -90,14 +90,14 @@ updateModel msg ((Model screen options) as model) =
                             background =
                                 drawScene data
                         in
-                            Model (GameoverScreen { initGameoverScreen | background = background }) options
+                            Model (GameoverScreen { initGameover | background = background }) options
 
                     Just (Win data) ->
                         let
                             background =
                                 drawScene data
                         in
-                            Model (WinScreen { initWinScreen | background = background }) options
+                            Model (WinScreen { initWin | background = background }) options
 
             WorldChoiceScreen data ->
                 Model (WorldChoiceScreen (updateWorldChoiceScreen msg data)) options
@@ -122,7 +122,7 @@ changeScreen msg ((Model screen options) as model) =
         KeyUpMsg Start ->
             case screen of
                 StartScreen ->
-                    Model (WorldChoiceScreen initWorldChoiceScreen) options
+                    Model (WorldChoiceScreen initWorldChoice) options
 
                 WorldChoiceScreen data ->
                     case List.head data.worlds of
@@ -133,10 +133,10 @@ changeScreen msg ((Model screen options) as model) =
                             Debug.crash "No world found"
 
                 GameoverScreen _ ->
-                    Model (WorldChoiceScreen initWorldChoiceScreen) options
+                    Model (WorldChoiceScreen initWorldChoice) options
 
                 WinScreen _ ->
-                    Model (WorldChoiceScreen initWorldChoiceScreen) options
+                    Model (WorldChoiceScreen initWorldChoice) options
 
                 PlayScreen _ ->
                     model
@@ -150,13 +150,13 @@ changeScreen msg ((Model screen options) as model) =
                     Model StartScreen options
 
                 GameoverScreen _ ->
-                    Model (WorldChoiceScreen initWorldChoiceScreen) options
+                    Model (WorldChoiceScreen initWorldChoice) options
 
                 WinScreen _ ->
-                    Model (WorldChoiceScreen initWorldChoiceScreen) options
+                    Model (WorldChoiceScreen initWorldChoice) options
 
                 PlayScreen _ ->
-                    Model (WorldChoiceScreen initWorldChoiceScreen) options
+                    Model (WorldChoiceScreen initWorldChoice) options
 
         _ ->
             model
@@ -164,7 +164,7 @@ changeScreen msg ((Model screen options) as model) =
 
 startPlayScreen : World -> PlayData
 startPlayScreen world =
-    { initPlayScreen
+    { initPlay
         | world = world
         , timeRemaining = world.totalTime
         , rocket =

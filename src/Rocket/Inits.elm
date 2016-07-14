@@ -11,8 +11,8 @@ initModel =
     Model StartScreen {}
 
 
-initPlayScreen : PlayData
-initPlayScreen =
+initPlay : PlayData
+initPlay =
     let
         world =
             visitChambers
@@ -30,20 +30,20 @@ initPlayScreen =
         }
 
 
-initWorldChoiceScreen : WorldChoiceData
-initWorldChoiceScreen =
+initWorldChoice : WorldChoiceData
+initWorldChoice =
     { worlds = allWorlds }
 
 
-initGameoverScreen : GameoverData
-initGameoverScreen =
+initGameover : GameoverData
+initGameover =
     { message = "Gameover - Press [SPACE] to continue"
     , background = empty
     }
 
 
-initWinScreen : WinData
-initWinScreen =
+initWin : WinData
+initWin =
     { message = "YEAH! WIN! - Press [SPACE] to continue"
     , background = empty
     }
