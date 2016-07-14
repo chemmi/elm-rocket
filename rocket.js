@@ -9347,17 +9347,23 @@ var _chemmi$elm_rocket$Rocket_Types$Options = F2(
 	function (a, b) {
 		return {worldChoice: a, ambientMusic: b};
 	});
+var _chemmi$elm_rocket$Rocket_Types$InfoData = F3(
+	function (a, b, c) {
+		return {accelerateAnimation: a, rotateAnimation: b, landAnimation: c};
+	});
+var _chemmi$elm_rocket$Rocket_Types$PortraitData = F2(
+	function (a, b) {
+		return {rocket: a, platform: b};
+	});
 var _chemmi$elm_rocket$Rocket_Types$WorldChoiceData = function (a) {
 	return {worldChoice: a};
 };
-var _chemmi$elm_rocket$Rocket_Types$GameoverData = F2(
-	function (a, b) {
-		return {message: a, background: b};
-	});
-var _chemmi$elm_rocket$Rocket_Types$WinData = F2(
-	function (a, b) {
-		return {message: a, background: b};
-	});
+var _chemmi$elm_rocket$Rocket_Types$GameoverData = function (a) {
+	return {background: a};
+};
+var _chemmi$elm_rocket$Rocket_Types$WinData = function (a) {
+	return {background: a};
+};
 var _chemmi$elm_rocket$Rocket_Types$PlayData = F7(
 	function (a, b, c, d, e, f, g) {
 		return {keyDown: a, timeRemaining: b, displaySize: c, displayPosition: d, rocket: e, world: f, playEvent: g};
@@ -9416,6 +9422,9 @@ var _chemmi$elm_rocket$Rocket_Types$WorldChoiceScreen = function (a) {
 };
 var _chemmi$elm_rocket$Rocket_Types$PlayScreen = function (a) {
 	return {ctor: 'PlayScreen', _0: a};
+};
+var _chemmi$elm_rocket$Rocket_Types$InfoScreen = function (a) {
+	return {ctor: 'InfoScreen', _0: a};
 };
 var _chemmi$elm_rocket$Rocket_Types$StartScreen = {ctor: 'StartScreen'};
 var _chemmi$elm_rocket$Rocket_Types$TimerTick = {ctor: 'TimerTick'};
@@ -10681,13 +10690,32 @@ var _evancz$elm_graphics$Collage$ngon = F2(
 				_elm_lang$core$Native_List.range(0, m - 1)));
 	});
 
+var _chemmi$elm_rocket$Rocket_Scene$countdownForm = function (t) {
+	var $default = _evancz$elm_graphics$Text$defaultStyle;
+	var style = _elm_lang$core$Native_Utils.update(
+		$default,
+		{
+			height: _elm_lang$core$Maybe$Just(20),
+			color: _elm_lang$core$Color$red,
+			typeface: _elm_lang$core$Native_List.fromArray(
+				['helvetica'])
+		});
+	return _evancz$elm_graphics$Collage$text(
+		A2(
+			_evancz$elm_graphics$Text$style,
+			style,
+			_evancz$elm_graphics$Text$fromString(
+				_elm_lang$core$Basics$toString(
+					_elm_lang$core$Time$inSeconds(t)))));
+};
 var _chemmi$elm_rocket$Rocket_Scene$rocketForm = function (_p0) {
 	var _p1 = _p0;
+	var _p4 = _p1.top;
 	var fireShape = _evancz$elm_graphics$Collage$polygon(
 		_elm_lang$core$Native_List.fromArray(
 			[
 				{ctor: '_Tuple2', _0: -6, _1: 1},
-				{ctor: '_Tuple2', _0: 0, _1: -6},
+				{ctor: '_Tuple2', _0: 0, _1: -10},
 				{ctor: '_Tuple2', _0: 6, _1: 1}
 			]));
 	var _p2 = _p1.base;
@@ -10697,7 +10725,7 @@ var _chemmi$elm_rocket$Rocket_Scene$rocketForm = function (_p0) {
 		_elm_lang$core$Native_List.fromArray(
 			[
 				base1,
-				_p1.top,
+				_p4,
 				base2,
 				{ctor: '_Tuple2', _0: 0, _1: 0}
 			]));
@@ -10711,41 +10739,67 @@ var _chemmi$elm_rocket$Rocket_Scene$rocketForm = function (_p0) {
 				_p3));
 	}(
 		_evancz$elm_graphics$Collage$group(
-			_p1.fire ? _elm_lang$core$Native_List.fromArray(
-				[
-					A2(_evancz$elm_graphics$Collage$filled, _elm_lang$core$Color$red, fireShape),
-					A2(_evancz$elm_graphics$Collage$filled, _elm_lang$core$Color$blue, bodyShape),
-					A2(_evancz$elm_graphics$Collage$outlined, _evancz$elm_graphics$Collage$defaultLine, bodyShape)
-				]) : _elm_lang$core$Native_List.fromArray(
-				[
-					A2(_evancz$elm_graphics$Collage$filled, _elm_lang$core$Color$blue, bodyShape),
-					A2(_evancz$elm_graphics$Collage$outlined, _evancz$elm_graphics$Collage$defaultLine, bodyShape)
-				])));
+			A2(
+				_elm_lang$core$Basics_ops['++'],
+				_p1.fire ? _elm_lang$core$Native_List.fromArray(
+					[
+						A2(
+						_evancz$elm_graphics$Collage$gradient,
+						A5(
+							_elm_lang$core$Color$radial,
+							{ctor: '_Tuple2', _0: 0, _1: 0},
+							3,
+							{ctor: '_Tuple2', _0: 0, _1: 0},
+							8,
+							_elm_lang$core$Native_List.fromArray(
+								[
+									{ctor: '_Tuple2', _0: 0, _1: _elm_lang$core$Color$red},
+									{ctor: '_Tuple2', _0: 0.7, _1: _elm_lang$core$Color$yellow}
+								])),
+						fireShape)
+					]) : _elm_lang$core$Native_List.fromArray(
+					[]),
+				_elm_lang$core$Native_List.fromArray(
+					[
+						A2(
+						_evancz$elm_graphics$Collage$gradient,
+						A3(
+							_elm_lang$core$Color$linear,
+							_p4,
+							base1,
+							_elm_lang$core$Native_List.fromArray(
+								[
+									{ctor: '_Tuple2', _0: 0, _1: _elm_lang$core$Color$white},
+									{ctor: '_Tuple2', _0: 1, _1: _elm_lang$core$Color$blue}
+								])),
+						bodyShape),
+						A2(_evancz$elm_graphics$Collage$outlined, _evancz$elm_graphics$Collage$defaultLine, bodyShape)
+					]))));
 };
 var _chemmi$elm_rocket$Rocket_Scene$frameForm = function () {
-	var line = _evancz$elm_graphics$Collage$solid(_elm_lang$core$Color$black);
-	return function (_p4) {
+	var line = _evancz$elm_graphics$Collage$solid(_elm_lang$core$Color$white);
+	return function (_p5) {
 		return A2(
 			_evancz$elm_graphics$Collage$outlined,
 			_elm_lang$core$Native_Utils.update(
 				line,
 				{width: 6}),
-			A2(_elm_lang$core$Basics$uncurry, _evancz$elm_graphics$Collage$rect, _p4));
+			A2(_elm_lang$core$Basics$uncurry, _evancz$elm_graphics$Collage$rect, _p5));
 	};
 }();
-var _chemmi$elm_rocket$Rocket_Scene$backgroundForm = function (_p5) {
-	var _p6 = _p5;
-	var b$ = _elm_lang$core$Basics$round(_p6._1);
-	var a$ = _elm_lang$core$Basics$round(_p6._0);
+var _chemmi$elm_rocket$Rocket_Scene$backgroundForm = function (_p6) {
+	var _p7 = _p6;
+	var b$ = _elm_lang$core$Basics$round(_p7._1);
+	var a$ = _elm_lang$core$Basics$round(_p7._0);
 	return _evancz$elm_graphics$Collage$toForm(
 		A3(_evancz$elm_graphics$Element$fittedImage, a$, b$, 'img/space.jpg'));
 };
 var _chemmi$elm_rocket$Rocket_Scene$platformShape = function (platform) {
 	var height = 10;
 	var hWidth = platform.width / 2;
-	var _p7 = platform.center;
-	var x = _p7._0;
-	var y = _p7._1;
+	var _p8 = platform.center;
+	var x = _p8._0;
+	var y = _p8._1;
 	return _evancz$elm_graphics$Collage$polygon(
 		_elm_lang$core$Native_List.fromArray(
 			[
@@ -10756,10 +10810,32 @@ var _chemmi$elm_rocket$Rocket_Scene$platformShape = function (platform) {
 			]));
 };
 var _chemmi$elm_rocket$Rocket_Scene$platformsForm = function (platforms) {
-	var unmarkedColor = _elm_lang$core$Color$red;
-	var markedColor = _elm_lang$core$Color$green;
-	var pColor = function (p) {
-		return p.marked ? markedColor : unmarkedColor;
+	var pGradient = function (p) {
+		var hWidth = p.width / 2;
+		var _p9 = p.center;
+		var cx = _p9._0;
+		var cy = _p9._1;
+		var lg1 = {ctor: '_Tuple2', _0: cx - hWidth, _1: cy - 20};
+		var lg2 = {ctor: '_Tuple2', _0: cx + hWidth, _1: cy};
+		return p.marked ? A3(
+			_elm_lang$core$Color$linear,
+			lg1,
+			lg2,
+			_elm_lang$core$Native_List.fromArray(
+				[
+					{ctor: '_Tuple2', _0: 0, _1: _elm_lang$core$Color$darkGreen},
+					{ctor: '_Tuple2', _0: 0.8, _1: _elm_lang$core$Color$lightGreen},
+					{ctor: '_Tuple2', _0: 1, _1: _elm_lang$core$Color$darkGreen}
+				])) : A3(
+			_elm_lang$core$Color$linear,
+			lg1,
+			lg2,
+			_elm_lang$core$Native_List.fromArray(
+				[
+					{ctor: '_Tuple2', _0: 0, _1: _elm_lang$core$Color$darkRed},
+					{ctor: '_Tuple2', _0: 0.8, _1: _elm_lang$core$Color$lightRed},
+					{ctor: '_Tuple2', _0: 1, _1: _elm_lang$core$Color$darkRed}
+				]));
 	};
 	var line = _evancz$elm_graphics$Collage$solid(_elm_lang$core$Color$black);
 	var pForm = function (p) {
@@ -10768,8 +10844,8 @@ var _chemmi$elm_rocket$Rocket_Scene$platformsForm = function (platforms) {
 			_elm_lang$core$Native_List.fromArray(
 				[
 					A2(
-					_evancz$elm_graphics$Collage$filled,
-					pColor(p),
+					_evancz$elm_graphics$Collage$gradient,
+					pGradient(p),
 					pS),
 					A2(_evancz$elm_graphics$Collage$outlined, line, pS)
 				]));
@@ -10777,15 +10853,64 @@ var _chemmi$elm_rocket$Rocket_Scene$platformsForm = function (platforms) {
 	return _evancz$elm_graphics$Collage$group(
 		A2(_elm_lang$core$List$map, pForm, platforms));
 };
+var _chemmi$elm_rocket$Rocket_Scene$drawPortrait = function (_p10) {
+	var _p11 = _p10;
+	return A3(
+		_evancz$elm_graphics$Collage$collage,
+		130,
+		130,
+		A2(
+			_elm_lang$core$Basics_ops['++'],
+			_elm_lang$core$Native_List.fromArray(
+				[
+					_chemmi$elm_rocket$Rocket_Scene$backgroundForm(
+					{ctor: '_Tuple2', _0: 110, _1: 110}),
+					_chemmi$elm_rocket$Rocket_Scene$rocketForm(_p11.rocket)
+				]),
+			A2(
+				_elm_lang$core$Basics_ops['++'],
+				function () {
+					var _p12 = _p11.platform;
+					if (_p12.ctor === 'Just') {
+						var _p13 = _p12._0;
+						return _elm_lang$core$Native_List.fromArray(
+							[
+								A2(
+								_evancz$elm_graphics$Collage$moveY,
+								_elm_lang$core$Basics$snd(_p13.center) - ((55 + _elm_lang$core$Basics$snd(_p13.center)) / 2),
+								A2(
+									_evancz$elm_graphics$Collage$filled,
+									_elm_lang$core$Color$lightCharcoal,
+									A2(
+										_evancz$elm_graphics$Collage$rect,
+										110,
+										55 + _elm_lang$core$Basics$snd(_p13.center)))),
+								_chemmi$elm_rocket$Rocket_Scene$platformsForm(
+								_elm_lang$core$Native_List.fromArray(
+									[_p13]))
+							]);
+					} else {
+						return _elm_lang$core$Native_List.fromArray(
+							[]);
+					}
+				}(),
+				_elm_lang$core$Native_List.fromArray(
+					[
+						A2(
+						_evancz$elm_graphics$Collage$outlined,
+						_evancz$elm_graphics$Collage$solid(_elm_lang$core$Color$white),
+						A2(_evancz$elm_graphics$Collage$rect, 110, 110))
+					]))));
+};
 var _chemmi$elm_rocket$Rocket_Scene$polyShape = function (poly) {
 	return _evancz$elm_graphics$Collage$polygon(poly);
 };
 var _chemmi$elm_rocket$Rocket_Scene$rectShape = function (rect) {
 	var w = rect.width;
 	var h = rect.height;
-	var _p8 = rect.topLeft;
-	var x = _p8._0;
-	var y = _p8._1;
+	var _p14 = rect.topLeft;
+	var x = _p14._0;
+	var y = _p14._1;
 	return _evancz$elm_graphics$Collage$polygon(
 		_elm_lang$core$Native_List.fromArray(
 			[
@@ -10795,60 +10920,83 @@ var _chemmi$elm_rocket$Rocket_Scene$rectShape = function (rect) {
 				{ctor: '_Tuple2', _0: x, _1: y - h}
 			]));
 };
-var _chemmi$elm_rocket$Rocket_Scene$worldForm = function (_p9) {
-	var _p10 = _p9;
+var _chemmi$elm_rocket$Rocket_Scene$worldForm = function (_p15) {
+	var _p16 = _p15;
+	var _p19 = _p16.size;
+	var linearGradient = A3(
+		_elm_lang$core$Color$linear,
+		{
+			ctor: '_Tuple2',
+			_0: (0 - _elm_lang$core$Basics$fst(_p19)) / 2,
+			_1: _elm_lang$core$Basics$snd(_p19) / 2
+		},
+		{
+			ctor: '_Tuple2',
+			_0: _elm_lang$core$Basics$fst(_p19) / 2,
+			_1: (0 - _elm_lang$core$Basics$snd(_p19)) / 2
+		},
+		_elm_lang$core$Native_List.fromArray(
+			[
+				{ctor: '_Tuple2', _0: 0, _1: _elm_lang$core$Color$darkCharcoal},
+				{ctor: '_Tuple2', _0: 0.2, _1: _elm_lang$core$Color$lightCharcoal},
+				{ctor: '_Tuple2', _0: 0.3, _1: _elm_lang$core$Color$darkGrey},
+				{ctor: '_Tuple2', _0: 0.6, _1: _elm_lang$core$Color$darkCharcoal},
+				{ctor: '_Tuple2', _0: 0.8, _1: _elm_lang$core$Color$charcoal},
+				{ctor: '_Tuple2', _0: 0.9, _1: _elm_lang$core$Color$darkGrey},
+				{ctor: '_Tuple2', _0: 1, _1: _elm_lang$core$Color$lightCharcoal}
+			]));
 	var color = _elm_lang$core$Color$lightCharcoal;
 	return _evancz$elm_graphics$Collage$group(
 		A2(
 			_elm_lang$core$Basics_ops['++'],
 			A2(
 				_elm_lang$core$List$map,
-				function (_p11) {
+				function (_p17) {
 					return A2(
-						_evancz$elm_graphics$Collage$filled,
-						color,
-						_chemmi$elm_rocket$Rocket_Scene$rectShape(_p11));
+						_evancz$elm_graphics$Collage$gradient,
+						linearGradient,
+						_chemmi$elm_rocket$Rocket_Scene$rectShape(_p17));
 				},
-				_p10.rects),
+				_p16.rects),
 			A2(
 				_elm_lang$core$Basics_ops['++'],
 				A2(
 					_elm_lang$core$List$map,
-					function (_p12) {
+					function (_p18) {
 						return A2(
-							_evancz$elm_graphics$Collage$filled,
-							color,
-							_chemmi$elm_rocket$Rocket_Scene$polyShape(_p12));
+							_evancz$elm_graphics$Collage$gradient,
+							linearGradient,
+							_chemmi$elm_rocket$Rocket_Scene$polyShape(_p18));
 					},
-					_p10.polygons),
+					_p16.polygons),
 				_elm_lang$core$Native_List.fromArray(
 					[
-						_chemmi$elm_rocket$Rocket_Scene$platformsForm(_p10.platforms)
+						_chemmi$elm_rocket$Rocket_Scene$platformsForm(_p16.platforms)
 					]))));
 };
-var _chemmi$elm_rocket$Rocket_Scene$drawScene = function (_p13) {
-	var _p14 = _p13;
-	var _p17 = _p14.world;
-	var _p16 = _p14.displaySize;
-	var _p15 = _p14.displayPosition;
+var _chemmi$elm_rocket$Rocket_Scene$drawScene = function (_p20) {
+	var _p21 = _p20;
+	var _p24 = _p21.world;
+	var _p23 = _p21.displaySize;
+	var _p22 = _p21.displayPosition;
 	var timerPos = {
 		ctor: '_Tuple2',
 		_0: _elm_lang$core$Basics$toFloat(
-			((_elm_lang$core$Basics$fst(_p16) / 2) | 0) - 15),
+			((_elm_lang$core$Basics$fst(_p23) / 2) | 0) - 20),
 		_1: _elm_lang$core$Basics$toFloat(
-			((_elm_lang$core$Basics$snd(_p16) / 2) | 0) - 12)
+			((_elm_lang$core$Basics$snd(_p23) / 2) | 0) - 15)
 	};
 	var offset = {
 		ctor: '_Tuple2',
 		_0: 0 - _elm_lang$core$Basics$toFloat(
-			_elm_lang$core$Basics$fst(_p15)),
+			_elm_lang$core$Basics$fst(_p22)),
 		_1: 0 - _elm_lang$core$Basics$toFloat(
-			_elm_lang$core$Basics$snd(_p15))
+			_elm_lang$core$Basics$snd(_p22))
 	};
 	return A3(
 		_elm_lang$core$Basics$uncurry,
 		_evancz$elm_graphics$Collage$collage,
-		_p16,
+		_p23,
 		_elm_lang$core$Native_List.fromArray(
 			[
 				A2(
@@ -10857,25 +11005,15 @@ var _chemmi$elm_rocket$Rocket_Scene$drawScene = function (_p13) {
 				_evancz$elm_graphics$Collage$group(
 					_elm_lang$core$Native_List.fromArray(
 						[
-							_chemmi$elm_rocket$Rocket_Scene$backgroundForm(_p17.size),
-							_chemmi$elm_rocket$Rocket_Scene$worldForm(_p17),
-							_chemmi$elm_rocket$Rocket_Scene$rocketForm(_p14.rocket),
-							_chemmi$elm_rocket$Rocket_Scene$frameForm(_p17.size)
+							_chemmi$elm_rocket$Rocket_Scene$backgroundForm(_p24.size),
+							_chemmi$elm_rocket$Rocket_Scene$rocketForm(_p21.rocket),
+							_chemmi$elm_rocket$Rocket_Scene$worldForm(_p24),
+							_chemmi$elm_rocket$Rocket_Scene$frameForm(_p24.size)
 						]))),
 				A2(
 				_evancz$elm_graphics$Collage$move,
 				timerPos,
-				_evancz$elm_graphics$Collage$text(
-					A2(
-						_evancz$elm_graphics$Text$height,
-						20,
-						A2(
-							_evancz$elm_graphics$Text$color,
-							_elm_lang$core$Color$red,
-							_evancz$elm_graphics$Text$bold(
-								_evancz$elm_graphics$Text$fromString(
-									_elm_lang$core$Basics$toString(
-										_elm_lang$core$Time$inSeconds(_p14.timeRemaining))))))))
+				_chemmi$elm_rocket$Rocket_Scene$countdownForm(_p21.timeRemaining))
 			]));
 };
 var _chemmi$elm_rocket$Rocket_Scene$drawWorldThumbnail = function (world) {
@@ -10943,8 +11081,8 @@ var _chemmi$elm_rocket$Rocket_Inits$initRocket = {
 	top: {ctor: '_Tuple2', _0: 0, _1: 20}
 };
 var _chemmi$elm_rocket$Rocket_Inits$noKeyDown = {left: false, right: false, up: false};
-var _chemmi$elm_rocket$Rocket_Inits$initWin = {message: 'YEAH! WIN! - Press [SPACE] to continue', background: _evancz$elm_graphics$Element$empty};
-var _chemmi$elm_rocket$Rocket_Inits$initGameover = {message: 'Gameover - Press [SPACE] to continue', background: _evancz$elm_graphics$Element$empty};
+var _chemmi$elm_rocket$Rocket_Inits$initWin = {background: _evancz$elm_graphics$Element$empty};
+var _chemmi$elm_rocket$Rocket_Inits$initGameover = {background: _evancz$elm_graphics$Element$empty};
 var _chemmi$elm_rocket$Rocket_Inits$initWorldChoice = {
 	worldChoice: _elm_lang$core$Native_List.fromArray(
 		[])
@@ -10963,6 +11101,23 @@ var _chemmi$elm_rocket$Rocket_Inits$initPlay = function () {
 		playEvent: _elm_lang$core$Maybe$Nothing
 	};
 }();
+var _chemmi$elm_rocket$Rocket_Inits$initInfo = {
+	accelerateAnimation: {rocket: _chemmi$elm_rocket$Rocket_Inits$initRocket, platform: _elm_lang$core$Maybe$Nothing},
+	rotateAnimation: {rocket: _chemmi$elm_rocket$Rocket_Inits$initRocket, platform: _elm_lang$core$Maybe$Nothing},
+	landAnimation: {
+		rocket: _elm_lang$core$Native_Utils.update(
+			_chemmi$elm_rocket$Rocket_Inits$initRocket,
+			{
+				position: {ctor: '_Tuple2', _0: 0, _1: 20}
+			}),
+		platform: _elm_lang$core$Maybe$Just(
+			A3(
+				_chemmi$elm_rocket$Rocket_Types$Platform,
+				{ctor: '_Tuple2', _0: 0, _1: -30},
+				80,
+				false))
+	}
+};
 var _chemmi$elm_rocket$Rocket_Inits$initOptions = {worldChoice: _chemmi$elm_rocket$Rocket_Worlds$allWorlds, ambientMusic: true};
 var _chemmi$elm_rocket$Rocket_Inits$initModel = A2(_chemmi$elm_rocket$Rocket_Types$Model, _chemmi$elm_rocket$Rocket_Types$StartScreen, _chemmi$elm_rocket$Rocket_Inits$initOptions);
 
@@ -12602,8 +12757,8 @@ var _chemmi$elm_rocket$Rocket_Updates$rotateLeft = function (xs) {
 				return _elm_lang$core$Native_Utils.crashCase(
 					'Rocket.Updates',
 					{
-						start: {line: 242, column: 21},
-						end: {line: 247, column: 72}
+						start: {line: 349, column: 21},
+						end: {line: 354, column: 72}
 					},
 					_p1)('List should not be empty here');
 			}
@@ -12616,8 +12771,8 @@ var _chemmi$elm_rocket$Rocket_Updates$rotateLeft = function (xs) {
 				return _elm_lang$core$Native_Utils.crashCase(
 					'Rocket.Updates',
 					{
-						start: {line: 234, column: 21},
-						end: {line: 239, column: 72}
+						start: {line: 341, column: 21},
+						end: {line: 346, column: 72}
 					},
 					_p3)('List should not be empty here');
 			}
@@ -12697,8 +12852,8 @@ var _chemmi$elm_rocket$Rocket_Updates$updateKeyDown = F2(
 				return _elm_lang$core$Native_Utils.crashCase(
 					'Rocket.Updates',
 					{
-						start: {line: 177, column: 5},
-						end: {line: 207, column: 84}
+						start: {line: 284, column: 5},
+						end: {line: 314, column: 84}
 					},
 					_p7)('updateKeyDown called with neither KeyDownMsg nor KeyUpMsg');
 		}
@@ -12788,8 +12943,8 @@ var _chemmi$elm_rocket$Rocket_Updates$updateLanding = function (_p26) {
 		return _elm_lang$core$Native_Utils.crashCase(
 			'Rocket.Updates',
 			{
-				start: {line: 97, column: 5},
-				end: {line: 108, column: 77}
+				start: {line: 204, column: 5},
+				end: {line: 215, column: 77}
 			},
 			_p28)('update Landing called with non \"Landing ...\" Msg');
 	}
@@ -12837,7 +12992,7 @@ var _chemmi$elm_rocket$Rocket_Updates$isWin = function (_p38) {
 	var _p40 = _p39.world;
 	return _p40.isWin(_p40.platforms);
 };
-var _chemmi$elm_rocket$Rocket_Updates$updatePlayScreen = F2(
+var _chemmi$elm_rocket$Rocket_Updates$updatePlay = F2(
 	function (msg, _p41) {
 		var _p42 = _p41;
 		var _p46 = _p42.keyDown;
@@ -12895,7 +13050,7 @@ var _chemmi$elm_rocket$Rocket_Updates$updatePlayScreen = F2(
 					{timeRemaining: _p45.timeRemaining - (1 * _elm_lang$core$Time$second)});
 		}
 	});
-var _chemmi$elm_rocket$Rocket_Updates$updateWorldChoiceScreen = F2(
+var _chemmi$elm_rocket$Rocket_Updates$updateWorldChoice = F2(
 	function (msg, _p47) {
 		var _p48 = _p47;
 		var _p51 = _p48.worldChoice;
@@ -12926,8 +13081,222 @@ var _chemmi$elm_rocket$Rocket_Updates$updateWorldChoiceScreen = F2(
 		} while(false);
 		return _p50;
 	});
+var _chemmi$elm_rocket$Rocket_Updates$updateLandAnimation = F2(
+	function (msg, _p52) {
+		var _p53 = _p52;
+		var _p62 = _p53.rocket;
+		var _p61 = _p53.platform;
+		var jPlatform = function () {
+			var _p54 = _p61;
+			if (_p54.ctor === 'Just') {
+				return _p54._0;
+			} else {
+				return _elm_lang$core$Native_Utils.crashCase(
+					'Rocket.Updates',
+					{
+						start: {line: 62, column: 13},
+						end: {line: 67, column: 71}
+					},
+					_p54)('LandAnimation should have a platform');
+			}
+		}();
+		var updatedRocket = function () {
+			var _p56 = _p62.movement;
+			switch (_p56.ctor) {
+				case 'Flying':
+					var _p57 = msg;
+					if (_p57.ctor === 'Step') {
+						return (_elm_lang$core$Native_Utils.cmp(
+							_elm_lang$core$Basics$snd(_p62.position) - 5,
+							_elm_lang$core$Basics$snd(jPlatform.center)) < 1) ? _elm_lang$core$Native_Utils.update(
+							_p62,
+							{
+								movement: _chemmi$elm_rocket$Rocket_Types$Landing(jPlatform)
+							}) : _elm_lang$core$Native_Utils.update(
+							_p62,
+							{
+								position: {
+									ctor: '_Tuple2',
+									_0: _elm_lang$core$Basics$fst(_p62.position),
+									_1: _elm_lang$core$Basics$snd(_p62.position) - 0.5
+								}
+							});
+					} else {
+						return _p62;
+					}
+				case 'Landing':
+					var _p58 = msg;
+					if (_p58.ctor === 'TimerTick') {
+						return _elm_lang$core$Native_Utils.update(
+							_p62,
+							{
+								movement: _chemmi$elm_rocket$Rocket_Types$Landed(_p56._0)
+							});
+					} else {
+						return _p62;
+					}
+				case 'Landed':
+					var _p59 = msg;
+					if (_p59.ctor === 'TimerTick') {
+						return _elm_lang$core$Native_Utils.update(
+							_p62,
+							{movement: _chemmi$elm_rocket$Rocket_Types$Flying, position: _chemmi$elm_rocket$Rocket_Inits$initInfo.landAnimation.rocket.position});
+					} else {
+						return _p62;
+					}
+				default:
+					return _p62;
+			}
+		}();
+		var updatedPlatform = function () {
+			var _p60 = _p62.movement;
+			switch (_p60.ctor) {
+				case 'Landing':
+					return _elm_lang$core$Maybe$Just(
+						_elm_lang$core$Native_Utils.update(
+							jPlatform,
+							{marked: true}));
+				case 'Flying':
+					return _elm_lang$core$Maybe$Just(
+						_elm_lang$core$Native_Utils.update(
+							jPlatform,
+							{marked: false}));
+				default:
+					return _p61;
+			}
+		}();
+		return _elm_lang$core$Native_Utils.update(
+			_p53,
+			{rocket: updatedRocket, platform: updatedPlatform});
+	});
+var _chemmi$elm_rocket$Rocket_Updates$updateRotateAnimation = F2(
+	function (msg, _p63) {
+		var _p64 = _p63;
+		var _p67 = _p64.rocket;
+		var _p66 = _p64;
+		var updatedRocket = (_elm_lang$core$Native_Utils.cmp(
+			_elm_lang$core$Basics$abs(_p67.angle),
+			60) < 0) ? _elm_lang$core$Native_Utils.update(
+			_p67,
+			{angle: _p67.angle + _p67.twist}) : _elm_lang$core$Native_Utils.update(
+			_p67,
+			{twist: 0 - _p67.twist, angle: _p67.angle - _p67.twist});
+		var _p65 = msg;
+		if (_p65.ctor === 'Step') {
+			return _elm_lang$core$Native_Utils.update(
+				_p66,
+				{rocket: updatedRocket});
+		} else {
+			return _p66;
+		}
+	});
+var _chemmi$elm_rocket$Rocket_Updates$updateAccelerateAnimation = F2(
+	function (msg, _p68) {
+		var _p69 = _p68;
+		var _p72 = _p69.rocket;
+		var _p71 = _p69;
+		var updatedRocket = _elm_lang$core$Native_Utils.update(
+			_p72,
+			{
+				fire: _elm_lang$core$Basics$not(_p72.fire)
+			});
+		var _p70 = msg;
+		if (_p70.ctor === 'TimerTick') {
+			return _elm_lang$core$Native_Utils.update(
+				_p71,
+				{rocket: updatedRocket});
+		} else {
+			return _p71;
+		}
+	});
+var _chemmi$elm_rocket$Rocket_Updates$updateInfo = F2(
+	function (msg, _p73) {
+		var _p74 = _p73;
+		return _elm_lang$core$Native_Utils.update(
+			_p74,
+			{
+				accelerateAnimation: A2(_chemmi$elm_rocket$Rocket_Updates$updateAccelerateAnimation, msg, _p74.accelerateAnimation),
+				rotateAnimation: A2(_chemmi$elm_rocket$Rocket_Updates$updateRotateAnimation, msg, _p74.rotateAnimation),
+				landAnimation: A2(_chemmi$elm_rocket$Rocket_Updates$updateLandAnimation, msg, _p74.landAnimation)
+			});
+	});
 
-var _chemmi$elm_rocket$Rocket_Views$showMessageBox = function (message) {
+var _chemmi$elm_rocket$Rocket_Views$showSmallMessageBox = function (_p0) {
+	var _p1 = _p0;
+	var height = 15;
+	var $default = _evancz$elm_graphics$Text$defaultStyle;
+	var messageStyle = _elm_lang$core$Native_Utils.update(
+		$default,
+		{
+			height: _elm_lang$core$Maybe$Just(height),
+			color: _elm_lang$core$Color$black,
+			typeface: _elm_lang$core$Native_List.fromArray(
+				['helvetica'])
+		});
+	var captionStyle = _elm_lang$core$Native_Utils.update(
+		messageStyle,
+		{bold: true, color: _elm_lang$core$Color$black});
+	return A4(
+		_evancz$elm_graphics$Element$container,
+		130,
+		130,
+		_evancz$elm_graphics$Element$middle,
+		A3(
+			_evancz$elm_graphics$Collage$collage,
+			130,
+			130,
+			_elm_lang$core$Native_List.fromArray(
+				[
+					A2(
+					_evancz$elm_graphics$Collage$moveY,
+					(0 - _elm_lang$core$Basics$toFloat(height)) * 0.7,
+					A2(
+						_evancz$elm_graphics$Collage$alpha,
+						0.8,
+						A2(
+							_evancz$elm_graphics$Collage$filled,
+							_elm_lang$core$Color$grey,
+							A2(_evancz$elm_graphics$Collage$rect, 100, (2 * height) + 30)))),
+					A2(
+					_evancz$elm_graphics$Collage$alpha,
+					0.6,
+					A2(
+						_evancz$elm_graphics$Collage$filled,
+						_elm_lang$core$Color$lightBlue,
+						A2(_evancz$elm_graphics$Collage$rect, 90, height + 10))),
+					A2(
+					_evancz$elm_graphics$Collage$moveY,
+					_elm_lang$core$Basics$toFloat(height) / 8,
+					_evancz$elm_graphics$Collage$text(
+						A2(
+							_evancz$elm_graphics$Text$style,
+							captionStyle,
+							_evancz$elm_graphics$Text$fromString(_p1._0)))),
+					A2(
+					_evancz$elm_graphics$Collage$moveY,
+					(_elm_lang$core$Basics$toFloat(height) / 8) - (_elm_lang$core$Basics$toFloat(height) * 1.7),
+					_evancz$elm_graphics$Collage$text(
+						A2(
+							_evancz$elm_graphics$Text$style,
+							messageStyle,
+							_evancz$elm_graphics$Text$fromString(_p1._1))))
+				])));
+};
+var _chemmi$elm_rocket$Rocket_Views$showMessageBox = function (_p2) {
+	var _p3 = _p2;
+	var height = 20;
+	var $default = _evancz$elm_graphics$Text$defaultStyle;
+	var messageStyle = _elm_lang$core$Native_Utils.update(
+		$default,
+		{
+			height: _elm_lang$core$Maybe$Just(height),
+			color: _elm_lang$core$Color$black,
+			typeface: _elm_lang$core$Native_List.fromArray(
+				['helvetica'])
+		});
+	var captionStyle = _elm_lang$core$Native_Utils.update(
+		messageStyle,
+		{bold: true, color: _elm_lang$core$Color$black});
 	return A4(
 		_evancz$elm_graphics$Element$container,
 		800,
@@ -12935,32 +13304,43 @@ var _chemmi$elm_rocket$Rocket_Views$showMessageBox = function (message) {
 		_evancz$elm_graphics$Element$middle,
 		A3(
 			_evancz$elm_graphics$Collage$collage,
-			800,
+			700,
 			300,
 			_elm_lang$core$Native_List.fromArray(
 				[
 					A2(
-					_evancz$elm_graphics$Collage$alpha,
-					0.8,
+					_evancz$elm_graphics$Collage$moveY,
+					(0 - _elm_lang$core$Basics$toFloat(height)) * 0.7,
 					A2(
-						_evancz$elm_graphics$Collage$moveY,
-						-3,
+						_evancz$elm_graphics$Collage$alpha,
+						0.8,
 						A2(
 							_evancz$elm_graphics$Collage$filled,
-							_elm_lang$core$Color$yellow,
-							A2(_evancz$elm_graphics$Collage$rect, 700, 40)))),
-					_evancz$elm_graphics$Collage$text(
+							_elm_lang$core$Color$grey,
+							A2(_evancz$elm_graphics$Collage$rect, 700, (2 * height) + 30)))),
 					A2(
-						_evancz$elm_graphics$Text$height,
-						20,
+					_evancz$elm_graphics$Collage$alpha,
+					0.5,
+					A2(
+						_evancz$elm_graphics$Collage$filled,
+						_elm_lang$core$Color$blue,
+						A2(_evancz$elm_graphics$Collage$rect, 650, height + 10))),
+					A2(
+					_evancz$elm_graphics$Collage$moveY,
+					_elm_lang$core$Basics$toFloat(height) / 8,
+					_evancz$elm_graphics$Collage$text(
 						A2(
-							_evancz$elm_graphics$Text$color,
-							_elm_lang$core$Color$red,
-							A2(
-								_evancz$elm_graphics$Text$typeface,
-								_elm_lang$core$Native_List.fromArray(
-									['Helvetica']),
-								_evancz$elm_graphics$Text$fromString(message)))))
+							_evancz$elm_graphics$Text$style,
+							captionStyle,
+							_evancz$elm_graphics$Text$fromString(_p3._0)))),
+					A2(
+					_evancz$elm_graphics$Collage$moveY,
+					(_elm_lang$core$Basics$toFloat(height) / 8) - (_elm_lang$core$Basics$toFloat(height) * 1.5),
+					_evancz$elm_graphics$Collage$text(
+						A2(
+							_evancz$elm_graphics$Text$style,
+							messageStyle,
+							_evancz$elm_graphics$Text$fromString(_p3._1))))
 				])));
 };
 var _chemmi$elm_rocket$Rocket_Views$viewValue = F2(
@@ -13015,9 +13395,9 @@ var _chemmi$elm_rocket$Rocket_Views$viewRocketStatus = function (r) {
 						_chemmi$elm_rocket$Rocket_Views$viewValue,
 						'Position',
 						function () {
-							var _p0 = r.position;
-							var x = _p0._0;
-							var y = _p0._1;
+							var _p4 = r.position;
+							var x = _p4._0;
+							var y = _p4._1;
 							return {
 								ctor: '_Tuple2',
 								_0: _elm_lang$core$Basics$round(x),
@@ -13032,9 +13412,9 @@ var _chemmi$elm_rocket$Rocket_Views$viewRocketStatus = function (r) {
 						_chemmi$elm_rocket$Rocket_Views$viewValue,
 						'Velocity',
 						function () {
-							var _p1 = r.velocity;
-							var vx = _p1._0;
-							var vy = _p1._1;
+							var _p5 = r.velocity;
+							var vx = _p5._0;
+							var vy = _p5._1;
 							return {
 								ctor: '_Tuple2',
 								_0: _elm_lang$core$Basics$round(vx),
@@ -13073,7 +13453,8 @@ var _chemmi$elm_rocket$Rocket_Views$viewWinScreen = function (data) {
 					_elm_lang$core$Native_List.fromArray(
 						[
 							data.background,
-							_chemmi$elm_rocket$Rocket_Views$showMessageBox(data.message)
+							_chemmi$elm_rocket$Rocket_Views$showMessageBox(
+							{ctor: '_Tuple2', _0: 'Congratulations, you made it !', _1: '[SPACE], [B]: continue'})
 						])))
 			]));
 };
@@ -13089,12 +13470,13 @@ var _chemmi$elm_rocket$Rocket_Views$viewGameoverScreen = function (data) {
 					_elm_lang$core$Native_List.fromArray(
 						[
 							data.background,
-							_chemmi$elm_rocket$Rocket_Views$showMessageBox(data.message)
+							_chemmi$elm_rocket$Rocket_Views$showMessageBox(
+							{ctor: '_Tuple2', _0: 'Gameover!', _1: '[Space] : restart, [B] : choose other world'})
 						])))
 			]));
 };
-var _chemmi$elm_rocket$Rocket_Views$viewWorldChoiceScreen = function (_p2) {
-	var _p3 = _p2;
+var _chemmi$elm_rocket$Rocket_Views$viewWorldChoiceScreen = function (_p6) {
+	var _p7 = _p6;
 	return A2(
 		_elm_lang$html$Html$div,
 		_elm_lang$core$Native_List.fromArray(
@@ -13107,20 +13489,85 @@ var _chemmi$elm_rocket$Rocket_Views$viewWorldChoiceScreen = function (_p2) {
 						[
 							_chemmi$elm_rocket$Rocket_Scene$drawWorldThumbnail(
 							function () {
-								var _p4 = _elm_lang$core$List$head(_p3.worldChoice);
-								if (_p4.ctor === 'Just') {
-									return _p4._0;
+								var _p8 = _elm_lang$core$List$head(_p7.worldChoice);
+								if (_p8.ctor === 'Just') {
+									return _p8._0;
 								} else {
 									return _elm_lang$core$Native_Utils.crashCase(
 										'Rocket.Views',
 										{
-											start: {line: 50, column: 24},
-											end: {line: 55, column: 58}
+											start: {line: 90, column: 24},
+											end: {line: 95, column: 58}
 										},
-										_p4)('No worlds found');
+										_p8)('No worlds found');
 								}
 							}()),
-							_chemmi$elm_rocket$Rocket_Views$showMessageBox('<-- [A]    Choose and press [SPACE] to start level    [D] -->')
+							_chemmi$elm_rocket$Rocket_Views$showMessageBox(
+							{ctor: '_Tuple2', _0: 'Choose world', _1: '<-- [A]       [SPACE] : start       [D] -->'})
+						])))
+			]));
+};
+var _chemmi$elm_rocket$Rocket_Views$showInstructions = function (_p10) {
+	var _p11 = _p10;
+	return _evancz$elm_graphics$Element$layers(
+		_elm_lang$core$Native_List.fromArray(
+			[
+				A4(
+				_evancz$elm_graphics$Element$container,
+				800,
+				600,
+				A2(
+					_evancz$elm_graphics$Element$middleAt,
+					_evancz$elm_graphics$Element$absolute(400),
+					_evancz$elm_graphics$Element$absolute(200)),
+				A2(
+					_evancz$elm_graphics$Element$flow,
+					_evancz$elm_graphics$Element$right,
+					_elm_lang$core$Native_List.fromArray(
+						[
+							_chemmi$elm_rocket$Rocket_Views$showSmallMessageBox(
+							{ctor: '_Tuple2', _0: 'Accelerate', _1: '[W]'}),
+							_chemmi$elm_rocket$Rocket_Scene$drawPortrait(_p11.accelerateAnimation),
+							A2(_evancz$elm_graphics$Element$spacer, 50, 1),
+							_chemmi$elm_rocket$Rocket_Scene$drawPortrait(_p11.rotateAnimation),
+							_chemmi$elm_rocket$Rocket_Views$showSmallMessageBox(
+							{ctor: '_Tuple2', _0: 'Rotate', _1: '[A] and [D]'})
+						]))),
+				A4(
+				_evancz$elm_graphics$Element$container,
+				800,
+				600,
+				A2(
+					_evancz$elm_graphics$Element$middleAt,
+					_evancz$elm_graphics$Element$absolute(400),
+					_evancz$elm_graphics$Element$absolute(430)),
+				A2(
+					_evancz$elm_graphics$Element$flow,
+					_evancz$elm_graphics$Element$right,
+					_elm_lang$core$Native_List.fromArray(
+						[
+							_chemmi$elm_rocket$Rocket_Views$showSmallMessageBox(
+							{ctor: '_Tuple2', _0: 'Landing', _1: 'Not too fast !!'}),
+							_chemmi$elm_rocket$Rocket_Scene$drawPortrait(_p11.landAnimation),
+							_chemmi$elm_rocket$Rocket_Views$showSmallMessageBox(
+							{ctor: '_Tuple2', _0: 'Toggle Music', _1: '[M]'})
+						])))
+			]));
+};
+var _chemmi$elm_rocket$Rocket_Views$viewInfoScreen = function (data) {
+	return A2(
+		_elm_lang$html$Html$div,
+		_elm_lang$core$Native_List.fromArray(
+			[]),
+		_elm_lang$core$Native_List.fromArray(
+			[
+				_evancz$elm_graphics$Element$toHtml(
+				_evancz$elm_graphics$Element$layers(
+					_elm_lang$core$Native_List.fromArray(
+						[
+							_chemmi$elm_rocket$Rocket_Views$showInstructions(data),
+							_chemmi$elm_rocket$Rocket_Views$showMessageBox(
+							{ctor: '_Tuple2', _0: 'Objective', _1: 'Land on all platforms in time !'})
 						])))
 			]));
 };
@@ -13134,24 +13581,379 @@ var _chemmi$elm_rocket$Rocket_Views$viewStartScreen = A2(
 			_evancz$elm_graphics$Element$layers(
 				_elm_lang$core$Native_List.fromArray(
 					[
-						_chemmi$elm_rocket$Rocket_Views$showMessageBox('StartScreen - Press [SPACE] to choose level')
+						_chemmi$elm_rocket$Rocket_Views$showMessageBox(
+						{ctor: '_Tuple2', _0: 'Welcome to RocketGame !', _1: 'Press [SPACE] to begin your journey'})
 					])))
 		]));
 var _chemmi$elm_rocket$Rocket_Views$viewScreen = function (screen) {
-	var _p6 = screen;
-	switch (_p6.ctor) {
-		case 'PlayScreen':
-			return _chemmi$elm_rocket$Rocket_Views$viewPlayScreen(_p6._0);
+	var _p12 = screen;
+	switch (_p12.ctor) {
 		case 'StartScreen':
 			return _chemmi$elm_rocket$Rocket_Views$viewStartScreen;
+		case 'InfoScreen':
+			return _chemmi$elm_rocket$Rocket_Views$viewInfoScreen(_p12._0);
 		case 'WorldChoiceScreen':
-			return _chemmi$elm_rocket$Rocket_Views$viewWorldChoiceScreen(_p6._0);
+			return _chemmi$elm_rocket$Rocket_Views$viewWorldChoiceScreen(_p12._0);
+		case 'PlayScreen':
+			return _chemmi$elm_rocket$Rocket_Views$viewPlayScreen(_p12._0);
 		case 'GameoverScreen':
-			return _chemmi$elm_rocket$Rocket_Views$viewGameoverScreen(_p6._0);
+			return _chemmi$elm_rocket$Rocket_Views$viewGameoverScreen(_p12._0);
 		default:
-			return _chemmi$elm_rocket$Rocket_Views$viewWinScreen(_p6._0);
+			return _chemmi$elm_rocket$Rocket_Views$viewWinScreen(_p12._0);
 	}
 };
+
+var _elm_lang$html$Html_Attributes$attribute = _elm_lang$virtual_dom$VirtualDom$attribute;
+var _elm_lang$html$Html_Attributes$contextmenu = function (value) {
+	return A2(_elm_lang$html$Html_Attributes$attribute, 'contextmenu', value);
+};
+var _elm_lang$html$Html_Attributes$draggable = function (value) {
+	return A2(_elm_lang$html$Html_Attributes$attribute, 'draggable', value);
+};
+var _elm_lang$html$Html_Attributes$list = function (value) {
+	return A2(_elm_lang$html$Html_Attributes$attribute, 'list', value);
+};
+var _elm_lang$html$Html_Attributes$maxlength = function (n) {
+	return A2(
+		_elm_lang$html$Html_Attributes$attribute,
+		'maxlength',
+		_elm_lang$core$Basics$toString(n));
+};
+var _elm_lang$html$Html_Attributes$datetime = function (value) {
+	return A2(_elm_lang$html$Html_Attributes$attribute, 'datetime', value);
+};
+var _elm_lang$html$Html_Attributes$pubdate = function (value) {
+	return A2(_elm_lang$html$Html_Attributes$attribute, 'pubdate', value);
+};
+var _elm_lang$html$Html_Attributes$colspan = function (n) {
+	return A2(
+		_elm_lang$html$Html_Attributes$attribute,
+		'colspan',
+		_elm_lang$core$Basics$toString(n));
+};
+var _elm_lang$html$Html_Attributes$rowspan = function (n) {
+	return A2(
+		_elm_lang$html$Html_Attributes$attribute,
+		'rowspan',
+		_elm_lang$core$Basics$toString(n));
+};
+var _elm_lang$html$Html_Attributes$property = _elm_lang$virtual_dom$VirtualDom$property;
+var _elm_lang$html$Html_Attributes$stringProperty = F2(
+	function (name, string) {
+		return A2(
+			_elm_lang$html$Html_Attributes$property,
+			name,
+			_elm_lang$core$Json_Encode$string(string));
+	});
+var _elm_lang$html$Html_Attributes$class = function (name) {
+	return A2(_elm_lang$html$Html_Attributes$stringProperty, 'className', name);
+};
+var _elm_lang$html$Html_Attributes$id = function (name) {
+	return A2(_elm_lang$html$Html_Attributes$stringProperty, 'id', name);
+};
+var _elm_lang$html$Html_Attributes$title = function (name) {
+	return A2(_elm_lang$html$Html_Attributes$stringProperty, 'title', name);
+};
+var _elm_lang$html$Html_Attributes$accesskey = function ($char) {
+	return A2(
+		_elm_lang$html$Html_Attributes$stringProperty,
+		'accessKey',
+		_elm_lang$core$String$fromChar($char));
+};
+var _elm_lang$html$Html_Attributes$dir = function (value) {
+	return A2(_elm_lang$html$Html_Attributes$stringProperty, 'dir', value);
+};
+var _elm_lang$html$Html_Attributes$dropzone = function (value) {
+	return A2(_elm_lang$html$Html_Attributes$stringProperty, 'dropzone', value);
+};
+var _elm_lang$html$Html_Attributes$itemprop = function (value) {
+	return A2(_elm_lang$html$Html_Attributes$stringProperty, 'itemprop', value);
+};
+var _elm_lang$html$Html_Attributes$lang = function (value) {
+	return A2(_elm_lang$html$Html_Attributes$stringProperty, 'lang', value);
+};
+var _elm_lang$html$Html_Attributes$tabindex = function (n) {
+	return A2(
+		_elm_lang$html$Html_Attributes$stringProperty,
+		'tabIndex',
+		_elm_lang$core$Basics$toString(n));
+};
+var _elm_lang$html$Html_Attributes$charset = function (value) {
+	return A2(_elm_lang$html$Html_Attributes$stringProperty, 'charset', value);
+};
+var _elm_lang$html$Html_Attributes$content = function (value) {
+	return A2(_elm_lang$html$Html_Attributes$stringProperty, 'content', value);
+};
+var _elm_lang$html$Html_Attributes$httpEquiv = function (value) {
+	return A2(_elm_lang$html$Html_Attributes$stringProperty, 'httpEquiv', value);
+};
+var _elm_lang$html$Html_Attributes$language = function (value) {
+	return A2(_elm_lang$html$Html_Attributes$stringProperty, 'language', value);
+};
+var _elm_lang$html$Html_Attributes$src = function (value) {
+	return A2(_elm_lang$html$Html_Attributes$stringProperty, 'src', value);
+};
+var _elm_lang$html$Html_Attributes$height = function (value) {
+	return A2(
+		_elm_lang$html$Html_Attributes$stringProperty,
+		'height',
+		_elm_lang$core$Basics$toString(value));
+};
+var _elm_lang$html$Html_Attributes$width = function (value) {
+	return A2(
+		_elm_lang$html$Html_Attributes$stringProperty,
+		'width',
+		_elm_lang$core$Basics$toString(value));
+};
+var _elm_lang$html$Html_Attributes$alt = function (value) {
+	return A2(_elm_lang$html$Html_Attributes$stringProperty, 'alt', value);
+};
+var _elm_lang$html$Html_Attributes$preload = function (value) {
+	return A2(_elm_lang$html$Html_Attributes$stringProperty, 'preload', value);
+};
+var _elm_lang$html$Html_Attributes$poster = function (value) {
+	return A2(_elm_lang$html$Html_Attributes$stringProperty, 'poster', value);
+};
+var _elm_lang$html$Html_Attributes$kind = function (value) {
+	return A2(_elm_lang$html$Html_Attributes$stringProperty, 'kind', value);
+};
+var _elm_lang$html$Html_Attributes$srclang = function (value) {
+	return A2(_elm_lang$html$Html_Attributes$stringProperty, 'srclang', value);
+};
+var _elm_lang$html$Html_Attributes$sandbox = function (value) {
+	return A2(_elm_lang$html$Html_Attributes$stringProperty, 'sandbox', value);
+};
+var _elm_lang$html$Html_Attributes$srcdoc = function (value) {
+	return A2(_elm_lang$html$Html_Attributes$stringProperty, 'srcdoc', value);
+};
+var _elm_lang$html$Html_Attributes$type$ = function (value) {
+	return A2(_elm_lang$html$Html_Attributes$stringProperty, 'type', value);
+};
+var _elm_lang$html$Html_Attributes$value = function (value) {
+	return A2(_elm_lang$html$Html_Attributes$stringProperty, 'value', value);
+};
+var _elm_lang$html$Html_Attributes$defaultValue = function (value) {
+	return A2(_elm_lang$html$Html_Attributes$stringProperty, 'defaultValue', value);
+};
+var _elm_lang$html$Html_Attributes$placeholder = function (value) {
+	return A2(_elm_lang$html$Html_Attributes$stringProperty, 'placeholder', value);
+};
+var _elm_lang$html$Html_Attributes$accept = function (value) {
+	return A2(_elm_lang$html$Html_Attributes$stringProperty, 'accept', value);
+};
+var _elm_lang$html$Html_Attributes$acceptCharset = function (value) {
+	return A2(_elm_lang$html$Html_Attributes$stringProperty, 'acceptCharset', value);
+};
+var _elm_lang$html$Html_Attributes$action = function (value) {
+	return A2(_elm_lang$html$Html_Attributes$stringProperty, 'action', value);
+};
+var _elm_lang$html$Html_Attributes$autocomplete = function (bool) {
+	return A2(
+		_elm_lang$html$Html_Attributes$stringProperty,
+		'autocomplete',
+		bool ? 'on' : 'off');
+};
+var _elm_lang$html$Html_Attributes$autosave = function (value) {
+	return A2(_elm_lang$html$Html_Attributes$stringProperty, 'autosave', value);
+};
+var _elm_lang$html$Html_Attributes$enctype = function (value) {
+	return A2(_elm_lang$html$Html_Attributes$stringProperty, 'enctype', value);
+};
+var _elm_lang$html$Html_Attributes$formaction = function (value) {
+	return A2(_elm_lang$html$Html_Attributes$stringProperty, 'formAction', value);
+};
+var _elm_lang$html$Html_Attributes$minlength = function (n) {
+	return A2(
+		_elm_lang$html$Html_Attributes$stringProperty,
+		'minLength',
+		_elm_lang$core$Basics$toString(n));
+};
+var _elm_lang$html$Html_Attributes$method = function (value) {
+	return A2(_elm_lang$html$Html_Attributes$stringProperty, 'method', value);
+};
+var _elm_lang$html$Html_Attributes$name = function (value) {
+	return A2(_elm_lang$html$Html_Attributes$stringProperty, 'name', value);
+};
+var _elm_lang$html$Html_Attributes$pattern = function (value) {
+	return A2(_elm_lang$html$Html_Attributes$stringProperty, 'pattern', value);
+};
+var _elm_lang$html$Html_Attributes$size = function (n) {
+	return A2(
+		_elm_lang$html$Html_Attributes$stringProperty,
+		'size',
+		_elm_lang$core$Basics$toString(n));
+};
+var _elm_lang$html$Html_Attributes$for = function (value) {
+	return A2(_elm_lang$html$Html_Attributes$stringProperty, 'htmlFor', value);
+};
+var _elm_lang$html$Html_Attributes$form = function (value) {
+	return A2(_elm_lang$html$Html_Attributes$stringProperty, 'form', value);
+};
+var _elm_lang$html$Html_Attributes$max = function (value) {
+	return A2(_elm_lang$html$Html_Attributes$stringProperty, 'max', value);
+};
+var _elm_lang$html$Html_Attributes$min = function (value) {
+	return A2(_elm_lang$html$Html_Attributes$stringProperty, 'min', value);
+};
+var _elm_lang$html$Html_Attributes$step = function (n) {
+	return A2(_elm_lang$html$Html_Attributes$stringProperty, 'step', n);
+};
+var _elm_lang$html$Html_Attributes$cols = function (n) {
+	return A2(
+		_elm_lang$html$Html_Attributes$stringProperty,
+		'cols',
+		_elm_lang$core$Basics$toString(n));
+};
+var _elm_lang$html$Html_Attributes$rows = function (n) {
+	return A2(
+		_elm_lang$html$Html_Attributes$stringProperty,
+		'rows',
+		_elm_lang$core$Basics$toString(n));
+};
+var _elm_lang$html$Html_Attributes$wrap = function (value) {
+	return A2(_elm_lang$html$Html_Attributes$stringProperty, 'wrap', value);
+};
+var _elm_lang$html$Html_Attributes$usemap = function (value) {
+	return A2(_elm_lang$html$Html_Attributes$stringProperty, 'useMap', value);
+};
+var _elm_lang$html$Html_Attributes$shape = function (value) {
+	return A2(_elm_lang$html$Html_Attributes$stringProperty, 'shape', value);
+};
+var _elm_lang$html$Html_Attributes$coords = function (value) {
+	return A2(_elm_lang$html$Html_Attributes$stringProperty, 'coords', value);
+};
+var _elm_lang$html$Html_Attributes$challenge = function (value) {
+	return A2(_elm_lang$html$Html_Attributes$stringProperty, 'challenge', value);
+};
+var _elm_lang$html$Html_Attributes$keytype = function (value) {
+	return A2(_elm_lang$html$Html_Attributes$stringProperty, 'keytype', value);
+};
+var _elm_lang$html$Html_Attributes$align = function (value) {
+	return A2(_elm_lang$html$Html_Attributes$stringProperty, 'align', value);
+};
+var _elm_lang$html$Html_Attributes$cite = function (value) {
+	return A2(_elm_lang$html$Html_Attributes$stringProperty, 'cite', value);
+};
+var _elm_lang$html$Html_Attributes$href = function (value) {
+	return A2(_elm_lang$html$Html_Attributes$stringProperty, 'href', value);
+};
+var _elm_lang$html$Html_Attributes$target = function (value) {
+	return A2(_elm_lang$html$Html_Attributes$stringProperty, 'target', value);
+};
+var _elm_lang$html$Html_Attributes$downloadAs = function (value) {
+	return A2(_elm_lang$html$Html_Attributes$stringProperty, 'download', value);
+};
+var _elm_lang$html$Html_Attributes$hreflang = function (value) {
+	return A2(_elm_lang$html$Html_Attributes$stringProperty, 'hreflang', value);
+};
+var _elm_lang$html$Html_Attributes$media = function (value) {
+	return A2(_elm_lang$html$Html_Attributes$stringProperty, 'media', value);
+};
+var _elm_lang$html$Html_Attributes$ping = function (value) {
+	return A2(_elm_lang$html$Html_Attributes$stringProperty, 'ping', value);
+};
+var _elm_lang$html$Html_Attributes$rel = function (value) {
+	return A2(_elm_lang$html$Html_Attributes$stringProperty, 'rel', value);
+};
+var _elm_lang$html$Html_Attributes$start = function (n) {
+	return A2(
+		_elm_lang$html$Html_Attributes$stringProperty,
+		'start',
+		_elm_lang$core$Basics$toString(n));
+};
+var _elm_lang$html$Html_Attributes$headers = function (value) {
+	return A2(_elm_lang$html$Html_Attributes$stringProperty, 'headers', value);
+};
+var _elm_lang$html$Html_Attributes$scope = function (value) {
+	return A2(_elm_lang$html$Html_Attributes$stringProperty, 'scope', value);
+};
+var _elm_lang$html$Html_Attributes$manifest = function (value) {
+	return A2(_elm_lang$html$Html_Attributes$stringProperty, 'manifest', value);
+};
+var _elm_lang$html$Html_Attributes$boolProperty = F2(
+	function (name, bool) {
+		return A2(
+			_elm_lang$html$Html_Attributes$property,
+			name,
+			_elm_lang$core$Json_Encode$bool(bool));
+	});
+var _elm_lang$html$Html_Attributes$hidden = function (bool) {
+	return A2(_elm_lang$html$Html_Attributes$boolProperty, 'hidden', bool);
+};
+var _elm_lang$html$Html_Attributes$contenteditable = function (bool) {
+	return A2(_elm_lang$html$Html_Attributes$boolProperty, 'contentEditable', bool);
+};
+var _elm_lang$html$Html_Attributes$spellcheck = function (bool) {
+	return A2(_elm_lang$html$Html_Attributes$boolProperty, 'spellcheck', bool);
+};
+var _elm_lang$html$Html_Attributes$async = function (bool) {
+	return A2(_elm_lang$html$Html_Attributes$boolProperty, 'async', bool);
+};
+var _elm_lang$html$Html_Attributes$defer = function (bool) {
+	return A2(_elm_lang$html$Html_Attributes$boolProperty, 'defer', bool);
+};
+var _elm_lang$html$Html_Attributes$scoped = function (bool) {
+	return A2(_elm_lang$html$Html_Attributes$boolProperty, 'scoped', bool);
+};
+var _elm_lang$html$Html_Attributes$autoplay = function (bool) {
+	return A2(_elm_lang$html$Html_Attributes$boolProperty, 'autoplay', bool);
+};
+var _elm_lang$html$Html_Attributes$controls = function (bool) {
+	return A2(_elm_lang$html$Html_Attributes$boolProperty, 'controls', bool);
+};
+var _elm_lang$html$Html_Attributes$loop = function (bool) {
+	return A2(_elm_lang$html$Html_Attributes$boolProperty, 'loop', bool);
+};
+var _elm_lang$html$Html_Attributes$default = function (bool) {
+	return A2(_elm_lang$html$Html_Attributes$boolProperty, 'default', bool);
+};
+var _elm_lang$html$Html_Attributes$seamless = function (bool) {
+	return A2(_elm_lang$html$Html_Attributes$boolProperty, 'seamless', bool);
+};
+var _elm_lang$html$Html_Attributes$checked = function (bool) {
+	return A2(_elm_lang$html$Html_Attributes$boolProperty, 'checked', bool);
+};
+var _elm_lang$html$Html_Attributes$selected = function (bool) {
+	return A2(_elm_lang$html$Html_Attributes$boolProperty, 'selected', bool);
+};
+var _elm_lang$html$Html_Attributes$autofocus = function (bool) {
+	return A2(_elm_lang$html$Html_Attributes$boolProperty, 'autofocus', bool);
+};
+var _elm_lang$html$Html_Attributes$disabled = function (bool) {
+	return A2(_elm_lang$html$Html_Attributes$boolProperty, 'disabled', bool);
+};
+var _elm_lang$html$Html_Attributes$multiple = function (bool) {
+	return A2(_elm_lang$html$Html_Attributes$boolProperty, 'multiple', bool);
+};
+var _elm_lang$html$Html_Attributes$novalidate = function (bool) {
+	return A2(_elm_lang$html$Html_Attributes$boolProperty, 'noValidate', bool);
+};
+var _elm_lang$html$Html_Attributes$readonly = function (bool) {
+	return A2(_elm_lang$html$Html_Attributes$boolProperty, 'readOnly', bool);
+};
+var _elm_lang$html$Html_Attributes$required = function (bool) {
+	return A2(_elm_lang$html$Html_Attributes$boolProperty, 'required', bool);
+};
+var _elm_lang$html$Html_Attributes$ismap = function (value) {
+	return A2(_elm_lang$html$Html_Attributes$boolProperty, 'isMap', value);
+};
+var _elm_lang$html$Html_Attributes$download = function (bool) {
+	return A2(_elm_lang$html$Html_Attributes$boolProperty, 'download', bool);
+};
+var _elm_lang$html$Html_Attributes$reversed = function (bool) {
+	return A2(_elm_lang$html$Html_Attributes$boolProperty, 'reversed', bool);
+};
+var _elm_lang$html$Html_Attributes$classList = function (list) {
+	return _elm_lang$html$Html_Attributes$class(
+		A2(
+			_elm_lang$core$String$join,
+			' ',
+			A2(
+				_elm_lang$core$List$map,
+				_elm_lang$core$Basics$fst,
+				A2(_elm_lang$core$List$filter, _elm_lang$core$Basics$snd, list))));
+};
+var _elm_lang$html$Html_Attributes$style = _elm_lang$virtual_dom$VirtualDom$style;
 
 var _elm_lang$html$Html_App$programWithFlags = _elm_lang$virtual_dom$VirtualDom$programWithFlags;
 var _elm_lang$html$Html_App$program = function (app) {
@@ -13628,8 +14430,8 @@ var _chemmi$elm_rocket$Rocket$changeToPlay = function (_p3) {
 			return _elm_lang$core$Native_Utils.crashCase(
 				'Rocket',
 				{
-					start: {line: 182, column: 13},
-					end: {line: 187, column: 49}
+					start: {line: 183, column: 13},
+					end: {line: 188, column: 49}
 				},
 				_p5)('No world found');
 		}
@@ -13672,29 +14474,39 @@ var _chemmi$elm_rocket$Rocket$changeScreen = F2(
 						var _p10 = _p14;
 						switch (_p10.ctor) {
 							case 'StartScreen':
+								return A2(
+									_chemmi$elm_rocket$Rocket_Types$Model,
+									_chemmi$elm_rocket$Rocket_Types$InfoScreen(_chemmi$elm_rocket$Rocket_Inits$initInfo),
+									_p13);
+							case 'InfoScreen':
 								return _chemmi$elm_rocket$Rocket$changeToWorldChoice(_p13);
 							case 'WorldChoiceScreen':
 								return _chemmi$elm_rocket$Rocket$changeToPlay(
 									_elm_lang$core$Native_Utils.update(
 										_p13,
 										{worldChoice: _p10._0.worldChoice}));
-							case 'GameoverScreen':
-								return _chemmi$elm_rocket$Rocket$changeToWorldChoice(_p13);
-							case 'WinScreen':
-								return _chemmi$elm_rocket$Rocket$changeToWorldChoice(_p13);
-							default:
+							case 'PlayScreen':
 								return _p12;
+							case 'GameoverScreen':
+								return _chemmi$elm_rocket$Rocket$changeToPlay(_p13);
+							default:
+								return _chemmi$elm_rocket$Rocket$changeToWorldChoice(_p13);
 						}
 					case 'Back':
 						var _p11 = _p14;
 						switch (_p11.ctor) {
 							case 'StartScreen':
 								return _p12;
-							case 'WorldChoiceScreen':
+							case 'InfoScreen':
 								return A2(_chemmi$elm_rocket$Rocket_Types$Model, _chemmi$elm_rocket$Rocket_Types$StartScreen, _p13);
-							case 'GameoverScreen':
+							case 'WorldChoiceScreen':
+								return A2(
+									_chemmi$elm_rocket$Rocket_Types$Model,
+									_chemmi$elm_rocket$Rocket_Types$InfoScreen(_chemmi$elm_rocket$Rocket_Inits$initInfo),
+									_p13);
+							case 'PlayScreen':
 								return _chemmi$elm_rocket$Rocket$changeToWorldChoice(_p13);
-							case 'WinScreen':
+							case 'GameoverScreen':
 								return _chemmi$elm_rocket$Rocket$changeToWorldChoice(_p13);
 							default:
 								return _chemmi$elm_rocket$Rocket$changeToWorldChoice(_p13);
@@ -13722,40 +14534,12 @@ var _chemmi$elm_rocket$Rocket$view = function (_p15) {
 	return A2(
 		_elm_lang$html$Html$div,
 		_elm_lang$core$Native_List.fromArray(
-			[]),
+			[
+				_elm_lang$html$Html_Attributes$id('gameScreen')
+			]),
 		_elm_lang$core$Native_List.fromArray(
 			[
-				_chemmi$elm_rocket$Rocket_Views$viewScreen(_p16._0),
-				A2(
-				_elm_lang$html$Html$h3,
-				_elm_lang$core$Native_List.fromArray(
-					[]),
-				_elm_lang$core$Native_List.fromArray(
-					[
-						_elm_lang$html$Html$text('Short Introduction:')
-					])),
-				_elm_lang$html$Html$text('Control the rocket with W (accelerate), A (turn left) and D (turn right).'),
-				A2(
-				_elm_lang$html$Html$br,
-				_elm_lang$core$Native_List.fromArray(
-					[]),
-				_elm_lang$core$Native_List.fromArray(
-					[])),
-				_elm_lang$html$Html$text('Try to land on all platforms in the given time.'),
-				A2(
-				_elm_lang$html$Html$br,
-				_elm_lang$core$Native_List.fromArray(
-					[]),
-				_elm_lang$core$Native_List.fromArray(
-					[])),
-				_elm_lang$html$Html$text('(Visited platforms turn from red to green).'),
-				A2(
-				_elm_lang$html$Html$br,
-				_elm_lang$core$Native_List.fromArray(
-					[]),
-				_elm_lang$core$Native_List.fromArray(
-					[])),
-				_elm_lang$html$Html$text('The rocket must have an apropriate angle and speed when landing.')
+				_chemmi$elm_rocket$Rocket_Views$viewScreen(_p16._0)
 			]));
 };
 var _chemmi$elm_rocket$Rocket$isScreenControlKey = function (key) {
@@ -13796,7 +14580,7 @@ var _chemmi$elm_rocket$Rocket$updateModel = F2(
 						return A2(
 							_chemmi$elm_rocket$Rocket_Types$Model,
 							_chemmi$elm_rocket$Rocket_Types$PlayScreen(
-								A2(_chemmi$elm_rocket$Rocket_Updates$updatePlayScreen, msg, _p23)),
+								A2(_chemmi$elm_rocket$Rocket_Updates$updatePlay, msg, _p23)),
 							_p25);
 					} else {
 						if (_p22._0.ctor === 'Gameover') {
@@ -13823,7 +14607,13 @@ var _chemmi$elm_rocket$Rocket$updateModel = F2(
 					return A2(
 						_chemmi$elm_rocket$Rocket_Types$Model,
 						_chemmi$elm_rocket$Rocket_Types$WorldChoiceScreen(
-							A2(_chemmi$elm_rocket$Rocket_Updates$updateWorldChoiceScreen, msg, _p21._0)),
+							A2(_chemmi$elm_rocket$Rocket_Updates$updateWorldChoice, msg, _p21._0)),
+						_p25);
+				case 'InfoScreen':
+					return A2(
+						_chemmi$elm_rocket$Rocket_Types$Model,
+						_chemmi$elm_rocket$Rocket_Types$InfoScreen(
+							A2(_chemmi$elm_rocket$Rocket_Updates$updateInfo, msg, _p21._0)),
 						_p25);
 				default:
 					return _p24;
@@ -13880,18 +14670,28 @@ var _chemmi$elm_rocket$Rocket$subscriptions = function (_p27) {
 				]),
 			function () {
 				var _p31 = _p28._0;
-				if (_p31.ctor === 'PlayScreen') {
-					return _elm_lang$core$Native_List.fromArray(
-						[
-							_elm_lang$animation_frame$AnimationFrame$diffs(_chemmi$elm_rocket$Rocket_Types$Step),
-							A2(
-							_elm_lang$core$Time$every,
-							_elm_lang$core$Time$second,
-							_elm_lang$core$Basics$always(_chemmi$elm_rocket$Rocket_Types$TimerTick))
-						]);
-				} else {
-					return _elm_lang$core$Native_List.fromArray(
-						[]);
+				switch (_p31.ctor) {
+					case 'PlayScreen':
+						return _elm_lang$core$Native_List.fromArray(
+							[
+								_elm_lang$animation_frame$AnimationFrame$diffs(_chemmi$elm_rocket$Rocket_Types$Step),
+								A2(
+								_elm_lang$core$Time$every,
+								_elm_lang$core$Time$second,
+								_elm_lang$core$Basics$always(_chemmi$elm_rocket$Rocket_Types$TimerTick))
+							]);
+					case 'InfoScreen':
+						return _elm_lang$core$Native_List.fromArray(
+							[
+								_elm_lang$animation_frame$AnimationFrame$diffs(_chemmi$elm_rocket$Rocket_Types$Step),
+								A2(
+								_elm_lang$core$Time$every,
+								_elm_lang$core$Time$second,
+								_elm_lang$core$Basics$always(_chemmi$elm_rocket$Rocket_Types$TimerTick))
+							]);
+					default:
+						return _elm_lang$core$Native_List.fromArray(
+							[]);
 				}
 			}()));
 };
