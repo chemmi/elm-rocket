@@ -171,21 +171,6 @@ drawScene { world, rocket, displaySize, displayPosition, timeRemaining } =
                ]
 
 
-
-{- The following should be the Element representing the Timer.
-   Unfortunately, the show function from Graphics Element has a bug
-   (and the Position in a container has one, too...)
-
-   (with layers)
-   uncurry container
-                   displaySize
-                   (midRightAt (absolute 10) (absolute 20))
-                   <| show
-                   <| inSeconds timeRemaining
-
--}
-
-
 drawWorldThumbnail : World -> Element
 drawWorldThumbnail world =
     let
