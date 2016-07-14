@@ -15,14 +15,17 @@ import Debug
 viewScreen : Screen -> Html a
 viewScreen screen =
     case screen of
-        PlayScreen data ->
-            viewPlayScreen data
-
         StartScreen ->
             viewStartScreen
 
+        InfoScreen data ->
+            viewInfoScreen data
+
         WorldChoiceScreen data ->
             viewWorldChoiceScreen data
+
+        PlayScreen data ->
+            viewPlayScreen data
 
         GameoverScreen data ->
             viewGameoverScreen data
@@ -36,8 +39,19 @@ viewStartScreen =
     div []
         [ toHtml
             <| layers
-                [ showMessageBox ( "Welcome to RocketGame !", "Press [SPACE] to begin your journey" )
+                [ showMessageBox
+                    ( "Welcome to RocketGame !"
+                    , "Press [SPACE] to begin your journey"
+                    )
                 ]
+        ]
+
+
+viewInfoScreen : InfoData -> Html a
+viewInfoScreen data =
+    div []
+        [ toHtml
+            <| container 800 600 middle Element.empty
         ]
 
 
@@ -53,7 +67,10 @@ viewWorldChoiceScreen { worldChoice } =
 
                         Nothing ->
                             Debug.crash "No worlds found"
-                , showMessageBox ( "Choose world", "<-- [A]       [SPACE] : start       [D] -->" )
+                , showMessageBox
+                    ( "Choose world"
+                    , "<-- [A]       [SPACE] : start       [D] -->"
+                    )
                 ]
         ]
 
@@ -64,7 +81,10 @@ viewGameoverScreen data =
         [ toHtml
             <| layers
                 [ data.background
-                , showMessageBox ( "Gameover!", "[Space] : restart, [B] : choose other world" )
+                , showMessageBox
+                    ( "Gameover!"
+                    , "[Space] : restart, [B] : choose other world"
+                    )
                 ]
         ]
 
@@ -75,7 +95,10 @@ viewWinScreen data =
         [ toHtml
             <| layers
                 [ data.background
-                , showMessageBox ( "Congratulations! YOU WIN!", "[SPACE], [B]: continue" )
+                , showMessageBox
+                    ( "Congratulations! YOU WIN!"
+                    , "[SPACE], [B]: continue"
+                    )
                 ]
         ]
 

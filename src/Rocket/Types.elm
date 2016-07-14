@@ -10,6 +10,7 @@ type Model
 
 type Screen
     = StartScreen
+    | InfoScreen InfoData
     | PlayScreen PlayData
     | WorldChoiceScreen WorldChoiceData
     | GameoverScreen GameoverData
@@ -39,6 +40,9 @@ type Key
     | AmbientMusic
     | NotBound
 
+
+type alias InfoData =
+    {}
 
 type alias WorldChoiceData =
     { worldChoice : List World }

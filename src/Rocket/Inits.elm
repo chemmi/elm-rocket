@@ -11,10 +11,16 @@ initModel =
     Model StartScreen initOptions
 
 
+initOptions : Options
 initOptions =
     { worldChoice = allWorlds
     , ambientMusic = True
     }
+
+
+initInfo : InfoData
+initInfo =
+    {}
 
 
 initPlay : PlayData

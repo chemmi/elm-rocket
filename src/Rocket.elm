@@ -136,10 +136,16 @@ changeScreen msg ((Model screen options) as model) =
         KeyUpMsg Start ->
             case screen of
                 StartScreen ->
+                    Model (InfoScreen initInfo) options
+
+                InfoScreen _ ->
                     changeToWorldChoice options
 
                 WorldChoiceScreen data ->
                     changeToPlay { options | worldChoice = data.worldChoice }
+
+                PlayScreen _ ->
+                    model
 
                 GameoverScreen _ ->
                     changeToPlay options
@@ -147,24 +153,24 @@ changeScreen msg ((Model screen options) as model) =
                 WinScreen _ ->
                     changeToWorldChoice options
 
-                PlayScreen _ ->
-                    model
-
         KeyUpMsg Back ->
             case screen of
                 StartScreen ->
                     model
 
-                WorldChoiceScreen _ ->
+                InfoScreen _ ->
                     Model StartScreen options
+
+                WorldChoiceScreen _ ->
+                    Model (InfoScreen initInfo) options
+
+                PlayScreen _ ->
+                    changeToWorldChoice options
 
                 GameoverScreen _ ->
                     changeToWorldChoice options
 
                 WinScreen _ ->
-                    changeToWorldChoice options
-
-                PlayScreen _ ->
                     changeToWorldChoice options
 
         KeyUpMsg AmbientMusic ->
