@@ -1,2 +1,5 @@
-rocket.js: src/Rocket.elm
-	elm make src/Rocket.elm --output rocket.js
+SRC_FILES := src/Rocket.elm $(wildcard src/Rocket/*.elm)
+MAIN := src/Rocket.elm
+
+rocket.js: $(SRC_FILES)
+	elm make $(MAIN) --output rocket.js
