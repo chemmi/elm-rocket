@@ -5,4 +5,4 @@ port module Rocket.Audio exposing (..)
 -}
 
 
-port audio : (String, String) -> Cmd msg
+port audio : ( String, String ) -> Cmd msg
